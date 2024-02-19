@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+    <form action="/update_funcionario/{{funcionario.rutFuncionario}}" method="POST"class="mi-formulario">
+    <div class="form-group">
+        <label for="rut_funcionario">Rut Funcionario</label>
+        <input type="text" name="rut_funcionario" value="{{funcionario.rutFuncionario}}">
+    </div>
+    <br>
+    <div class="form-group">
+        <label for="rut_funcionario">Nombre Funcionario</label>
+        <input type="text" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}">
+    </div>
+    <br>
+    <div class="form-group">
+        <label for="cargo_funcionario">Cargo:</label>
+        <input type="text" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}">
+
+    </div>
+    <!-- Arreglar nombre unidad-->
+    <div class="form-group">
+        <label for="codigo_Unidad">Unidad:</label>
+        <select name="codigo_Unidad" id="" >
+            <option value="">Elija la Unidad</option>
+            {% for ubi in Unidad %}
+                <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form>
+{% endblock %}

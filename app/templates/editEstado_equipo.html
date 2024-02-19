@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+<form action="/update_estado_equipo/{{estado_equipo.idEstado_equipo}}" method="POST"class="mi-formulario">
+    <div class="form-group">
+    <label for="nombre_estado_equipo">Estado Equipo:</label>
+    <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" value="{{estado_equipo.nombreEstadoequipo}}">
+    </div>
+    <div class="form-group">
+        <label for="fecha_modificacion">Fecha de modificación:</label>
+        <input type="date" name="fecha_modificacion"  value="{{estado_equipo.FechamodEstadoequipo}}">
+
+    </div>
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form> 
+
+{% endblock %}

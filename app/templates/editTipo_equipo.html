@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+        <form action="/update_tipo_equipo/{{tipo_equipo.idTipo_equipo}}" method="POST"class="mi-formulario">
+            <div class="form-group">
+                <input type="text" name="nombre_tipo_equipo" placeholder="Nombre tipo de equipo" value="{{tipo_equipo.nombreidTipoequipo}}">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="agregar-button"> Guardar</button>  
+
+            </div>
+          </form> 
+        </div>
+    </div>
+</div>
+
+{% endblock %}

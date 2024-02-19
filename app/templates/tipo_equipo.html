@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+<div class="row">
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+        
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+        
+        <!-- ----- -->
+        <div class="card card-body">
+            <form action="/add_tipo_equipo" method="POST"class="mi-formulario">
+                <div class="form-group">
+                    <label for="nombreidTipoequipo">Nombre Tipo Equipo:</label>
+                    <input type="text" id="nombreidTipoequipo" name="nombreidTipoequipo" required>    
+                </div>
+                    <button type="submit" class="agregar-button"> 
+                        Agregar
+                    </button>
+             </form>
+            </div>
+        </div>
+        <h2>Tipos de equipo</h2>
+        <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead>
+                <tr>
+                    <td>Nombre tipo de equipo</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                {% for tipoe in tipo_equipo %}
+                <tr>
+                    <td>{{tipoe.nombreidTipoequipo}}</td> 
+                    <td>
+                        <a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>
+                        <a href="/delete_tipo_equipo/{{tipoe.idTipo_equipo}}" class="delete-button">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

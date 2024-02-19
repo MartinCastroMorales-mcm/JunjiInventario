@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+
+<form action="/update_modelo_equipo/{{modelo_equipo.idModelo_Equipo}}" method="POST"class="mi-formulario">
+    <div class="form-group">
+    <label for="nombre_modelo_equipo">Modelo Equipo: </label>
+    <input type="text" name="nombre_modelo_equipo" placeholder="Nombre modelo equipo" value="{{modelo_equipo.nombreModeloequipo}}">
+    </div>
+    <div class="form-group">
+        <label for="nombre_marca_equipo">Marca Equipo: </label>
+    <select name="nombre_marca_equipo">
+        {% for marcae in marca_equipo %}
+            <option value="{{ marcae.idMarca_Equipo }}" {% if marcae.idMarca_Equipo == modelo_equipo.idMarca_equipo %}selected{% endif %}>{{ marcae.nombreMarcaEquipo }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form>
+{% endblock %}
