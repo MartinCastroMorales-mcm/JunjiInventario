@@ -45,6 +45,7 @@ def try_add_asignacion():
     cur.execute("""
         SELECT * 
         FROM tipo_equipo te
+        ORDER BY te.nombreidTipoequipo
                  """)
     tipos = cur.fetchall()
     cur.execute("""
@@ -52,6 +53,7 @@ def try_add_asignacion():
                 f.rutFuncionario,
                 f.nombreFuncionario 
         FROM funcionario f
+        ORDER BY f.nombreFuncionario
                  """)
     funcionarios = cur.fetchall()
     return render_template('asignacion.html', asignacion = data, 
