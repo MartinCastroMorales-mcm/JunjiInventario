@@ -8,7 +8,7 @@ def validarChar(name):
         if i == name:
             return i
 
-
+#deberia ser un rut sin puntos y con guion
 def validarRut(rut):
     rutGrupo = rut.split("-")
     if len(rutGrupo) != 2:

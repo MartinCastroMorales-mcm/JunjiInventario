@@ -7,17 +7,55 @@ asignacion = Blueprint('asignacion', __name__, template_folder='app/templates')
 def Asignacion():
     cur = mysql.connection.cursor()
     cur.execute(""" 
-    SELECT d.idAsignacion, d.fecha_inicioAsignacion, d.ObservacionAsignacion, d.rutaactaAsignacion , d.ActivoAsignacion, d.rutFuncionario, f.rutFuncionario, d.idEquipo, eq.idEquipo
-    FROM asignacion d
-    INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-    INNER JOIN equipo eq on d.idEquipo = eq.idEquipo
+    SELECT  
+    	te.nombreidTipoequipo,
+        a.fecha_inicioAsignacion,
+        a.observacionAsignacion,
+        a.rutaactaAsignacion,
+        f.nombreFuncionario,
+        d.fechaDevolucion
+    FROM asignacion a
+    INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
+    INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
+    INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
+    INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
     """)
     data = cur.fetchall()
-    cur.execute('SELECT rutFuncionario FROM funcionario')
-    f_data = cur.fetchall()
-    cur.execute('SELECT idEquipo FROM equipo')
-    eq_data = cur.fetchall()   
-    return render_template('asignacion.html', asignacion = data, funcionario= f_data, equipo= eq_data)
+    return render_template('asignacion.html', asignacion = data, agregar = False,  tiposEquipos = None)
+
+@asignacion.route('/try_add_asignacion')
+def try_add_asignacion():
+    cur = mysql.connection.cursor()
+    cur.execute(""" 
+    SELECT  
+    	te.nombreidTipoequipo,
+        a.fecha_inicioAsignacion,
+        a.observacionAsignacion,
+        a.rutaactaAsignacion,
+        f.nombreFuncionario,
+        d.fechaDevolucion
+    FROM asignacion a
+    INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
+    INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
+    INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
+    INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
+    """)
+
+    data = cur.fetchall()
+    cur.execute("""
+        SELECT * 
+        FROM tipo_equipo te
+                 """)
+    tipos = cur.fetchall()
+    cur.execute("""
+        SELECT 
+                f.rutFuncionario,
+                f.nombreFuncionario 
+        FROM funcionario f
+                 """)
+    funcionarios = cur.fetchall()
+    return render_template('asignacion.html', asignacion = data, 
+                           agregar = True, tiposEquipos = tipos, funcionarios= funcionarios)
 
 @asignacion.route('/add_asignacion', methods = ['POST'])
 def add_estado_equipo():
@@ -46,7 +84,9 @@ def edit_asignacion(id):
     try:
         cur = mysql.connection.cursor()
         cur.execute(""" 
-    SELECT d.idAsignacion, d.fecha_inicioAsignacion, d.ObservacionAsignacion, d.rutaactaAsignacion , d.ActivoAsignacion, d.rutFuncionario, f.rutFuncionario, d.idEquipo, eq.idEquipo
+    SELECT d.idAsignacion, d.fecha_inicioAsignacion, 
+        d.ObservacionAsignacion, d.rutaactaAsignacion , d.ActivoAsignacion, 
+        d.rutFuncionario, f.rutFuncionario, d.idEquipo, eq.idEquipo
     FROM asignacion d
     INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
     INNER JOIN equipo eq on d.idEquipo = eq.idEquipo
@@ -56,7 +96,7 @@ def edit_asignacion(id):
         f_data = cur.fetchall()
         cur.execute('SELECT idEquipo FROM equipo')
         eq_data = cur.fetchall()  
-        return render_template('editasignacion.html', asignacion = data[0], funcionario= f_data, equipo=eq_data)
+        return render_template('editasignacion.html', asignacion = data, funcionario= f_data, equipo=eq_data)
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('asignacion.Asignacion'))
