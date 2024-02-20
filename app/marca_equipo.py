@@ -1,5 +1,6 @@
 from flask import Blueprint, request, flash, render_template, redirect, url_for, g
 from db import mysql
+from flask_paginate import Pagination, get_page_args
 
 marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templates')
 @marca_equipo.route('/')
@@ -8,14 +9,14 @@ def dashboard():
     return render_template('dashboard.html')
 
 
-@marca_equipo.route('/marca_equipo')
+@marca_equipo.route('/marca_equipo', defaults={'order': 1})
 @marca_equipo.route('/marca_equipo/<order>')
-@marca_equipo.route('/marca_equipo/<order>')
-def marcaEquipo(order=1):
+@marca_equipo.route('/marca_equipo/<order>/<page>/')
+def marcaEquipo(order=1, page=1):
     #flash(order)
     query = 'SELECT * FROM marca_equipo '
-    #perpage = 2
-    #startpage = page * perpage
+    perpage = 2
+    startpage = page * perpage
     if(order == "ASC"):
         #flash("test")
         query += "ORDER BY marca_equipo.nombreMarcaEquipo" 
@@ -24,6 +25,8 @@ def marcaEquipo(order=1):
     cur = mysql.connection.cursor()
     cur.execute(query)
     data = cur.fetchall()
+    search = False
+    pagination = Pagination(page=page, total=len(data), search=search, record_name='test')
     
     return render_template('marca_equipo.html', marca_equipo = data, agregar= False)
 
@@ -51,7 +54,7 @@ def add_marca_equipo():
             return redirect(url_for('marca_equipo.marcaEquipo'))
         
 #enviar datos a vista editar
-@marca_equipo.route('/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
+@marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
 def edit_marca_equipo(id):
     try:
         cur = mysql.connection.cursor()

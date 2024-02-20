@@ -1,19 +1,25 @@
-OK en MARCA_EQUIPO-Sacar formulario de arriba de la tabla -> Agregar un boton de agregar que deribe a formulario, (como boton edit)
-OK en RUT-Hacer validaciones
-OK -Arreglar en Devolucion 'ActivoDevolucion' -Activo que no se edite.
 -Investigar sobre pagination de flask
 -Agregar Marca a Equipo (foranea de modelo)
 -Agregar Equipo en asignacion y en devolucion
 -Editar Edit tipo_adquisicion 
 -Falta tabla asignacion
--Error MARCA_EQUIPO problema con las rutas del boton de borrar. 
-        el endpoint /ASC y /DESC no deja usar delete
 
-Proveedor OK
-ORDEN_COMPRA OK
-UNIDAD OK
-MODELO_EQUIPO OK
-TIPO_EQUIPO OK
-ESTADO_EQUIPO OK
-TIPO_ADQUISICION OK
-MARCA_EQUIPO OK
+
+
+La asignacion, la unidad de la asignacion es 
+la unidad del funcionario no la unidad donde se encuentre
+
+TODO:
+agregar funcionario a equipos,
+Boton detalles para equipo
+        (informacion, observacion, asignacion, devolucion, traslado),
+PRO agregar pestaña traslado,
+agregar boton de traslados,
+generar pdfs de asignacion, devolucion y traslacion,
+renombrar ubicacion -> unidad,
+paginacion,
+boton de llamar formulario,
+PRO buscador de inicio
+
+
+

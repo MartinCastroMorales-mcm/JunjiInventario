@@ -55,6 +55,12 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if page != 1 %}
+            <a class="info-button" href="/tipo_equipo/{{page - 1}}">Pagina Anterior</a>
+        {% endif %}
+        {% if lastpage %}
+            <a class="info-button" href="/tipo_equipo/{{page + 1}}">Pagina Siguiente</a>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
