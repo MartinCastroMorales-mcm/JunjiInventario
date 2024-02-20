@@ -21,7 +21,7 @@ def Asignacion():
     INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
     INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
     INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-    """
+        """
     )
     data = cur.fetchall()
     return render_template(
@@ -46,7 +46,7 @@ def try_add_asignacion():
     INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
     INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
     INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-    """
+        """
     )
 
     data = cur.fetchall()
