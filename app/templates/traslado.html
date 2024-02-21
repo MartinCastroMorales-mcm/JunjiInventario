@@ -1,0 +1,93 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {#
+        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
+        y se muestra el formulario para agregar un item.
+        #}
+        {% if agregar %}
+        <div class="card card-body">
+            <form action="/traslado/add_traslado" method="POST" class="mi-formulario">
+                    <label>Origen</label>
+                    <select name="Origen" id="">
+                        <option value="">Seleccione el Origen</option>
+                        {% for unidadOrigen in unidades %}
+                        <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
+                        {% endfor %}
+                    </select>
+                    
+                    <button class="agregar-button" type="submit"> Agregar</button>
+                </div>
+            </form>
+
+
+        </div>
+        {% else %}
+        <a href="/try_add_traslado" class="info-button">Agregar</a>
+        {% endif %}
+
+
+    </div>
+    <h2>Traslado</h2>
+    <div style="position: relative;">
+        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+        <div style="overflow-x:auto;">
+
+
+            <table id="posts">
+                <thead>
+                    <tr>
+
+                        <td>Fecha Traslado
+                            <br />
+                            <a href="/traslado/ASC" class="text-sort">ASC</a>
+                            <a href="/traslado/DESC" class="text-sort">DESC</a>
+                        </td>
+                        <td>Acta</td>
+                        <td>Equipo</td>
+                        <td>Origen</td>
+                        <td>Destino</td>
+                        <td>Botones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
+                    {% for tras in traslado %}
+                    <tr>
+                        <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
+                        <td>{{tras.fechatraslado}}</td>
+                        <td>{{tras.rutadocumentoTraslado}}</td>
+                        <td><a href="/mostrar_asociados_traslado/{{tras.idTraslado}}" class="info-button">Equipos</a></td>
+                        <td>{{tras.nombreOrigen}}</td>
+                        <td>{{tras.nombreDestino}}</td>
+                        <td>
+                            <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
+                            <a href="/traslado/edit_traslado/{{tras.idTraslado}}"
+                                class="success-button">Editar</a>
+                            <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
+                            <a href="/traslado/delete_traslado/{{tras.idTraslado}}"
+                                class="delete-button">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Se termina la iteracion for -->
+                </tbody>
+            </table>
+            
+            {% endblock %}

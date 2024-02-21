@@ -10,16 +10,25 @@ La asignacion, la unidad de la asignacion es
 la unidad del funcionario no la unidad donde se encuentre
 
 TODO:
-agregar funcionario a equipos,
+agregar funcionario a equipos, OK
 Boton detalles para equipo
         (informacion, observacion, asignacion, devolucion, traslado),
-PRO agregar pestaña traslado,
+PRO 
+        agregar pestaña traslado,
+(
+        tabla OK
+        add, edit delete OK
+        se deben poder añadir n equipos en cada traslacion
+        tabla de traslacion OK
+        metodo create_traslado tiene un error
+
+
+)
 agregar boton de traslados,
 generar pdfs de asignacion, devolucion y traslacion,
 renombrar ubicacion -> unidad,
 paginacion,
 boton de llamar formulario,
 PRO buscador de inicio
-
 
 

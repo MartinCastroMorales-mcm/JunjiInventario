@@ -9,13 +9,15 @@ def Equipo():
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo
+    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
+    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     """)
     data = cur.fetchall()
     cur.execute('SELECT * FROM tipo_equipo')
@@ -146,3 +148,35 @@ def delete_equipo(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('equipo.Equipo'))
+
+@equipo.route('/mostrar_asociados_traslado/<idTraslado>')
+def mostrar_asociados_traslado(idTraslado):
+    cur = mysql.connection.cursor()
+    cur.execute(""" 
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
+    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
+    INNER JOIN traslacion tras on tras.idEquipo = e.idEquipo
+    WHERE tras.idTraslado = %s
+    """, (idTraslado,))
+    data = cur.fetchall()
+    cur.execute('SELECT * FROM tipo_equipo')
+    tipoe_data = cur.fetchall()
+    cur.execute('SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo')
+    estadoe_data = cur.fetchall()
+    cur.execute('SELECT idUnidad, nombreUnidad FROM Unidad')
+    ubi_data = cur.fetchall()
+    cur.execute('SELECT idOrden_compra, nombreOrden_compra FROM orden_compra')
+    ordenc_data = cur.fetchall()
+    cur.execute('SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo')
+    modeloe_data = cur.fetchall()  
+
+    return render_template('equipo.html', equipo = data, tipo_equipo = tipoe_data, estado_equipo = estadoe_data, orden_compra = ordenc_data, 
+    Unidad = ubi_data, modelo_equipo = modeloe_data)
