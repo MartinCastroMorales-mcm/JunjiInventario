@@ -14,7 +14,7 @@ agregar funcionario a equipos, OK
 Boton detalles para equipo
         (informacion, observacion, asignacion, devolucion, traslado),
 PRO 
-        agregar pestaña traslado,
+        agregar pestaña traslado, OK POR AHORA
 (
         tabla OK
         add, edit delete OK
@@ -26,7 +26,7 @@ PRO
 )
 agregar boton de traslados,
 generar pdfs de asignacion, devolucion y traslacion,
-renombrar ubicacion -> unidad,
+renombrar ubicacion -> unidad, OK
 paginacion,
 boton de llamar formulario,
 PRO buscador de inicio
