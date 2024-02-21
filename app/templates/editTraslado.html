@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card card-body">
+            <form action="/add_traslado" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <div>
+                        <label for="fechatraslado"> Fecha de Traslado:</label>
+                        <input type="date" name='fechatraslado' value="{{traslado.fechatraslado}}"/>
+                    </div>
+                    <label>Acta</label>
+                    <div class="info-button">Acta</div>
+                    <label>Origen</label>
+                    <select name="Origen" id="">
+                        <option value="">Seleccione el Origen</option>
+                        {% for unidadOrigen in unidades %}
+                        <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Seleccione Destino</label>
+                    <select name="Destino" id="">
+                        <option value="">Seleccione el Destino </option>
+                        {% for unidadDestino in unidades %}
+                        <option value="{{ unidadDestino.idUnidad}}">{{ unidadDestino.nombreUnidad}}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label>Seleccione Equipo</label>
+                    <select name="equipo" id="">
+                        <option value="">Seleccione el equipo</option>
+                        {% for eq in equipo %}
+                        <option value="{{ eq.idEquipo}}">{{ eq.idEquipo}}</option>
+                        {% endfor %}
+                    </select>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <button class="agregar-button" type="submit"> Agregar</button>
+                </div>
+            </form>
+            {% endblock %}

@@ -14,6 +14,8 @@ from funcionario import funcionario
 from equipo import equipo
 from devolucion import devolucion
 from asignacion import asignacion
+from traslado import traslado
+
 app.register_blueprint(devolucion)
 app.register_blueprint(proveedor)
 app.register_blueprint(tipo_adquisicion)
@@ -28,6 +30,7 @@ app.register_blueprint(estado_equipo)
 app.register_blueprint(funcionario)
 app.register_blueprint(equipo)
 app.register_blueprint(asignacion)
+app.register_blueprint(traslado)
 
 # se inicia la aplicacion, y confirma que __name__ sea la aplicacion main y no un modulo
 if __name__ == "__main__":
