@@ -22,20 +22,6 @@
         y se muestra el formulario para agregar un item.
         #}
         <div class="card card-body">
-            <form action="/traslado/create_traslado/{{equipo[0].idUnidad}}" class="mi-formulatio" method="POST">
-                <label>Seleccione Origen:</label>
-                <select name="Origen" id="">
-                    <option value="{{traslado.idUnidadOrigen}}">{{ traslado.nombreOrigen}}</option>
-                    {% for unidadOrigen in unidades %}
-                    {% if unidadOrigen.idUnidad != traslado.idUnidadOrigen %}
-                    <option value="{{ unidadOrigen.idUnidad}}">{{ unidadOrigen.nombreUnidad}}</option>
-                    {% endif %}
-                    {% endfor %}
-                </select>
-                <script>
-                    
-                </script>
-            </form>
             <form action="/traslado/create_traslado/{{equipo[0].idUnidad}}" class="mi-formulario" method="POST">
                 <div class="form-group">
                     <div>
@@ -86,7 +72,6 @@
         <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
         <div style="overflow-x:auto;">
 
-
             <table id="posts">
                 <thead>
                     <tr>
@@ -104,20 +89,22 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for equipo in equipo %}
+                    {% for eq in equipo %}
                     <tr>
-                        <td>{{equipo.nombreidTipoequipo}}</td>
-                        <td>{{equipo.Cod_inventarioEquipo}}</td>
-                        <td>{{equipo.Num_serieEquipo}}</td>
-                        <td>{{equipo.codigoproveedor_equipo }}</td>
+                        <td>{{eq.nombreidTipoequipo}}</td>
+                        <td>{{eq.Cod_inventarioEquipo}}</td>
+                        <td>{{eq.Num_serieEquipo}}</td>
+                        <td>{{eq.codigoproveedor_equipo }}</td>
                         {# hacer inner join con unidad para obtener nombreUnidad#}
-                        <td>{{equipo.nombreUnidad}}</td>
+                        <td>{{traslado.nombreOrigen}}</td>
                         <td>
-                            Trasladar: <input value="{{equipo.idEquipo}}" type="checkbox" name="trasladar[]" />
+                            Trasladar: <input type="checkbox" value="{{eq.idEquipo}}" name="trasladar[]" />
+                            {#<input type="hidden" value="off" name="trasladar[]" />#}
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            
             </form>
             {% endblock %}
