@@ -136,6 +136,30 @@ def edit_traslado(id):
 def delete_traslado(id):
     try:
         cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT *
+                    FROM traslado
+                    WHERE idTraslado = %s
+                    """, (id,))
+        trasladoABorrar = cur.fetchall()
+        cur.execute("""
+                    SELECT *
+                    FROM traslacion
+                    WHERE idTraslado = %s
+                    """, (id,))
+        traslaciones = cur.fetchall()
+        for traslacion in traslaciones:
+            cur.execute("""
+                        UPDATE equipo
+                        SET idUnidad = %s
+                        WHERE idEquipo = %s 
+                        """, (trasladoABorrar[3], traslacion[1]))
+        
+        cur.execute("""DELETE 
+                        FROM traslacion
+                        WHERE idTraslado = %s
+        """, (id,))
+        mysql.connection.commit()
         cur.execute('DELETE FROM traslado WHERE idTraslado = %s', (id,))
         mysql.connection.commit()
         flash('Traslado eliminado correctamente')
@@ -169,9 +193,6 @@ def create_traslado(origen):
         #Encontrar la id de traslado
         trasladoid = cur.lastrowid
         #Añadir las traslaciones para asociar multiples equipos al traslado
-        print("equipos:")
-        print(len(equipos))
-        flash(equipos)
         for idEquipo in equipos:
             print(idEquipo)
             cur.execute("""
