@@ -8,13 +8,17 @@ Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 def UNIDAD():
     cur = mysql.connection.cursor()
     cur.execute(""" 
-    SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
-    FROM Unidad u
-    INNER JOIN comuna co on u.idComuna = co.idComuna
+        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna, COUNT(e.idEquipo) as num_equipos
+        FROM Unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        LEFT JOIN equipo e on u.idUnidad = e.idUnidad
+        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
+    
     """)
     data = cur.fetchall()
     cur.execute('SELECT * FROM comuna')
     c_data = cur.fetchall()
+   
     cur.close()
     return render_template('Unidad.html', Unidad = data, comuna = c_data)
 
