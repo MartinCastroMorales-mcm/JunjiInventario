@@ -180,3 +180,6 @@ def mostrar_asociados_traslado(idTraslado):
 
     return render_template('equipo.html', equipo = data, tipo_equipo = tipoe_data, estado_equipo = estadoe_data, orden_compra = ordenc_data, 
     Unidad = ubi_data, modelo_equipo = modeloe_data)
+@equipo.route("/equipo_detalles")
+def equipo_detalles():
+    return render_template('equipo_detalles.html')

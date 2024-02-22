@@ -30,5 +30,6 @@ renombrar ubicacion -> unidad, OK
 paginacion,
 boton de llamar formulario,
 PRO buscador de inicio
+La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
 
 

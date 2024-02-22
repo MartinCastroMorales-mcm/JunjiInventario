@@ -1,36 +1,71 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="row">
-    <div class="col-md-4 offset-md-4">
+
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {#
+        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
+        y se muestra el formulario para agregar un item.
+        #}
         <div class="card card-body">
-            <form action="/add_traslado" method="POST" class="mi-formulario">
+            <form action="/traslado/create_traslado/{{equipo[0].idUnidad}}" class="mi-formulatio" method="POST">
+                <label>Seleccione Origen:</label>
+                <select name="Origen" id="">
+                    <option value="{{traslado.idUnidadOrigen}}">{{ traslado.nombreOrigen}}</option>
+                    {% for unidadOrigen in unidades %}
+                    {% if unidadOrigen.idUnidad != traslado.idUnidadOrigen %}
+                    <option value="{{ unidadOrigen.idUnidad}}">{{ unidadOrigen.nombreUnidad}}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+                <script>
+                    
+                </script>
+            </form>
+            <form action="/traslado/create_traslado/{{equipo[0].idUnidad}}" class="mi-formulario" method="POST">
                 <div class="form-group">
                     <div>
                         <label for="fechatraslado"> Fecha de Traslado:</label>
-                        <input type="date" name='fechatraslado' value="{{traslado.fechatraslado}}"/>
+                        <input id="fechatraslado" type="date" name='fechatraslado' value="">
+                        <script>
+                            date = new Date();
+                            year = date.getFullYear();
+                            month = date.getMonth() + 1;
+                            day = date.getDate();
+                            if (month < 10) {
+                                month = "0" + month
+                            }
+                            formatedDate = year + "-" + month + "-" + day
+                            //console.log(formatedDate)
+                            document.getElementById("fechatraslado")
+                                .setAttribute("value", formatedDate);
+                        </script>
                     </div>
-                    <label>Acta</label>
-                    <div class="info-button">Acta</div>
-                    <label>Origen</label>
-                    <select name="Origen" id="">
-                        <option value="">Seleccione el Origen</option>
-                        {% for unidadOrigen in unidades %}
-                        <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
-                        {% endfor %}
-                    </select>
-                    <label>Seleccione Destino</label>
-                    <select name="Destino" id="">
-                        <option value="">Seleccione el Destino </option>
-                        {% for unidadDestino in unidades %}
-                        <option value="{{ unidadDestino.idUnidad}}">{{ unidadDestino.nombreUnidad}}</option>
-                        {% endfor %}
-                    </select>
+                    <div>
+                        <label>Acta</label>
+                        <div class="info-button">Acta</div>
 
-                    <label>Seleccione Equipo</label>
-                    <select name="equipo" id="">
-                        <option value="">Seleccione el equipo</option>
-                        {% for eq in equipo %}
-                        <option value="{{ eq.idEquipo}}">{{ eq.idEquipo}}</option>
+                    </div>
+                    <select name="Destino" id="">
+                        <option value="{{traslado.idUnidadDestino}}">{{ traslado.nombreDestino}}</option>
+                        {% for unidadDestino in unidades %}
+                        {% if unidadDestino.idUnidad != traslado.idUnidadDestino %}
+                        <option value="{{ unidadDestino.idUnidad}}">{{ unidadDestino.nombreUnidad}}</option>
+                        {% endif %}
                         {% endfor %}
                     </select>
                     <br />
@@ -39,5 +74,50 @@
                     <br />
                     <button class="agregar-button" type="submit"> Agregar</button>
                 </div>
+
+
+        </div>
+
+
+
+    </div>
+    <h2>Crear Traslado</h2>
+    <div style="position: relative;">
+        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+        <div style="overflow-x:auto;">
+
+
+            <table id="posts">
+                <thead>
+                    <tr>
+
+                        <td>Tipo Equipo
+                            <br />
+                            <a href="/traslado/ASC" class="text-sort">ASC</a>
+                            <a href="/traslado/DESC" class="text-sort">DESC</a>
+                        </td>
+                        <td>Codigo Inventario</td>
+                        <td>N° Serie</td>
+                        <td>Codigo Proovedor</td>
+                        <td>Unidad</td>
+                        <td>Botones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for equipo in equipo %}
+                    <tr>
+                        <td>{{equipo.nombreidTipoequipo}}</td>
+                        <td>{{equipo.Cod_inventarioEquipo}}</td>
+                        <td>{{equipo.Num_serieEquipo}}</td>
+                        <td>{{equipo.codigoproveedor_equipo }}</td>
+                        {# hacer inner join con unidad para obtener nombreUnidad#}
+                        <td>{{equipo.nombreUnidad}}</td>
+                        <td>
+                            Trasladar: <input value="{{equipo.idEquipo}}" type="checkbox" name="trasladar[]" />
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             </form>
             {% endblock %}

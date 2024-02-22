@@ -80,9 +80,13 @@ def add_traslado():
                 ORDER BY u.nombreUnidad
                         """
             )
-            unidades = cur.fetchall()
+            print("equipos: ")
             print(equipo)
-            print(unidades)
+            unidades = cur.fetchall()
+            if len(equipo) == 0:
+                equipo = []
+                flash("no hay equipos en esta Unidad")
+                return redirect(url_for('traslado.Traslado'))
             return render_template("add_traslado.html", equipo=equipo, unidades=unidades)
 
         except Exception as e:
@@ -95,12 +99,11 @@ def edit_traslado(id):
         cur = mysql.connection.cursor()
         cur.execute(
         """
-                SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, te.nombreidTipoEquipo, 
+                SELECT t.idTraslado, origen.idUnidad as idUnidadOrigen, destino.idUnidad as idUnidadDestino,
+                    t.fechatraslado, t.rutadocumentoTraslado,
                     origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
-                FROM traslado t
-                INNER JOIN equipo e on e.idEquipo = t.idEquipo
+                FROM traslado t 
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
                 WHERE t.idTraslado = %s
         """, (id,)
@@ -118,6 +121,7 @@ def edit_traslado(id):
             """
             SELECT * 
             FROM equipo e
+            INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
             ORDER BY e.idEquipo
                     """
         )
@@ -148,7 +152,7 @@ def create_traslado(origen):
         Destino = request.form['Destino']
         Origen = origen
         #trasladar[] es la notacion para obtener un array con todos los outputs de las checklist
-        equipos = request.form['trasladar[]']
+        equipos = request.form.getlist('trasladar[]')
 
         #Añadir fila a traslado
         cur = mysql.connection.cursor()
@@ -165,7 +169,11 @@ def create_traslado(origen):
         #Encontrar la id de traslado
         trasladoid = cur.lastrowid
         #Añadir las traslaciones para asociar multiples equipos al traslado
+        print("equipos:")
+        print(len(equipos))
+        flash(equipos)
         for idEquipo in equipos:
+            print(idEquipo)
             cur.execute("""
                         INSERT INTO traslacion (
                             idTraslado,
@@ -174,6 +182,13 @@ def create_traslado(origen):
                         VALUES (%s, %s)
                        """, (str(trasladoid), idEquipo))
             mysql.connection.commit()
-        print("success")
+            cur.execute("""
+                        UPDATE equipo
+                        SET idUnidad = %s
+                        WHERE equipo.idEquipo = %s
+                        """, (Destino, idEquipo))
+            mysql.connection.commit()
+        
+        flash("traslado agregado correctamente")
         return redirect(url_for('traslado.Traslado'))
     return redirect(url_for('traslado.Traslado'))
