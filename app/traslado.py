@@ -197,6 +197,7 @@ def create_traslado(origen):
         #Encontrar la id de traslado
         trasladoid = cur.lastrowid
         #Añadir las traslaciones para asociar multiples equipos al traslado
+        TuplaEquipos = ()
         for idEquipo in equipos:
             print(idEquipo)
             cur.execute("""
@@ -213,17 +214,48 @@ def create_traslado(origen):
                         WHERE equipo.idEquipo = %s
                         """, (Destino, idEquipo))
             mysql.connection.commit()
-        
+
+            cur.execute("""
+                        SELECT *
+                        FROM equipo
+                        INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
+                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                        WHERE equipo.idEquipo = %s
+                        """, (idEquipo))
+            equipoTupla = cur.fetchone()
+            TuplaEquipos = TuplaEquipos + (equipoTupla,)
+
+        #nombre origen y destino
+        cur.execute("""
+                    SELECT *
+                    FROM traslado
+                    WHERE traslado.idTraslado = %s 
+                    """, (str(trasladoid),))
+        traslado = cur.fetchone()
+        cur.execute("""
+                    SELECT *
+                    FROM unidad
+                    WHERE unidad.idUnidad = %s
+                    """, (traslado['idUnidadOrigen'],))
+        UnidadOrigen = cur.fetchone()
+
+        cur.execute("""
+                    SELECT *
+                    FROM unidad
+                    WHERE unidad.idUnidad = %s
+                    """, (traslado['idUnidadDestino'],))
+        UnidadDestino = cur.fetchone()
+
         flash("traslado agregado correctamente")
 
+
+        create_pdf(traslado, TuplaEquipos, UnidadOrigen, UnidadDestino)
         return redirect(url_for('traslado.Traslado'))
     return redirect(url_for('traslado.Traslado'))
 
 
-@traslado.route("/traslado/create_pdf")
-def create_pdf():
-    #(Orientacion, unidades, formato)
-    #Orientacion P(portrait) o L(landscape)
+def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
+
     class PDF(FPDF):
         def header(self):
             #logo
@@ -245,29 +277,45 @@ def create_pdf():
             self.set_y(-30)
             self.set_font('times', 'B', 12)
             self.set_text_color(170,170,170)
-            self.image('logo_inferior.jpg', 10, 8, 25)
             self.cell(0,0, "", ln=1)
             self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            self.cell(0,5, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
-            self.cell(0,5, "www.junji.cl", ln=1)
+            self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
+            self.cell(0,12, "www.junji.cl", ln=1)
+            #self.image('logo_inferior.jpg', 30, -30, 25) Las imagenes en el Footer no parecen funcionar correctamente
 
 
 
+    #(Orientacion, unidades, formato)
+    #Orientacion P(portrait) o L(landscape)
     pdf = PDF('P', 'mm', 'A4')
 
     pdf.add_page()
 
 
-    titulo = "ACTA DE TRASLADO N° 'n'"
-    parrafo_1 = "En Concepción 'fecha' se procede al traslado de bienes JUNJI de registro inventario desde 'Origen' hasta 'Destino' el siguiente detalle: "
+    titulo = "ACTA DE TRASLADO N°" + str(traslado['idTraslado']) 
+    parrafo_1 = "En Concepción {} se procede al traslado de bienes JUNJI de registro inventario desde {} hasta {} el siguiente detalle: ".format(traslado['fechatraslado'], UnidadOrigen['nombreUnidad'], UnidadDestino['nombreUnidad'])
     TABLE_DATA = (
     ("N°", "Articulos", "Serie", "Código Inventario", "Estado"),
-    ("1", "EpsonI5190", "X5NS117668", "8042812", "MAL"),
-    ("2", "EpsonI5190", "X5NS117668", "8042813", "MAL"),
-    ("3", "EpsonI5190", "X5NS117668", "8042814", "MAL"),
-    ("4", "EpsonI5190", "X5NS117668", "8042815", "MAL"),
     )
-                
+    print("$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print(equipos) 
+    #contadores de estado
+    for equipo in equipos:
+        TABLE_DATA = TABLE_DATA + ((str((equipo['idEquipo'])), equipo['nombreidTipoequipo'],
+                        str(equipo['Num_serieEquipo']),
+                        str(equipo['Cod_inventarioEquipo']),
+                        equipo['nombreEstado_equipo'],
+                        ),)
+    
+    print("#$$$$$$#############")
+    print(TABLE_DATA)
+
+    TABLE_DATA2 = (('N°', 'Articulos', 'Serie', 'Código Inventario', 'Estado'), 
+                   (str(3), 'AIO', str(0), str(8013913), 'EN USO'),)
+    #("1", "EpsonI5190", "X5NS117668", "8042812", "MAL"),
+    #("2", "EpsonI5190", "X5NS117668", "8042813", "MAL"),
+    #("3", "EpsonI5190", "X5NS117668", "8042814", "MAL"),
+    #("4", "EpsonI5190", "X5NS117668", "8042815", "MAL"),
     pdf.set_font('times', '', 20)
     pdf.cell(0, 10, titulo, ln=True, align='C')            
             
@@ -279,15 +327,51 @@ def create_pdf():
             for datum in datarow:
                 row.cell(datum)
     parrafo_2 = "Se ecuentran X en Bien, Y Regular y Z Mal"
-    pdf.multi_cell(0,10,parrafo_2, ln=True)
-    parrafo_3 = "Nombre Encargado:____________________"
-    pdf.multi_cell(0,10,parrafo_3, ln=True)
-    parrafo_4 = "Numero de RUT:____________________"
-    pdf.multi_cell(0,10,parrafo_4, ln=True)
-    parrafo_5 = "Nombre Ministro de Fe:____________________"
-    pdf.multi_cell(0,10,parrafo_5, ln=True)
-    parrafo_6 = "Firma:____________________"
-    pdf.multi_cell(0,10,parrafo_6, ln=True)
+
+
+    #pdf.multi_cell(0,10,parrafo_2, ln=True)
+    pdf.ln(10)
+    nombreEncargado = "Nombre Encargado:"
+    rutEncargado = "Numero de RUT:"
+    firmaEncargado = "Firma:"
+    nombreMinistro = "Nombre Ministro de Fe:"
+    rutMinistro = "Numero de RUT:"
+    firma = "Firma"
+    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
+        cols.write(nombreEncargado)
+        cols.ln()
+        cols.ln()
+        cols.write(rutEncargado)
+        cols.ln()
+        cols.ln()
+        cols.write(firmaEncargado)
+        cols.ln()
+        cols.ln()
+        cols.ln()
+        cols.ln()
+
+        cols.write(nombreMinistro)
+        cols.ln()
+        cols.ln()
+        cols.write(rutMinistro)
+        cols.ln()
+        cols.ln()
+        cols.write(firma)
+        cols.ln()
+        cols.ln()
+        cols.new_column()
+        for i in range(0, 3):
+            cols.write(text="_________________________")
+            cols.ln()
+            cols.ln()
+        cols.ln()
+        cols.ln()
+        for i in range(0, 3):
+            cols.write(text="_________________________")
+            cols.ln()
+            cols.ln()
+
+
     pdf.output('pdf_1.pdf')
     return redirect(url_for('traslado.Traslado'))
 
