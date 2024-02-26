@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, url_for, redirect,flash
 from db import mysql
-from funciones import validarChar
+from funciones import getPerPage
 
 tipo_equipo = Blueprint('tipo_equipo', __name__, template_folder='app/templates')
 
@@ -8,7 +8,7 @@ tipo_equipo = Blueprint('tipo_equipo', __name__, template_folder='app/templates'
 @tipo_equipo.route('/tipo_equipo')
 @tipo_equipo.route('/tipo_equipo/<page>')
 def tipoEquipo(page = 1):
-    perpage = 10
+    perpage = getPerPage()
     offset = (int(page)-1) * perpage
     cur = mysql.connection.cursor()
     total = 0
