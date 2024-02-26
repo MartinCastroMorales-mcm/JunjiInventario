@@ -297,8 +297,8 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     TABLE_DATA = (
     ("N°", "Articulos", "Serie", "Código Inventario", "Estado"),
     )
-    print("$$$$$$$$$$$$$$$$$$$$$$$$$")
-    print(equipos) 
+    #print("$$$$$$$$$$$$$$$$$$$$$$$$$")
+    #print(equipos) 
     #contadores de estado
     for equipo in equipos:
         TABLE_DATA = TABLE_DATA + ((str((equipo['idEquipo'])), equipo['nombreidTipoequipo'],
@@ -307,11 +307,11 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
                         equipo['nombreEstado_equipo'],
                         ),)
     
-    print("#$$$$$$#############")
-    print(TABLE_DATA)
+    #print("#$$$$$$#############")
+    #print(TABLE_DATA)
 
-    TABLE_DATA2 = (('N°', 'Articulos', 'Serie', 'Código Inventario', 'Estado'), 
-                   (str(3), 'AIO', str(0), str(8013913), 'EN USO'),)
+    #TABLE_DATA2 = (('N°', 'Articulos', 'Serie', 'Código Inventario', 'Estado'), 
+                   #(str(3), 'AIO', str(0), str(8013913), 'EN USO'),)
     #("1", "EpsonI5190", "X5NS117668", "8042812", "MAL"),
     #("2", "EpsonI5190", "X5NS117668", "8042813", "MAL"),
     #("3", "EpsonI5190", "X5NS117668", "8042814", "MAL"),

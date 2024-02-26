@@ -18,13 +18,13 @@ TODO:
         (
                 tabla OK
                 add, edit delete OK
-                se deben poder añadir n equipos en cada traslacion
+                se deben poder añadir n equipos en cada traslacion OK
                 tabla de traslacion OK
-                metodo create_traslado tiene un error
+                metodo create_traslado tiene un error OK
 
 
         )
-        agregar boton de traslados,
+        OK agregar boton de traslados
         generar pdfs de asignacion, devolucion y traslacion,
         renombrar ubicacion -> unidad, OK
         paginacion,
