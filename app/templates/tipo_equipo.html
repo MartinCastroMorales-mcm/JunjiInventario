@@ -7,34 +7,34 @@
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
-        
+
         <div class="custom-alert" role="alert">
             {{ message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">&times;</span>
             </button>
-          </div>
+        </div>
 
         {% endfor %}
         {% endif %}
         {% endwith %}
         <!-- Se termina la seccion de errores -->
-        
+
         <!-- ----- -->
         <div class="card card-body">
-            <form action="/add_tipo_equipo" method="POST"class="mi-formulario">
+            <form action="/add_tipo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombreidTipoequipo">Nombre Tipo Equipo:</label>
-                    <input type="text" id="nombreidTipoequipo" name="nombreidTipoequipo" required>    
+                    <input type="text" id="nombreidTipoequipo" name="nombreidTipoequipo" required>
                 </div>
-                    <button type="submit" class="agregar-button"> 
-                        Agregar
-                    </button>
-             </form>
-            </div>
+                <button type="submit" class="agregar-button">
+                    Agregar
+                </button>
+            </form>
         </div>
-        <h2>Tipos de equipo</h2>
-        <div style="overflow-x:auto;">
+    </div>
+    <h2>Tipos de equipo</h2>
+    <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
                 <tr>
@@ -46,7 +46,7 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for tipoe in tipo_equipo %}
                 <tr>
-                    <td>{{tipoe.nombreidTipoequipo}}</td> 
+                    <td>{{tipoe.nombreidTipoequipo}}</td>
                     <td>
                         <a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>
                         <a href="/delete_tipo_equipo/{{tipoe.idTipo_equipo}}" class="delete-button">Eliminar</a>
@@ -55,12 +55,16 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% if page != 1 %}
-            <a class="info-button" href="/tipo_equipo/{{page - 1}}">Pagina Anterior</a>
-        {% endif %}
-        {% if lastpage %}
-            <a class="info-button" href="/tipo_equipo/{{page + 1}}">Pagina Siguiente</a>
-        {% endif %}
+        <div class="pagination">
+            {% if page != 1 %}
+            <a class="nav-button" href="/tipo_equipo/{{page - 1}}">Pagina Anterior</a>
+            {% endif %}
+            {% if lastpage %}
+            <a class="nav-button" href="/tipo_equipo/{{page + 1}}">Pagina Siguiente</a>
+            {% endif %}
+
+        </div>
+        <p style="margin: 15px;">Pagina: {{page}}</p>
     </div>
 </div>
 {% endblock %}

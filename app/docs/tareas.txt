@@ -31,9 +31,7 @@ TODO:
         boton de llamar formulario,
         PRO buscador de inicio
         La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
-        ¿como deberia funcionar la edicion de traslados?, que pasa con las equipo.idUnidad
-        añadir boton equipos a Unidad
-
+        
         En el acta de traslado los contadores de cuantos estan en cada 
         estado solo se deberian hacer una vez este completamente claro cuales son los estados
 

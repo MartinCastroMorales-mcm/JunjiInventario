@@ -187,4 +187,13 @@
                     <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
+
+        <div class="pagination">
+            {% if page != 1 %}
+            <a class="nav-button" href="/tipo_equipo/{{page - 1}}">Pagina Anterior</a>
+            {% endif %}
+            {% if lastpage %}
+            <a class="nav-button" href="/tipo_equipo/{{page + 1}}">Pagina Siguiente</a>
+            {% endif %}
+
             {% endblock %}
