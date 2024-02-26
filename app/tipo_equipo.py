@@ -18,7 +18,8 @@ def tipoEquipo(page = 1):
     cur.execute('SELECT * FROM tipo_equipo LIMIT {} OFFSET {}'.format(perpage, offset))
     data = cur.fetchall()
     page = int(page)
-    return render_template('tipo_equipo.html', tipo_equipo = data, page=page, lastpage = page < (total/perpage)+1)
+    return render_template('tipo_equipo.html', tipo_equipo = data, 
+                            page=page, lastpage = page < (total/perpage)+1)
 
 #agrega un tipo de equipo
 @tipo_equipo.route('/add_tipo_equipo', methods = ['POST'])

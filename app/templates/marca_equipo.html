@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 <div class="row">
 
     <div class="col-md-5">
@@ -21,8 +22,8 @@
         En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
         y se muestra el formulario para agregar un item.
         #}
-        {% if agregar %}
-        <div class="card card-body">
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" style="display: none;" id="formulario">
             <form action="/add_marca_equipo" method="POST">
                 <div class="form-group">
 
@@ -31,11 +32,6 @@
                 <button class="agregar-button"> Agregar</button>
             </form>
         </div>
-        {% else %}
-        <a href="/try_add_marca_equipo" class="info-button">Agregar</a>
-        {% endif %}
-
-
     </div>
     <h2>Marca Equipos</h2>
     <div style="position: relative;">
@@ -62,13 +58,16 @@
                         <td>{{marcae.nombreMarcaEquipo}}</td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/marca_equipo/edit_marca_equipo/{{marcae.idMarca_Equipo}}" class="success-button">Editar</a>
+                            <a href="/marca_equipo/edit_marca_equipo/{{marcae.idMarca_Equipo}}"
+                                class="success-button">Editar</a>
                             <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                            <a href="/marca_equipo/delete_marca_equipo/{{marcae.idMarca_Equipo}}" class="delete-button">Eliminar</a>
+                            <a href="/marca_equipo/delete_marca_equipo/{{marcae.idMarca_Equipo}}"
+                                class="delete-button">Eliminar</a>
                         </td>
                     </tr>
                     {% endfor %}
                     <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
+            {{ paginacion("marca_equipo", page, lastpage) }}
             {% endblock %}

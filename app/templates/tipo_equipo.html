@@ -21,7 +21,9 @@
         <!-- Se termina la seccion de errores -->
 
         <!-- ----- -->
-        <div class="card card-body">
+
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_tipo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombreidTipoequipo">Nombre Tipo Equipo:</label>

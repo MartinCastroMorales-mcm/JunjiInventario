@@ -1,0 +1,11 @@
+{% macro paginacion(location, page, lastpage) %}
+<div class="pagination">
+    {% if page != 1 %}
+    <a class="nav-button" href="/{{location}}/{{page - 1}}">Pagina Anterior</a>
+    {% endif %}
+    {% if lastpage %}
+    <a class="nav-button" href="/{{location}}/{{page + 1}}">Pagina Siguiente</a>
+    {% endif %}
+</div>
+<p style="margin: 15px;">Pagina: {{page}}</p>
+{% endmacro %}

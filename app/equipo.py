@@ -9,7 +9,7 @@ equipo = Blueprint('equipo', __name__, template_folder='app/templates')
 @equipo.route('/equipo/<page>')
 def Equipo(page = 1):
     page = int(page)
-    perpage = getPerPage()
+    perpage = getPerPage() 
     offset = (int(page)-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute('SELECT COUNT(*) FROM EQUIPO')

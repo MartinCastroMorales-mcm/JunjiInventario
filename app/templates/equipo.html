@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
@@ -22,7 +23,7 @@
         <!-- Se termina la seccion de errores -->
 
         <!-- ----- -->
-        <button href="try_add_equipo" class="nav-button" onclick="showDiv()">Agregar</button>
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
@@ -92,20 +93,6 @@
 
 
         </div>
-        <script>
-            let div = document.getElementById("formulario")
-            function showDiv()  {
-                if (div.style.display === "none") {
-                    div.style.display = "block";
-                    console.log("block")
-                    return
-                }
-                div.style.display = "none"
-                console.log("none")
-                return
-            }
-
-        </script>
 
 
     </div>
@@ -165,14 +152,5 @@
                 {% endfor %}
             </tbody>
         </table>
-
-        <div class="pagination">
-            {% if page != 1 %}
-            <a class="nav-button" href="/equipo/{{page - 1}}">Pagina Anterior</a>
-            {% endif %}
-            {% if lastpage %}
-            <a class="nav-button" href="/equipo/{{page + 1}}">Pagina Siguiente</a>
-            {% endif %}
-        </div>
-        <p style="margin: 15px;">Pagina: {{page}}</p>
+        {{ paginacion("equipo", page, lastpage) }}
         {% endblock %}
