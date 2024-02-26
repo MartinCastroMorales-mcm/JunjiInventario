@@ -1,10 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
     <div class="col-md-5">
-<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -12,139 +13,144 @@
         <div class="custom-alert" role="alert">
             {{ message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+                <span aria-hidden="true">&times;</span>
             </button>
-          </div>
+        </div>
 
         {% endfor %}
         {% endif %}
         {% endwith %}
-<!-- Se termina la seccion de errores -->
+        <!-- Se termina la seccion de errores -->
 
-<!-- ----- -->
-<div class="card card-body">
-    <form action="/add_equipo" method="POST" class="mi-formulario">
-        <div class="form-group">
-            <label for="codigo_inventario">ID de Inventario: </label>
-            <input type="text" class="form-control" name="codigo_inventario" placeholder="Cod. inventario">
-            <br>
-            <label for="numero_serie">Numero de Serie: </label>
-            <input type="text" class="form-control" name="numero_serie" placeholder="Numero de serie">
-            <br>
-            <label for="observacion_equipo">Observacion: </label>
-            <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50"></textarea>
-            <br>
-            <label for="codigoproveedor">Codigo de Proveedor: </label>
-            <input type="text" class="form-control" name="codigoproveedor" >
-            <br>
-            <label for="mac">Mac: </label>
-            <input type="text" class="form-control" name="mac">
-            <br>
-            <label for="imei">imei: </label>
-            <input type="text" name="imei" >
-            <br>
-            <label for="numero">Numero de Telefono: </label>
-            <input type="text" name="numero" >
-            <br>
-            <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
-    <select name="nombre_tipo_equipo" id="" >
-        <option value="">Seleccione el Tipo de Equipo</option>
-        {% for tipoe in tipo_equipo %}
-            <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreidTipoequipo}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="nombre_estado_equipo">Estado de Equipo: </label>
-    <select name="nombre_estado_equipo">
-        <option value="">Seleccione el Estado de el Equipo</option>
-        {% for estadoe in estado_equipo %}
-            <option value="{{ estadoe.idEstado_equipo }}">{{estadoe.nombreEstado_equipo}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="codigo_Unidad">Unidad: </label>
-    <select name="codigo_Unidad">
-        <option value="">Seleccione la Unidad</option>
-        {% for ubi in Unidad %}
-            <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="nombre_orden_compra">Orden de Compra: </label>
-    <select name="nombre_orden_compra">
-        <option value="">Seleccione el Orden de Compra</option>
-        {% for ordenc in orden_compra %}
-            <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
-    <select name="nombre_modelo_equipo">
-        <option value="">Seleccione el Modelo del Equipo</option>
-        {% for modeloe in modelo_equipo %}
-            <option value="{{ modeloe.idModelo_Equipo }}">{{modeloe.nombreModeloequipo}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <button class="agregar-button"> Agregar</button>    
-</form>
-</div>
-</div>
-<h2>Equipo</h2>
-<div style="overflow-x:auto;">
-  <table id="posts">
-    <thead>
-        <tr>
-            <td>Cod. inventario</td>
-            <td>Num. serie</td>            
-            <td>Observacion</td> 
-            <td>Funcionario</td>
-            <td>Codigo Proveedor</td>            
-            <td>Mac</td>            
-            <td>Imei</td>            
-            <td>Numero de Telefono</td>                       
-            <td>Tipo equipo</td>            
-            <td>Estado equipo</td>            
-            <td>Unidad</td>            
-            <td>Nombre orden compra</td>            
-            <td>Modelo</td>            
-            <td>Operations</td>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-        {% for equi in equipo %}
-        <tr>
-            <td>{{equi.Cod_inventarioEquipo}}</td>
-            <td>{{equi.Num_serieEquipo}}</td>
-            <td>{{equi.ObservacionEquipo}}</td>
-            <td>{{equi.nombreFuncionario}}</td>
-            <td>{{equi.codigoproveedor_equipo}}</td>
-            <td>{{equi.macEquipo}}</td>
-            <td>{{equi.imeiEquipo}}</td>
-            <td>{{equi.numerotelefonicoEquipo}}</td>
-            {% if  tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
-                <td>{{equi.nombreidTipoequipo}}</td>
-            {% endif %}
-            {% if  estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
-                <td>{{equi.nombreEstado_equipo}}</td>
-            {% endif %}
-                <td>{{equi.nombreUnidad}}</td>
-            {% if  orden_compra.idOrden_compra == equipo.idOrden_compra %}
-                <td>{{equi.nombreOrden_compra}}</td>
-            {% endif %}
-            {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
-                <td>{{equi.nombreModeloequipo}}</td>
-            {% endif %}            
-          
-            <td>
-                <a href="/edit_equipo/{{equi.idEquipo}}"class="success-button">Editar</a>
-                <a href="/delete_equipo/{{equi.idEquipo}}"class="delete-button">Eliminar</a>
-                <a href="/equipo_detalles" class="info-button">Detalles</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        <!-- ----- -->
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" style="display: none;">
+            <form action="/add_equipo" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <label for="codigo_inventario">ID de Inventario: </label>
+                    <input type="text" class="form-control" name="codigo_inventario" placeholder="Cod. inventario">
+                    <br>
+                    <label for="numero_serie">Numero de Serie: </label>
+                    <input type="text" class="form-control" name="numero_serie" placeholder="Numero de serie">
+                    <br>
+                    <label for="observacion_equipo">Observacion: </label>
+                    <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50"></textarea>
+                    <br>
+                    <label for="codigoproveedor">Codigo de Proveedor: </label>
+                    <input type="text" class="form-control" name="codigoproveedor">
+                    <br>
+                    <label for="mac">Mac: </label>
+                    <input type="text" class="form-control" name="mac">
+                    <br>
+                    <label for="imei">imei: </label>
+                    <input type="text" name="imei">
+                    <br>
+                    <label for="numero">Numero de Telefono: </label>
+                    <input type="text" name="numero">
+                    <br>
+                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
+                    <select name="nombre_tipo_equipo" id="">
+                        <option value="">Seleccione el Tipo de Equipo</option>
+                        {% for tipoe in tipo_equipo %}
+                        <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreidTipoequipo}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="nombre_estado_equipo">Estado de Equipo: </label>
+                    <select name="nombre_estado_equipo">
+                        <option value="">Seleccione el Estado de el Equipo</option>
+                        {% for estadoe in estado_equipo %}
+                        <option value="{{ estadoe.idEstado_equipo }}">{{estadoe.nombreEstado_equipo}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="codigo_Unidad">Unidad: </label>
+                    <select name="codigo_Unidad">
+                        <option value="">Seleccione la Unidad</option>
+                        {% for ubi in Unidad %}
+                        <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="nombre_orden_compra">Orden de Compra: </label>
+                    <select name="nombre_orden_compra">
+                        <option value="">Seleccione el Orden de Compra</option>
+                        {% for ordenc in orden_compra %}
+                        <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
+                    <select name="nombre_modelo_equipo">
+                        <option value="">Seleccione el Modelo del Equipo</option>
+                        {% for modeloe in modelo_equipo %}
+                        <option value="{{ modeloe.idModelo_Equipo }}">{{modeloe.nombreModeloequipo}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <button class="agregar-button"> Agregar</button>
+            </form>
 
-{% endblock %}
+
+        </div>
+
+
+    </div>
+    <h2>Equipo</h2>
+    <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead>
+                <tr>
+                    <td>Cod. inventario</td>
+                    <td>Num. serie</td>
+                    <td>Observacion</td>
+                    <td>Funcionario</td>
+                    <td>Codigo Proveedor</td>
+                    <td>Mac</td>
+                    <td>Imei</td>
+                    <td>Numero de Telefono</td>
+                    <td>Tipo equipo</td>
+                    <td>Estado equipo</td>
+                    <td>Unidad</td>
+                    <td>Nombre orden compra</td>
+                    <td>Modelo</td>
+                    <td>Operations</td>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                {% for equi in equipo %}
+                <tr>
+                    <td>{{equi.Cod_inventarioEquipo}}</td>
+                    <td>{{equi.Num_serieEquipo}}</td>
+                    <td>{{equi.ObservacionEquipo}}</td>
+                    <td>{{equi.nombreFuncionario}}</td>
+                    <td>{{equi.codigoproveedor_equipo}}</td>
+                    <td>{{equi.macEquipo}}</td>
+                    <td>{{equi.imeiEquipo}}</td>
+                    <td>{{equi.numerotelefonicoEquipo}}</td>
+                    {% if tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
+                    <td>{{equi.nombreidTipoequipo}}</td>
+                    {% endif %}
+                    {% if estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
+                    <td>{{equi.nombreEstado_equipo}}</td>
+                    {% endif %}
+                    <td>{{equi.nombreUnidad}}</td>
+                    {% if orden_compra.idOrden_compra == equipo.idOrden_compra %}
+                    <td>{{equi.nombreOrden_compra}}</td>
+                    {% endif %}
+                    {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
+                    <td>{{equi.nombreModeloequipo}}</td>
+                    {% endif %}
+
+                    <td>
+                        <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button">Editar</a>
+                        <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button">Eliminar</a>
+                        <a href="/equipo_detalles" class="info-button">Detalles</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {{ paginacion("equipo", page, lastpage) }}
+        {% endblock %}

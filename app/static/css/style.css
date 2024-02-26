@@ -327,6 +327,22 @@ a.sidebar-link:hover {
     border-radius: 5px; /* Bordes redondeados */
     transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
 }
+.nav-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+    margin: 15px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #008800; 
+    color: #fff; /* Color del texto */
+    background-color: #009900; 
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
 
 /* Estilo del botón de éxito */
 .success-button {
@@ -602,3 +618,7 @@ a.sidebar-link:hover {
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
   .show {display:block;}
   /*end dropdown search*/
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+  }

@@ -1,11 +1,15 @@
 from flask import Blueprint, request, render_template, flash, url_for, redirect
 from db import mysql
-from funciones import validarRut
+from funciones import validarRut, getPerPage
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
 #envias los datos a la vista pricipal de funcionario
 @funcionario.route('/funcionario')
-def Funcionario():
+@funcionario.route('/fucionario/<page>')
+def Funcionario(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, f.idUnidad, u.idUnidad, u.nombreUnidad

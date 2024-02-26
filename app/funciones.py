@@ -32,3 +32,6 @@ def validarRut(rut):
         return True
     else:
         return False
+
+def getPerPage():
+    return 2

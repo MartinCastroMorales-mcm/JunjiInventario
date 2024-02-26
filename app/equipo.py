@@ -1,12 +1,20 @@
 from flask import request, flash, render_template, url_for, redirect, Blueprint
 from db import mysql
+from funciones import getPerPage
 
 equipo = Blueprint('equipo', __name__, template_folder='app/templates')
 
 #envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR
 @equipo.route('/equipo')
-def Equipo():
+@equipo.route('/equipo/<page>')
+def Equipo(page = 1):
+    page = int(page)
+    perpage = getPerPage() 
+    offset = (int(page)-1) * perpage
     cur = mysql.connection.cursor()
+    cur.execute('SELECT COUNT(*) FROM EQUIPO')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
     cur.execute(""" 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
@@ -18,7 +26,8 @@ def Equipo():
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
     INNER JOIN asignacion a on a.idEquipo = e.idEquipo
     INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
-    """)
+    LIMIT {} OFFSET {}
+    """.format(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM tipo_equipo')
     tipoe_data = cur.fetchall()
@@ -31,8 +40,11 @@ def Equipo():
     cur.execute('SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo')
     modeloe_data = cur.fetchall()  
 
-    return render_template('equipo.html', equipo = data, tipo_equipo = tipoe_data, estado_equipo = estadoe_data, orden_compra = ordenc_data, 
-    Unidad = ubi_data, modelo_equipo = modeloe_data)
+    return render_template('equipo.html', equipo = data, 
+        tipo_equipo = tipoe_data, estado_equipo = estadoe_data,
+        orden_compra = ordenc_data, 
+        Unidad = ubi_data, modelo_equipo = modeloe_data, 
+        page=page, lastpage= page < (total/perpage)+1)
 
 #agrega registro para id
 @equipo.route('/add_equipo', methods = ['POST'])

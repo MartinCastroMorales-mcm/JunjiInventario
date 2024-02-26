@@ -1,59 +1,62 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
     <div class="col-md-5">
-            <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
-            {% with messages = get_flashed_messages() %}
-            {% if messages %}
-            {% for message in messages %}
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
 
-            <div class="custom-alert" role="alert">
-                {{ message }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            </button>
+        </div>
 
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-            <!-- Se termina la seccion de errores -->
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
 
-<!-- ----- 
+        <!-- ----- 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.3/b-2.1.1/b-html5-2.1.1/b-print-2.1.1/cr-1.5.5/r-2.2.9/datatables.min.js"></script>
 -->
-<div class="card card-body">
-    <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
-        <div class="form-group">
-<label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo">
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" style="display: none;" id="formulario">
+
+            <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
+                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo">
+                </div>
+                <div class="form-group">
+                    <label for="nombre_marca_equipo"> Marca Equipo: </label>
+                    <select name="nombre_marca_equipo" id="">
+                        <option value="">Elija la Marca del Equipo</option>
+                        {% for marcae in marca_equipo %}
+                        <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button class="agregar-button"> Agregar</button>
+            </form>
         </div>
-        <div class="form-group">
-            <label for="nombre_marca_equipo"> Marca Equipo: </label>
-    <select name="nombre_marca_equipo" id="" >
-        <option value="">Elija la Marca del Equipo</option>
-        {% for marcae in marca_equipo %}
-            <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
-        {% endfor %}
-    </select>   
-</div>
- 
-<button class="agregar-button"> Agregar</button>    
-</form>
-</div>
-</div>
-<h2>Modelo de Equipos</h2>
+    </div>
+    <h2>Modelo de Equipos</h2>
 
     <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
                 <tr>
                     <th>Modelo equipo</th>
-                    <th>Marca</th>            
+                    <th>Marca</th>
                     <th>Operations</th>
                 </tr>
             </thead>
@@ -63,7 +66,7 @@
                 <tr>
                     <td>{{modeloe.nombreModeloequipo}}</td>
                     {% if modelo_equipo.idMarca_equipo == marca_equipo.idMarca_Equipo %}
-                        <td>{{modeloe.nombreMarcaEquipo}}</td>
+                    <td>{{modeloe.nombreMarcaEquipo}}</td>
                     {% endif %}
                     <td>
                         <a href="/edit_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="success-button">Editar</a>
@@ -74,7 +77,7 @@
             </tbody>
         </table>
     </div>
-<!--
+    <!--
 <script>
     $(document).ready(function() {
         $('#posts').DataTable({
@@ -108,5 +111,6 @@
 </script>
 
 -->
+    {{ paginacion("modelo_equipo", page, lastpage) }}
 
-{% endblock %}
+    {% endblock %}
