@@ -41,16 +41,14 @@
 
             <table id="posts">
                 <thead>
-                    <tr>
+                    <tr> 
 
-                        <td>Nombre Marca
-                            <a href="/marca_equipo/ASC" class="text-sort">ASC</a>
-                            <a href="/marca_equipo/DESC" class="text-sort">DESC</a>
+                        <td onclick="sortTable(0)">Nombre Marca
                         </td>
                         <td>Operations</td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="myTableBody">
                     <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
                     {% for marcae in marca_equipo %}
                     <tr>

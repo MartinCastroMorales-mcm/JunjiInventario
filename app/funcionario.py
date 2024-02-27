@@ -15,7 +15,8 @@ def Funcionario(page = 1):
     SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, f.idUnidad, u.idUnidad, u.nombreUnidad
     FROM funcionario f
     INNER JOIN Unidad u on f.idUnidad = u.idUnidad
-    """)
+    LIMIT {} OFFSET {}
+    """.format(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM Unidad')
     ubi_data = cur.fetchall()

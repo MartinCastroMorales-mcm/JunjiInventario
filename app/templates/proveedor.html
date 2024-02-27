@@ -38,11 +38,11 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td>Nombre proveedor</td>
+                    <td onclick="sortTable(0)">Nombre proveedor</td>
                     <td>Operations</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for pro in proveedor %}
                 <tr>

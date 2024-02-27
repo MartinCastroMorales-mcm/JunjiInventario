@@ -66,17 +66,17 @@
   <table id="posts">
     <thead>
         <tr>
-            <td>Codigo de orden</td>
-            <td>Nombre de orden</td>
-            <td>Fecha de Orden de compra</td>
-            <td>Fecha Final de Orden de compra</td>
-            <td>Ruta Documento</td>
-            <td>Tipo de adquisicion</td>
-            <td>Nombre de proveedor</td>
+            <td onclick="sortTable(0)">Codigo de orden</td>
+            <td onclick="sortTable(1)">Nombre de orden</td>
+            <td onclick="sortTable(2)">Fecha de Orden de compra</td>
+            <td onclick="sortTable(3)">Fecha Final de Orden de compra</td>
+            <td onclick="sortTable(4)">Ruta Documento</td>
+            <td onclick="sortTable(5)">Tipo de adquisicion</td>
+            <td onclick="sortTable(6)">Nombre de proveedor</td>
             <td>Operations</td>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="myTableBody">
         <!-- Se inicia iteracion for para mostrar todos los proveedores -->
         {% for ordenc in orden_compra %}
         <tr>

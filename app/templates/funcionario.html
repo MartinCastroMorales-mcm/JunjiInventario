@@ -52,14 +52,14 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td>Rut funcionario</td>
-                    <td>Nombre funcionario</td>
-                    <td>Cargo</td>
-                    <td>Cod. Unidad</td>
+                    <td onclick="sortTable(0)">Rut funcionario</td>
+                    <td onclick="sortTable(1)">Nombre funcionario</td>
+                    <td onclick="sortTable(2)">Cargo</td>
+                    <td onclick="sortTable(3)">Cod. Unidad</td>
                     <td>Operations</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for fun in funcionario %}
                 <tr>

@@ -49,31 +49,34 @@
 
 
         <table id="posts">
-            <thead>
+            <thead id="myTableHead">
                 <tr>
 
-                    <td>Fecha Traslado
-                        <br />
-                        <a href="/traslado/ASC" class="text-sort">ASC</a>
-                        <a href="/traslado/DESC" class="text-sort">DESC</a>
-                    </td>
-                    <td>Acta</td>
-                    <td>Origen</td>
-                    <td>Destino</td>
-                    <td>Botones</td>
+                    <th onclick="sortTable(0)">Fecha Traslado</th>
+                    <th>Acta</th>
+                    <th onclick="sortTable(2)">Origen</th>
+                    <th onclick="sortTable(3)">Destino</th>
+                    <th onclick="sortTable(4)">N°</th>
+                    <th>Botones</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
                 {% for tras in traslado %}
                 <tr>
                     <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
                     <td>{{tras.fechatraslado}}</td>
                     <td>
-                        <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}" class="info-button">Acta</a>
+                        {# añadir el path para los pdfs#}
+                        <a href="/traslado/mostrar_pdf/{{tras.idTraslado}}" class="info-button">Acta</a>
+                        {#
+                            tener los pdfs guardados como traslado_{{id}}
+                            
+                            #}
                     </td>
                     <td>{{tras.nombreOrigen}}</td>
                     <td>{{tras.nombreDestino}}</td>
+                    <td>{{tras.idTraslado}}</td>
                     <td>
                         <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
                         <a href="/traslado/edit_traslado/{{tras.idTraslado}}" class="success-button">Editar</a>

@@ -37,11 +37,11 @@
   <table id="posts">
     <thead>
         <tr>
-            <td>Tipo de adquisicion</td>
+            <td onclick="sortTable(0)">Tipo de adquisicion</td>
             <td>Operations</td>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="myTableBody">
         <!-- Se inicia iteracion for para mostrar todos los proveedores -->
         {% for ta in tipo_adquisicion %}
         <tr>

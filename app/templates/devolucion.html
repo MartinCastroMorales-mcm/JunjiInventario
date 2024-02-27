@@ -72,15 +72,15 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td>Fecha de Devolucion</td>
-                    <td>Observacion de Devolucion</td>
-                    <td>Acta de Devolucion</td>
-                    <td>Estado</td>
-                    <td>Funcionario</td>
+                    <td onclick="sortTable(0)">Fecha de Devolucion</td>
+                    <td onclick="sortTable(1)">Observacion de Devolucion</td>
+                    <td onclick="sortTable(2)">Acta de Devolucion</td>
+                    <td onclick="sortTable(3)">Estado</td>
+                    <td onclick="sortTable(4)">Funcionario</td>
                     <td>Operations</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for d in devolucion %}
                 <tr>

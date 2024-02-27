@@ -2,4 +2,24 @@
 {% extends "layout.html" %}
 {% block body %}
 <h1>En contruccion</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Evento</th>
+            <th>Acta</th>
+            <th>Botones</th>
+        </tr>
+    </thead>
+    <tbody>
+        {# Se deberian tener una tupla de Asignaciones, Devoluciones y Asignaciones todas con un inner join#}
+        {# tenerlas por separado y despues ordenarlas en js por fecha#}
+        {% for evento in eventos %}
+        <tr>
+            <td>evento.fecha</td>
+            <td>evento.tipo</td>
+        </tr>
+    </tbody>
+</table>
 {% endblock %}

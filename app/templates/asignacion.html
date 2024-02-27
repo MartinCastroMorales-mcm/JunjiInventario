@@ -147,20 +147,16 @@
                 <thead>
                     <tr>
 
-                        <td>NombreTipoEquipo
-                            <br />
-                            <a href="/asignacion/ASC" class="text-sort">ASC</a>
-                            <a href="/asignacion/DESC" class="text-sort">DESC</a>
-                        </td>
-                        <td>Fecha Inicio</td>
-                        <td>Observacion</td>
+                        <td onclick="sortTable(0)">NombreTipoEquipo</td>
+                        <td onclick="sortTable(1)">Fecha Inicio</td>
+                        <td onclick="sortTable(2)">Observacion</td>
                         <td>Acta</td>
-                        <td>nombreFuncionario</td>
-                        <td>fechaDevolucion</td>
+                        <td onclick="sortTable(3)">nombreFuncionario</td>
+                        <td onclick="sortTable(4)">fechaDevolucion</td>
                         <td>Botones</td>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="myTableBody">
                     <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
                     {% for asig in asignacion %}
                     <tr>

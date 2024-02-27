@@ -43,12 +43,12 @@
   <table id="posts">
     <thead>
         <tr>
-            <td>Nombre estado</td>
-            <td>Fecha modificación</td>
+            <td onclick="sortTable(0)">Nombre estado</td>
+            <td onclick="sortTable(1)">Fecha modificación</td>
             <td>Operations</td>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="myTableBody">
         <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
         {% for ee in estado_equipo %}
         <tr>
