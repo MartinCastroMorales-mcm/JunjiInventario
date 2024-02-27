@@ -55,12 +55,12 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <th>Modelo equipo</th>
-                    <th>Marca</th>
+                    <th onclick="sortTable(0)">Modelo equipo</th>
+                    <th onclick="sortTable(1)">Marca</th>
                     <th>Operations</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for modeloe in modelo_equipo %}
                 <tr>

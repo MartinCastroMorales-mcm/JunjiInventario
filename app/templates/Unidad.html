@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
@@ -23,7 +24,8 @@
         <!-- Se termina la seccion de errores -->
 
         <!-- ----- -->
-        <div class="card card-body">
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario", style="display: none;">
             <form action="/add_Unidad" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="codigo_Unidad">ID de Unidad: </label>
@@ -55,16 +57,16 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td>Codigo Unidad</td>
-                    <td>Nombre Unidad</td>
-                    <td>Contacto</td>
-                    <td>Direccion</td>
-                    <td>Comuna</td>
-                    <td>N° Equipos</td>
+                    <td onclick="sortTable(0)">Codigo Unidad</td>
+                    <td onclick="sortTable(1)">Nombre Unidad</td>
+                    <td onclick="sortTable(2)">Contacto</td>
+                    <td onclick="sortTable(3)">Direccion</td>
+                    <td onclick="sortTable(4)">Comuna</td>
+                    <td onclick="sortTable(5)">N° Equipos</td>
                     <td>Operations</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for ubi in Unidad %}
                 <tr>
@@ -85,4 +87,5 @@
                 {% endfor %}
             </tbody>
         </table>
+        {{ paginacion("Unidad", page, lastpage) }}
         {% endblock %}

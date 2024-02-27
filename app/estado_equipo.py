@@ -1,15 +1,24 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from db import mysql
+from funciones import getPerPage
 
 estado_equipo = Blueprint('estado_equipo', __name__, template_folder='app/templates')
 
 @estado_equipo.route('/estado_equipo')
-def estadoEquipo():
+@estado_equipo.route('/estado_equipo/<page>')
+def estadoEquipo(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM estado_equipo')
+    cur.execute('SELECT * FROM estado_equipo LIMIT {} OFFSET {}'.format(perpage, offset))
     data = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM estado_equipo')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
     cur.close()
-    return render_template('estado_equipo.html', estado_equipo = data)
+    return render_template('estado_equipo.html', estado_equipo = data,
+                           page=page, lastpage= page < (total/perpage)+1)
 
 @estado_equipo.route('/add_estado_equipo', methods = ['POST'])
 def add_estado_equipo():

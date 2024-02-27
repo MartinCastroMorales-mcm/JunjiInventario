@@ -1,12 +1,17 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from db import mysql
 from fpdf import FPDF
+from funciones import getPerPage
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
 
 @asignacion.route("/asignacion")
-def Asignacion():
+@asignacion.route("/asignacion/<page>")
+def Asignacion(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(
         """ 
@@ -22,11 +27,15 @@ def Asignacion():
     INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
     INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
     INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-        """
+    LIMIT {} OFFSET {}
+        """.format(perpage, offset)
     )
     data = cur.fetchall()
-    return render_template(
-        "asignacion.html", asignacion=data, agregar=False, tiposEquipos=None, page=2
+    cur.execute('SELECT COUNT(*) FROM asignacion')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    return render_template("asignacion.html", asignacion=data,
+        page=page, lastpage= page < (total/perpage)+1
     )
 
 
@@ -322,7 +331,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-    pdf.output('pdf_asignacion_1.pdf')
+    nombrePdf = "asignacion_" + str(Funcionario['nombreFuncionario'] + "_" + str(Asignacion['fecha_inicioAsignaion']) + "_" + str(Asignacion['idAsignacion']))
+    pdf.output(nombrePdf)
     return redirect(url_for("asignacion.Asignacion"))
 
 

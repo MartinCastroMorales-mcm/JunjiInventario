@@ -1,11 +1,18 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response
+from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file
 from db import mysql
 from fpdf import FPDF
+from funciones import getPerPage
+import os
+import shutil 
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
 
 @traslado.route("/traslado")
-def Traslado():
+@traslado.route("/traslado/<page>")
+def Traslado(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page -1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(
         """
@@ -14,11 +21,24 @@ def Traslado():
                 FROM traslado t
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-        """
+                ORDER BY idTraslado DESC
+                LIMIT {} OFFSET {}
+        """.format(perpage, offset)
     )
     data = cur.fetchall()
-
-    return render_template("traslado.html", traslado=data)
+    cur.execute('SELECT COUNT(*) FROM traslado')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    cur.execute(
+        """
+        SELECT * 
+        FROM unidad u
+        ORDER BY u.nombreUnidad
+                 """
+    )
+    unidades = cur.fetchall()
+    return render_template("traslado.html", traslado=data, unidades=unidades,
+                           page=page, lastpage= page < (total/perpage)+1)
 
 
 @traslado.route("/try_add_traslado")
@@ -149,10 +169,10 @@ def delete_traslado(id):
                     """, (id,))
         traslaciones = cur.fetchall()
         for traslacion in traslaciones:
-            print("###############")
-            print(trasladoABorrar)
-            print("###############")
-            print(traslacion)
+            #print("###############")
+            #print(trasladoABorrar)
+            #print("###############")
+            #print(traslacion)
             cur.execute("""
                         UPDATE equipo
                         SET idUnidad = %s
@@ -337,6 +357,9 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     nombreMinistro = "Nombre Ministro de Fe:"
     rutMinistro = "Numero de RUT:"
     firma = "Firma"
+    nombreEncargadoUnidadTI = "Nombre Encargado TI"
+    rutMinistro = "Numero de RUT:"
+    firma = "Firma"
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(nombreEncargado)
         cols.ln()
@@ -359,6 +382,18 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
         cols.write(firma)
         cols.ln()
         cols.ln()
+        cols.ln()
+        cols.ln()
+
+        cols.write(nombreEncargadoUnidadTI)
+        cols.ln()
+        cols.ln()
+        cols.write(rutMinistro)
+        cols.ln()
+        cols.ln()
+        cols.write(firma)
+        cols.ln()
+        cols.ln()
         cols.new_column()
         for i in range(0, 3):
             cols.write(text="_________________________")
@@ -370,8 +405,26 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-
-
-    pdf.output('pdf_1.pdf')
+        cols.ln()
+        cols.ln()
+        for i in range(0, 3):
+            cols.write(text="_________________________")
+            cols.ln()
+            cols.ln()
+    nombrePdf = "traslado" + "_" + str(traslado['idTraslado']) + ".pdf"
+    pdf.output(nombrePdf)
+    #print("test")
+    #print(str(os.curdir)) 
+    shutil.move(nombrePdf, "app/pdf")
     return redirect(url_for('traslado.Traslado'))
 
+@traslado.route("/traslado/mostrar_pdf/<id>")
+def mostrar_pdf(id):
+    try:
+        nombrePdf = "traslado_" + str(id) + ".pdf"
+        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        file = os.path.join(dir, nombrePdf)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("no se encontro el pdf")
+        return redirect(url_for('traslado.Traslado'))

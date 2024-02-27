@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
 <div class="row">
@@ -40,11 +41,11 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td>Nombre tipo de equipo</td>
+                    <td onclick="sortTable(0)">Nombre tipo de equipo</td>
                     <td>Operations</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="myTableBody">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for tipoe in tipo_equipo %}
                 <tr>
@@ -57,16 +58,8 @@
                 {% endfor %}
             </tbody>
         </table>
-        <div class="pagination">
-            {% if page != 1 %}
-            <a class="nav-button" href="/tipo_equipo/{{page - 1}}">Pagina Anterior</a>
-            {% endif %}
-            {% if lastpage %}
-            <a class="nav-button" href="/tipo_equipo/{{page + 1}}">Pagina Siguiente</a>
-            {% endif %}
 
-        </div>
-        <p style="margin: 15px;">Pagina: {{page}}</p>
+    {{ paginacion("tipo_equipo", page, lastpage) }}
     </div>
 </div>
 {% endblock %}

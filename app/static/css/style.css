@@ -622,3 +622,30 @@ a.sidebar-link:hover {
     display: flex;
     flex-wrap: wrap;
   }
+  .main-ul {
+    width: 85px;
+    min-width: 85px;
+    padding: 25px 0;
+    flex: 1 1 auto;
+}
+.main-ul-item {
+    color: #000;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    
+}
+.main-li {
+}
+a.mainbar-link {
+    padding: 1.625rem 3.625rem;
+    color: #FFF;
+    display: block;
+    white-space: nowrap;
+    border-left: 3px;
+    background-color: #090;
+    border-color: #080;
+    margin: 15px;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}

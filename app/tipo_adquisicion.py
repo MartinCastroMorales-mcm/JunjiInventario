@@ -1,15 +1,23 @@
 from flask import Blueprint, render_template, request, url_for, redirect,flash
 from db import mysql
-from funciones import validarChar
+from funciones import validarChar, getPerPage
 
 tipo_adquisicion = Blueprint('tipo_adquisicion', __name__, template_folder='app/templates')
 
 @tipo_adquisicion.route('/tipo_adquisicion')
-def tipoAdquisicion():
+@tipo_adquisicion.route('/tipo_adquisicion/<page>')
+def tipoAdquisicion(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM tipo_adquisicion')
+    cur.execute('SELECT * FROM tipo_adquisicion LIMIT {} OFFSET {} '.format(perpage, offset))
     data = cur.fetchall()
-    return render_template('tipo_adquisicion.html', tipo_adquisicion = data)
+    cur.execute('SELECT COUNT(*) FROM EQUIPO')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    return render_template('tipo_adquisicion.html', 
+                tipo_adquisicion = data, page=page, lastpage= page < (total/perpage)+1)
 
 #agrega un registro para tipo de adquisicion
 @tipo_adquisicion.route('/add_tipoa', methods = ['POST'])    

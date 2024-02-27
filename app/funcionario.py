@@ -5,21 +5,26 @@ funcionario = Blueprint('funcionario', __name__, template_folder='app/templates'
 
 #envias los datos a la vista pricipal de funcionario
 @funcionario.route('/funcionario')
-@funcionario.route('/fucionario/<page>')
+@funcionario.route('/funcionario/<page>')
 def Funcionario(page = 1):
     page = int(page)
     perpage = getPerPage()
-    
+    offset = (page -1) * perpage 
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, f.idUnidad, u.idUnidad, u.nombreUnidad
     FROM funcionario f
     INNER JOIN Unidad u on f.idUnidad = u.idUnidad
-    """)
+    LIMIT {} OFFSET {}
+    """.format(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM Unidad')
     ubi_data = cur.fetchall()
-    return render_template('funcionario.html', funcionario = data, Unidad = ubi_data)
+    cur.execute('SELECT COUNT(*) FROM funcionario')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    return render_template('funcionario.html', funcionario = data, 
+                           Unidad = ubi_data, page=page, lastpage= page < (total/perpage)+1)
 
 
 #agregar funcionario
