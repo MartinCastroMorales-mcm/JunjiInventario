@@ -1,21 +1,31 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from db import mysql
 from fpdf import FPDF
+from funciones import getPerPage
 
 devolucion = Blueprint('devolucion', __name__, template_folder='app/templates')
 
 @devolucion.route('/devolucion')
-def Devolucion():
+@devolucion.route('/devolucion/<page>')
+def Devolucion(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT d.idDevolucion, d.fechaDevolucion, d.observacionDevolucion, d.rutaactaDevolucion, d.ActivoDevolucion, d.rutFuncionario, f.rutFuncionario
     FROM devolucion d
     INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-    """)
+    LIMIT {} OFFSET {}
+    """.format(perpage, offset))
     data = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM DEVOLUCION')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
     cur.execute('SELECT rutFuncionario FROM funcionario')
     f_data = cur.fetchall()
-    return render_template('devolucion.html', devolucion = data, funcionario= f_data)
+    return render_template('devolucion.html', devolucion = data, funcionario= f_data,
+                           page=page, lastpage= page < (total/perpage)+1)
 
 @devolucion.route('/add_devolucion', methods = ['POST'])
 def add_estado_equipo():

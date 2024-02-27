@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
@@ -22,7 +23,8 @@
         <!-- Se termina la seccion de errores -->
 
         <!-- ----- -->
-        <div class="card card-body">
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario", style="display: none;">
             <form action="/add_devolucion" method="POST" class="mi-formulario">
                 <label for="fechaDevolucion"> Fecha de Devolucion: </label>
                 <input type="date" name="fechaDevolucion" id="fechaDevolucion"/>
@@ -97,5 +99,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        {{ paginacion("devolucion", page, lastpage) }}
 
         {% endblock %}

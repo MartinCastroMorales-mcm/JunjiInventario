@@ -1,11 +1,16 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash
 from db import mysql
+from funciones import getPerPage
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
 #ruta para poder enviar datos a la pagina principal de Unidad
 @Unidad.route('/Unidad')
-def UNIDAD():
+@Unidad.route('/Unidad/<page>')
+def UNIDAD(page=1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(""" 
         SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna, COUNT(e.idEquipo) as num_equipos
@@ -13,14 +18,19 @@ def UNIDAD():
         INNER JOIN comuna co on u.idComuna = co.idComuna
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
         GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
+        LIMIT {} OFFSET {}
     
-    """)
+    """.format(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM comuna')
     c_data = cur.fetchall()
+    cur.execute("SELECT COUNT(*) FROM unidad")
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
    
     cur.close()
-    return render_template('Unidad.html', Unidad = data, comuna = c_data)
+    return render_template('Unidad.html', Unidad = data, comuna = c_data, 
+                           page=page, lastpage= page < (total/perpage)+1)
 
 #ruta y metodo para poder agregar una Unidad
 @Unidad.route('/add_Unidad', methods = ['POST'])

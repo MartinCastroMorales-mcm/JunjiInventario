@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 <div class="row">
 
     <div class="col-md-5">
@@ -21,8 +22,8 @@
         En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
         y se muestra el formulario para agregar un item.
         #}
-        {% if agregar %}
-        <div class="card card-body">
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" style="display: none;">
             <form action="/traslado/add_traslado" method="POST" class="mi-formulario">
                     <label>Origen</label>
                 <select name="Origen" id="">
@@ -38,9 +39,6 @@
 
 
     </div>
-    {% else %}
-    <a href="/try_add_traslado" class="info-button">Agregar</a>
-    {% endif %}
 
 
 </div>
@@ -89,4 +87,5 @@
             </tbody>
         </table>
 
+        {{ paginacion("traslado", page, lastpage) }}
         {% endblock %}

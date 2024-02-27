@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
@@ -22,7 +23,8 @@
             <!-- Se termina la seccion de errores -->
 
 <!-- ----- -->
-<div class="card card-body">
+<button class="nav-button" onclick="showDiv()">Agregar</button>
+<div class="card card-body" id="formulario" style="display: none;">
 <form action="/add_estado_equipo" method="POST"class="mi-formulario">
     <div class="form-group">
         <label for="nombre_estado_equipo">Estado de Equipo: </label>
@@ -64,5 +66,6 @@
         <!-- Se termina la iteracion for -->
     </tbody>
 </table>
+{{ paginacion("estado_equipo", page, lastpage) }}
 
 {% endblock %}

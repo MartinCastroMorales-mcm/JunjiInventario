@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
 
@@ -22,7 +23,8 @@
             <!-- Se termina la seccion de errores -->
 
 <!-- ----- -->
-<div class="card card-body">
+<button class="nav-button" onclick="showDiv()">Agregar</button>
+<div class="card card-body" id="formulario" style="display: none;">
 <form action="/add_tipoa" method="POST"class="mi-formulario">
     <label for="nombre_tipoa"> Tipo de Adquisicion</label>
     <input type="text" name="nombre_tipoa" placeholder="Nombre tipo adquisicion">
@@ -52,4 +54,5 @@
         {% endfor %}
     </tbody>
 </table> 
+{{ paginacion("tipo_adquisicion", page, lastpage) }}
 {% endblock %}

@@ -1,11 +1,16 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response
 from db import mysql
 from fpdf import FPDF
+from funciones import getPerPage
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
 
 @traslado.route("/traslado")
-def Traslado():
+@traslado.route("/traslado/<page>")
+def Traslado(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset = (page -1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(
         """
@@ -14,11 +19,16 @@ def Traslado():
                 FROM traslado t
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-        """
+                LIMIT {} OFFSET {}
+        """.format(perpage, offset)
     )
     data = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM traslado')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
 
-    return render_template("traslado.html", traslado=data)
+    return render_template("traslado.html", traslado=data,
+                           page=page, lastpage= page < (total/perpage)+1)
 
 
 @traslado.route("/try_add_traslado")

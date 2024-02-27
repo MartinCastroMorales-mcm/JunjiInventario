@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, request, url_for, redirect,flash
 #se importa dependencias para conexion con mysql
 from db import mysql
 #importamos el modulo que creamos
-from funciones import validarChar
+from funciones import validarChar, getPerPage
 
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
@@ -11,14 +11,22 @@ proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
 #se especifica la ruta principal para la vista de proveedor 
 @proveedor.route('/proveedor')
-def Proveedor():
+@proveedor.route('/proveedor/<page>')
+def Proveedor(page = 1):
+    page = int(page)
+    perpage = getPerPage()
+    offset  = (page -1) * perpage
     #el cursor permite interactuar con la base de datos
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor')
+    cur.execute('SELECT * FROM proveedor LIMIT {} OFFSET {}'.format(perpage, offset))
     #almacenamos los datos consultados en una variable
     data = cur.fetchall()
     #se retorna la vista con render_template y la informacion de la base de datos de los proveedores para ser manipulados
-    return render_template('proveedor.html', proveedor = data)
+    cur.execute('SELECT COUNT(*) FROM proveedor')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    return render_template('proveedor.html', proveedor = data, 
+                           page = page, lastpage = page < (total/perpage)+1)
 
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
 @proveedor.route('/add_proveedor', methods = ['POST'])  
