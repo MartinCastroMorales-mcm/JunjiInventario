@@ -331,7 +331,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-    pdf.output('pdf_asignacion_1.pdf')
+    nombrePdf = "asignacion_" + str(Funcionario['nombreFuncionario'] + "_" + str(Asignacion['fecha_inicioAsignaion']) + "_" + str(Asignacion['idAsignacion']))
+    pdf.output(nombrePdf)
     return redirect(url_for("asignacion.Asignacion"))
 
 

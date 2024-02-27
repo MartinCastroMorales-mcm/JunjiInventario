@@ -380,8 +380,8 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-
-
-    pdf.output('pdf_1.pdf')
+ 
+    nombrePdf = "traslado_" + str(UnidadOrigen['nombreUnidad']) + "_" + str(UnidadDestino['nombreUnidad'] + "_" + str(traslado['fechatraslado']) + "_" + str(traslado['idTraslado']))
+    pdf.output(nombrePdf)
     return redirect(url_for('traslado.Traslado'))
 
