@@ -22,19 +22,20 @@
 
 <div class="row">
     <div class="col-md-4 offset-md-4">
-        <h1>Editando una Incidencia</h1>
+        <h1>Añadiendo una Incidencia al Equipo {{equipo.idEquipo}}</h1>
         <div class="card card-body" id="formulario" style="display: bloc;">
-            <form action="/incidencia/update_incidencia/{{incidencia.idIncidencia}}" method="POST" class="mi-formulario">
+            <form action="/incidencia/add_incidencia" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombreIncidencia">Nombre Incidencia:</label>
-                    <input value="{{incidencia.nombreIncidencia}}" type="text" class="form-control" name="nombreIncidencia" placeholder="Nombre Incidencia">
+                    <input type="text" class="form-control" name="nombreIncidencia" placeholder="Nombre Incidencia">
                     <br>
                     <label for="observacionIncidencia">Observacion: </label>
-                    <textarea value="{{incidencia.observacionIncidencia}}" id="observacionIncidencia" name="observacionIncidencia" rows="2" cols="50"></textarea>
+                    <textarea id="observacionIncidencia" name="observacionIncidencia" rows="2" cols="50"></textarea>
                     <br>
                     <label for="fechaIncidencia">Fecha Incidencia: </label>
-                    <input value="{{incidencia.fechaIncidencia}}" type="date" class="form-control" name="fechaIncidencia">
+                    <input type="date" class="form-control" name="fechaIncidencia">
                     <br>
+                    <input style="display: none;" value="{{equipo.idEquipo}}" name="idEquipo"/>
                     {# se nesesita una forma eficiente de añadir el equipo#}
                     <button class="agregar-button"> Agregar</button>
             </form>

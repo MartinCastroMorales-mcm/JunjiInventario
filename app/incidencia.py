@@ -42,7 +42,7 @@ def incidencia_form(idEquipo):
                 WHERE e.idEquipo = idEquipo
                 """)
     equipo = cur.fetchone()
-    return render_template("edit_incidencia.html", equipo=equipo)
+    return render_template("add_incidencia.html", equipo=equipo)
 
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
 def add_incidencia():
@@ -51,9 +51,6 @@ def add_incidencia():
          observacionIncidencia = request.form['observacionIncidencia']
          fechaIncidencia = request.form['fechaIncidencia']
          idEquipo = request.form['idEquipo']
-         print("#############################")
-         print("id: " + idEquipo)
-
          cur = mysql.connection.cursor()
          cur.execute("""
                     INSERT INTO incidencia (
@@ -68,9 +65,6 @@ def add_incidencia():
                     )
          mysql.connection.commit()
          flash("Incidencia Agregada Corectamante")
-                
-
-
     return redirect(url_for('equipo.Equipo'))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
@@ -81,7 +75,7 @@ def delete_incidencia(id):
     flash("Incidencia eliminada correctamente")
     return redirect(url_for("incidencia.Incidencia"))
 
-@incidencia.route("/incidencia/edit_incidencia/<id>", methods=["POST"])
+@incidencia.route("/incidencia/edit_incidencia/<id>", methods=["GET", "POST"])
 def edit_incidencia(id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -90,8 +84,28 @@ def edit_incidencia(id):
             WHERE incidencia.idIncidencia = %s
                 """, (id,))
     incidencia = cur.fetchone()
-    
+    return render_template("edit_incidencia.html", incidencia=incidencia)
+
      
+@incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
+def update_incidencia(id):
+   nombreIncidencia = request.form['nombreIncidencia'] 
+   ObservacionIncidencia = request.form['observacionIncidencia']
+   fechaIncidencia = request.form['fechaIncidencia']
+   
+   cur = mysql.connection.cursor()
+   cur.execute("""
+        UPDATE incidencia
+        SET nombreIncidencias = %s,
+            observacionIncidencias = %s,
+            fechaIncidencia = %s
+        WHERE idIncidencia = %s
+               """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
+   mysql.connection.commit()
+   flash("Incidencia actualizada correctamente")
+   return redirect(url_for("incidencia.Incidencia"))
+   
+
 
 def create_pdf(Incidencia):
     
