@@ -49,11 +49,10 @@
                 <tr>
                     <td onclick="sortTable(0)">Nombre Incidencia</td>
                     <td onclick="sortTable(1)">Observacion Incidencia</td>
-                    <td onclick="sortTable(2)">Acta</td>
-                    <td onclick="sortTable(3)">FechaIncidencia</td>
-                    <td onclick="sortTable(4)">Codigo Equipo</td>
-                    <td onclick="sortTable(5)">N° Serie</td>
-                    <td onclick="sortTable(6)">Nombre Equipo</td>
+                    <td onclick="sortTable(2)">FechaIncidencia</td>
+                    <td onclick="sortTable(3)">Codigo Equipo</td>
+                    <td onclick="sortTable(4)">N° Serie</td>
+                    <td onclick="sortTable(5)">Nombre Equipo</td>
                     <td onclick="sortTable(7)">Nombre Funcionario</td>
                     <td>Operations</td>
                 </tr>
@@ -64,7 +63,6 @@
                 <tr>
                     <td>{{incidencia.nombreIncidencia}}</td>
                     <td>{{incidencia.observacionIncidencia}}</td>
-                    <td><a href="/TODO" class="info-button">Acta</a></td>
                     <td>{{incidencia.fechaIncidencia}}</td>
                     <td>{{incidencia.cod_inventarioEquipo}}</td>
                     <td>{{incidencia.Num_serieEquipo}}</td>
@@ -72,7 +70,7 @@
                     <td>TODO</td>
                     <td>
                         <a href="/TODO" class="success-button">Editar</a>
-                        <a href="/TODO" class="delete-button">Eliminar</a>
+                        <a href="" class="delete-button">Eliminar</a>
                     </td>
                 </tr>
                 {% endfor %}

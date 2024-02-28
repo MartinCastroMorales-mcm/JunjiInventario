@@ -16,14 +16,30 @@ $(document).ready(function() {
 */
 console.log("jsLink")
 
-function showDiv(id="formulario") {
-let div = document.getElementById(id)
+function showDiv(id = "formulario") {
+  let div = document.getElementById(id)
   if (div.style.display === "none") {
     div.style.display = "block";
     return
   }
   div.style.display = "none"
   return
+}
+function showDivHideOthers(id = "formulario") {
+  let divs = {
+    "tabla-asignaciones": document.getElementById("tabla-asignaciones"),
+    "tabla-devoluciones": document.getElementById("tabla-devoluciones"),
+    "tabla-traslados": document.getElementById("tabla-traslados"),
+    "tabla-incidencias": document.getElementById("tabla-incidencias")
+  }
+  for (const [key, value] of Object.entries(divs)) {
+    if (key != id) {
+      value.style.display = "none"
+    }else {
+      value.style.display = "block"
+    }
+    
+  }
 }
 
 function openWindow(url) {
@@ -73,7 +89,7 @@ function sortTable(n) {
       rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
       switching = true;
       // Each time a switch is done, increase this count by 1:
-      switchcount ++;
+      switchcount++;
     } else {
       /* If no switching has been done AND the direction is "asc",
       set the direction to "desc" and run the while loop again. */

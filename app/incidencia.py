@@ -73,6 +73,26 @@ def add_incidencia():
 
     return redirect(url_for('equipo.Equipo'))
 
+@incidencia.route("/incidencia/delete_incidencia/<id>")
+def delete_incidencia(id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM incidencia WHERE idIncidencia = %s", (id,))
+    mysql.connection.commit()
+    flash("Incidencia eliminada correctamente")
+    return redirect(url_for("incidencia.Incidencia"))
+
+@incidencia.route("/incidencia/edit_incidencia/<id>", methods=["POST"])
+def edit_incidencia(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+            SELECT *
+            FROM incidencia
+            WHERE incidencia.idIncidencia = %s
+                """, (id,))
+    incidencia = cur.fetchone()
+    
+     
+
 def create_pdf(Incidencia):
     
     class PDF(FPDF):
@@ -103,7 +123,7 @@ def create_pdf(Incidencia):
      
     pdf = PDF('P', 'mm', 'A4')
     pdf.add_page()
-    
+
 
     nombrePdf = "incidencia_" + str(Incidencia['idIncidencia']) + ".pdf"
     pdf.output(nombrePdf)
