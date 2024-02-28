@@ -16,7 +16,6 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-
         {% endfor %}
         {% endif %}
         {% endwith %}
@@ -90,11 +89,7 @@
                     <br>
                     <button class="agregar-button"> Agregar</button>
             </form>
-
-
         </div>
-
-
     </div>
     <h2>Equipo</h2>
     <div style="overflow-x:auto;">
@@ -144,9 +139,12 @@
                     {% endif %}
 
                     <td>
-                        <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button">Editar</a>
-                        <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button">Eliminar</a>
-                        <a href="/equipo_detalles" class="info-button">Detalles</a>
+                        <div>
+                            <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button">Editar</a>
+                            <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button">Eliminar</a>
+                            <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button">Detalles</a>
+                            <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button">Incidencia</a>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

@@ -2,7 +2,61 @@
 {% extends "layout.html" %}
 {% block body %}
 <h1>En contruccion</h1>
-
+<table id="posts">
+            <thead>
+                <tr>
+                    <td onclick="sortTable(0)">Cod. inventario</td>
+                    <td onclick="sortTable(1)">Num. serie</td>
+                    <td onclick="sortTable(2)">Observacion</td>
+                    <td onclick="sortTable(3)">Funcionario</td>
+                    <td onclick="sortTable(4)">Codigo Proveedor</td>
+                    <td onclick="sortTable(5)">Mac</td>
+                    <td onclick="sortTable(6)">Imei</td>
+                    <td onclick="sortTable(7)">Numero de Telefono</td>
+                    <td onclick="sortTable(8)">Tipo equipo</td>
+                    <td onclick="sortTable(9)">Estado equipo</td>
+                    <td onclick="sortTable(10)">Unidad</td>
+                    <td onclick="sortTable(11)">Nombre orden compra</td>
+                    <td onclick="sortTable(12)">Modelo</td>
+                </tr>
+            </thead>
+            <tbody id="myTableBody">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                <tr>
+                    <td>{{equipo.Cod_inventarioEquipo}}</td>
+                    <td>{{equipo.Num_serieEquipo}}</td>
+                    <td>{{equipo.ObservacionEquipo}}</td>
+                    <td>{{equipo.nombreFuncionario}}</td>
+                    <td>{{equipo.codigoproveedor_equipo}}</td>
+                    <td>{{equipo.macEquipo}}</td>
+                    <td>{{equipo.imeiEquipo}}</td>
+                    <td>{{equipo.numerotelefonicoEquipo}}</td>
+                    <td>{{equipo.nombreidTipoequipo}}</td>
+                    <td>{{equipo.nombreEstado_equipo}}</td>
+                    <td>{{equipo.nombreUnidad}}</td>
+                    <td>{{equipo.nombreOrden_compra}}</td>
+                    <td>{{equipo.nombreModeloequipo}}</td>
+                </tr>
+            </tbody>
+        </table>
+<div>
+    <button class="nav-button" onclick="showDiv('tabla-asignaciones')">Asignaciones</button>
+    <button class="nav-button" onclick="showDiv('tabla-devoluciones')">Devoluciones</button>
+    <button class="nav-button" onclick="showDiv('tabla-traslados')">Traslados</button>
+    <button class="nav-button" onclick="showDiv('tabla-incidencias')">Incidencias</button>
+</div>
+<div id="tabla-asignaciones" style="display: none;">
+    <p>Asignaciones</p>
+</div>
+<div id="tabla-devoluciones" style="display: none;">
+    <p>Devoluciones</p>
+</div>
+<div id="tabla-traslados" style="display: none;">
+    <p>Traslados</p>
+</div>
+<div id="tabla-incidencias" style="display: none;">
+    <p>Incidencias</p>
+</div>
 <table id="posts">
     <thead>
         <tr>

@@ -16,8 +16,8 @@ $(document).ready(function() {
 */
 console.log("jsLink")
 
-function showDiv() {
-let div = document.getElementById("formulario")
+function showDiv(id="formulario") {
+let div = document.getElementById(id)
   if (div.style.display === "none") {
     div.style.display = "block";
     return
