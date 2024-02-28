@@ -96,8 +96,8 @@ def update_incidencia(id):
    cur = mysql.connection.cursor()
    cur.execute("""
         UPDATE incidencia
-        SET nombreIncidencias = %s,
-            observacionIncidencias = %s,
+        SET nombreIncidencia = %s,
+            observacionIncidencia = %s,
             fechaIncidencia = %s
         WHERE idIncidencia = %s
                """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
