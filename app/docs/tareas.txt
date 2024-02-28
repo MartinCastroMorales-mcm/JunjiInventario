@@ -10,25 +10,15 @@ La asignacion, la unidad de la asignacion es
 la unidad del funcionario no la unidad donde se encuentre
 
 TODO:
-        agregar funcionario a equipos, OK
         Boton detalles para equipo
-                (informacion, observacion, asignacion, devolucion, traslado),
-        PRO 
-                agregar pestaña traslado, OK POR AHORA
-        (
-                tabla OK
-                add, edit delete OK
-                se deben poder añadir n equipos en cada traslacion OK
-                tabla de traslacion OK
-                metodo create_traslado tiene un error OK
-
-
-        )
-        OK agregar boton de traslados
-        OK 80% generar pdfs de asignacion, devolucion y traslacion,
-        OK renombrar ubicacion -> unidad, OK
-        OK paginacion,
-        OK boton de llamar formulario,
+                (informacion, observacion, asignacion, devolucion, traslado, Incidencias),
         La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
         
 
+        Pestaña de Incidencias (
+                Edit Incidencias
+                Eliminar Incidencias
+                pdf? NO
+        )
+
+        
