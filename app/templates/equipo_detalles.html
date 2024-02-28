@@ -3,7 +3,7 @@
 {% block body %}
 <h1>En contruccion</h1>
 
-<table>
+<table id="posts">
     <thead>
         <tr>
             <th>Fecha</th>
@@ -19,7 +19,9 @@
         <tr>
             <td>evento.fecha</td>
             <td>evento.tipo</td>
+            <td>evento.</td>
         </tr>
+        {% endfor %}
     </tbody>
 </table>
 {% endblock %}

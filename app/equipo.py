@@ -163,7 +163,13 @@ def delete_equipo(id):
 
 @equipo.route('/mostrar_asociados_traslado/<idTraslado>')
 def mostrar_asociados_traslado(idTraslado):
+    page = 1
+    perpage = 200
+    offset = (page-1) * perpage
     cur = mysql.connection.cursor()
+    cur.execute('SELECT COUNT(*) FROM EQUIPO')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
     cur.execute(""" 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
@@ -177,7 +183,8 @@ def mostrar_asociados_traslado(idTraslado):
     INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     INNER JOIN traslacion tras on tras.idEquipo = e.idEquipo
     WHERE tras.idTraslado = %s
-    """, (idTraslado,))
+    LIMIT %s OFFSET %s
+    """, (idTraslado, perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM tipo_equipo')
     tipoe_data = cur.fetchall()
@@ -191,11 +198,21 @@ def mostrar_asociados_traslado(idTraslado):
     modeloe_data = cur.fetchall()  
 
     return render_template('equipo.html', equipo = data, tipo_equipo = tipoe_data, estado_equipo = estadoe_data, orden_compra = ordenc_data, 
-    Unidad = ubi_data, modelo_equipo = modeloe_data)
+    Unidad = ubi_data, modelo_equipo = modeloe_data,
+    page=page, lastpage= False)
+
 
 @equipo.route('/mostrar_asociados_unidad/<idUnidad>')
-def mostrar_asociados_unidad(idUnidad):
+@equipo.route('/mostrar_asociados_unidad/<idUnidad>/<page>')
+def mostrar_asociados_unidad(idUnidad, page=1):
+    page = int(page)
+    page = 1
+    perpage = 200#getPerPage()
+    offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
+    cur.execute('SELECT COUNT(*) FROM EQUIPO')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
     cur.execute(""" 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
@@ -208,7 +225,8 @@ def mostrar_asociados_unidad(idUnidad):
     INNER JOIN asignacion a on a.idEquipo = e.idEquipo
     INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     WHERE e.idUnidad = %s
-    """, (idUnidad,))
+    LIMIT %s OFFSET %s
+    """, (idUnidad,perpage, offset, ))
     data = cur.fetchall()
     cur.execute('SELECT * FROM tipo_equipo')
     tipoe_data = cur.fetchall()
@@ -222,7 +240,8 @@ def mostrar_asociados_unidad(idUnidad):
     modeloe_data = cur.fetchall()  
 
     return render_template('equipo.html', equipo = data, tipo_equipo = tipoe_data, estado_equipo = estadoe_data, orden_compra = ordenc_data, 
-    Unidad = ubi_data, modelo_equipo = modeloe_data)
+    Unidad = ubi_data, modelo_equipo = modeloe_data,
+    page=page, lastpage= False)
     
 @equipo.route("/equipo_detalles")
 def equipo_detalles():
