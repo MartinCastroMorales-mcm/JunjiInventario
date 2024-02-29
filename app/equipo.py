@@ -26,8 +26,8 @@ def Equipo(page=1):
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
-    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
+    LEFT OUTER JOIN asignacion a on a.idEquipo = e.idEquipo
+    LEFT OUTER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     LIMIT {} OFFSET {}
     """.format(
             perpage, offset

@@ -18,7 +18,7 @@ TODO:
         Pestaña de Incidencias (
                 Edit Incidencias
                 Eliminar Incidencias
-                pdf? NO
+                pdf? subir como usuario
         )
 
-        
+        añadir modelo a tabla traslado
