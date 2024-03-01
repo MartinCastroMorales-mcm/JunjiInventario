@@ -15,12 +15,12 @@ TODO:
         La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
         
 
-        Pestaña de Incidencias (
+        OK Pestaña de Incidencias (
                 Edit Incidencias
                 Eliminar Incidencias
                 pdf? subir como usuario
         )
 
         Todos las pestañas de formularios deben tener un boton volver.
-        boton de opciones en equipo despliega los otros equipos
+        OK boton de opciones en equipo despliega los otros botones
         OK añadir modelo a tabla traslado
