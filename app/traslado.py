@@ -330,10 +330,10 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     for equipo in equipos:
         i += 1
         TABLE_DATA = TABLE_DATA + ((str((i)), equipo['nombreidTipoequipo'],
+                        equipo['nombreModeloequipo'],
                         str(equipo['Num_serieEquipo']),
                         str(equipo['Cod_inventarioEquipo']),
-                        equipo['nombreEstado_equipo'],
-                        equipo['nombreModeloequipo']
+                        equipo['nombreEstado_equipo']
                         ),)
     
     #print("#$$$$$$#############")

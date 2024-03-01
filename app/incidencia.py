@@ -4,7 +4,9 @@ from fpdf import FPDF
 from funciones import getPerPage
 import os
 import shutil 
+from werkzeug.utils import secure_filename
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
+PDFS_INCIDENCIAS = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
 
 
 @incidencia.route("/incidencia")
@@ -42,6 +44,7 @@ def incidencia_form(idEquipo):
                 WHERE e.idEquipo = idEquipo
                 """)
     equipo = cur.fetchone()
+    flash("se subio correctamente")
     return render_template("add_incidencia.html", equipo=equipo)
 
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
@@ -65,7 +68,14 @@ def add_incidencia():
                     )
          mysql.connection.commit()
          flash("Incidencia Agregada Corectamante")
-    return redirect(url_for('equipo.Equipo'))
+         idIncidencia = cur.lastrowid 
+         cur.execute("""
+                    SELECT *
+                     FROM incidencia i
+                     WHERE i.idIncidencia = %s
+                     """, (idIncidencia,))
+         obj_incidencia = cur.fetchone()
+    return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
 def delete_incidencia(id):
@@ -92,6 +102,7 @@ def update_incidencia(id):
    nombreIncidencia = request.form['nombreIncidencia'] 
    ObservacionIncidencia = request.form['observacionIncidencia']
    fechaIncidencia = request.form['fechaIncidencia']
+
    
    cur = mysql.connection.cursor()
    cur.execute("""
@@ -104,47 +115,115 @@ def update_incidencia(id):
    mysql.connection.commit()
    flash("Incidencia actualizada correctamente")
    return redirect(url_for("incidencia.Incidencia"))
-   
+ 
+ALLOWED_EXTENSIONS = {'pdf'}
 
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def create_pdf(Incidencia):
+@incidencia.route("/incidencia/adjuntar_pdf/<id>", methods=["POST"])
+def adjuntar_pdf(id):
+    #guardar pdf
+    file = request.files["file"]
+    dir = PDFS_INCIDENCIAS
+    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
+    try:
+        os.mkdir(os.path.join(dir, carpeta_incidencias))
+    except:
+        pass
+    fileName = file.filename
+    file.save(os.path.join(
+        carpeta_incidencias,
+        secure_filename(fileName)
+    ))
     
-    class PDF(FPDF):
-        def header(self):
-            #logo
-            #imageUrl = url_for('static', filename='img/logo_junji.png')
-            #print(imageUrl)
-            self.image('logo_junji.png', 10, 8, 25)
-            #font
-            self.set_font('times', 'B', 12)
-            self.set_text_color(170,170,170)
-            #Title
-            self.cell(0, 30, '', border=False, ln=1, align='L')
-            self.cell(0, 5, 'JUNTA NACIONAL', border=False, ln=1, align='L')
-            self.cell(0, 5, 'INFANTILES', border=False, ln=1, align='L')
-            self.cell(0, 5, 'Unidad de Inventarios', border=False, ln=1, align='L')
-            #line break
-            self.ln(10)
+    #obtener incidencia
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                    SELECT *
+                     FROM incidencia i
+                     WHERE i.idIncidencia = %s
+                """, (id,))
+    obj_incidencia = cur.fetchone()
+    #redirigir a si add_pdf_incidencia
+    flash("se subio correctamente")
+    return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
+
+@incidencia.route("/incidencia/listar_pdf/<id>")
+def listar_pdf(id):
+    #verificar la existencia de la carpeta incidencia
+    try:
+        dir = PDFS_INCIDENCIAS
+        carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
+        if(not os.path.exists(carpeta_incidencias)):
+            return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=())
+
         
-        def footer(self):
-            self.set_y(-30)
-            self.set_font('times', 'B', 12)
-            self.set_text_color(170,170,170)
-            self.cell(0,0, "", ln=1)
-            self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
-            self.cell(0,12, "www.junji.cl", ln=1)
+    except:
+        flash("ERROR")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    #obtener un listado de los nombres de la carpeta
+    #generar las tuplas tal que se pueda abrir en otra ventana
+    pdfTupla = ()
+    for fileName in os.listdir(carpeta_incidencias):
+        print(fileName)
+        if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
+            pdfTupla = pdfTupla + (fileName,)
+    print(pdfTupla)
+    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=pdfTupla)
+            
+@incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
+def mostrar_pdf(id, nombrePdf):
+    try:
+        nombrePdf = nombrePdf
+        dir = PDFS_INCIDENCIAS
+        carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
+        file = os.path.join(carpeta_incidencias, nombrePdf)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("no se encontro pdf")
+        return redirect(url_for("insicencia.Incidencia"))
+#def create_pdf(Incidencia):
+    
+    #class PDF(FPDF):
+        #def header(self):
+            ##logo
+            ##imageUrl = url_for('static', filename='img/logo_junji.png')
+            ##print(imageUrl)
+            #self.image('logo_junji.png', 10, 8, 25)
+            ##font
+            #self.set_font('times', 'B', 12)
+            #self.set_text_color(170,170,170)
+            ##Title
+            #self.cell(0, 30, '', border=False, ln=1, align='L')
+            #self.cell(0, 5, 'JUNTA NACIONAL', border=False, ln=1, align='L')
+            #self.cell(0, 5, 'INFANTILES', border=False, ln=1, align='L')
+            #self.cell(0, 5, 'Unidad de Inventarios', border=False, ln=1, align='L')
+            ##line break
+            #self.ln(10)
+        
+        #def footer(self):
+            #self.set_y(-30)
+            #self.set_font('times', 'B', 12)
+            #self.set_text_color(170,170,170)
+            #self.cell(0,0, "", ln=1)
+            #self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
+            #self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
+            #self.cell(0,12, "www.junji.cl", ln=1)
      
-    pdf = PDF('P', 'mm', 'A4')
-    pdf.add_page()
+    #pdf = PDF('P', 'mm', 'A4')
+    #pdf.add_page()
 
 
-    nombrePdf = "incidencia_" + str(Incidencia['idIncidencia']) + ".pdf"
-    pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "app/pdf")
-    return
+    #nombrePdf = "incidencia_" + str(Incidencia['idIncidencia']) + ".pdf"
+    #pdf.output(nombrePdf)
+    #shutil.move(nombrePdf, "app/pdf")
+    #return
 
-@incidencia.route("/incidencia/mostrar_pdf/<id>")
-def mostrar_pdf(id):
-    pass
+#@incidencia.route("/incidencia/mostrar_pdf/<id>")
+#def mostrar_pdf(id):
+    #pass
     

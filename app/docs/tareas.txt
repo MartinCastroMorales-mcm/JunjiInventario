@@ -21,4 +21,5 @@ TODO:
                 pdf? subir como usuario
         )
 
-        añadir modelo a tabla traslado
+        Todos las pestañas de formularios deben tener un boton volver.
+        OK añadir modelo a tabla traslado

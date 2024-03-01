@@ -1,6 +1,3 @@
-
-{% extends "layout.html" %}
-{% block body %}
 <div class="col-md-5">
     <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
     {% with messages = get_flashed_messages() %}
@@ -20,23 +17,25 @@
     <!-- Se termina la seccion de errores -->
 
 </div>
+{% extends "layout.html" %}
+{% block body %}
+{#Aqui van todos los pdfs agregados#}
+<div>
+<p>Lista en Construccion</p>
+<ul>
+    <li></li>
+</ul>
+</div>
 
 <div class="row">
     <div class="col-md-4 offset-md-4">
-        <h2>Añadiendo una Incidencia un Equipo</h2>
         <div class="card card-body" id="formulario" style="display: bloc;">
-            <form action="/incidencia/add_incidencia" method="POST" class="mi-formulario">
+            <p>idIncidencia: {{incidencia.idIncidencia}}</p>
+            <form action="/incidencia/adjuntar_pdf/{{incidencia.idIncidencia}}" method="POST" class="mi-formulario"
+                    enctype="multipart/form-data">
                 <div class="form-group">
-                    <label for="nombreIncidencia">Nombre Incidencia:</label>
-                    <input type="text" class="form-control" name="nombreIncidencia" placeholder="Nombre Incidencia">
-                    <br>
-                    <label for="observacionIncidencia">Observacion: </label>
-                    <textarea id="observacionIncidencia" name="observacionIncidencia" rows="2" cols="50"></textarea>
-                    <br>
-                    <label for="fechaIncidencia">Fecha Incidencia: </label>
-                    <input type="date" class="form-control" name="fechaIncidencia">
-                    <br>
-                    <input style="display: none;" value="{{equipo.idEquipo}}" name="idEquipo" />
+                    <label for="file">Añadir pdf</label>
+                    <input type="file" name="file"/>
                     {# se nesesita una forma eficiente de añadir el equipo#}
                     <button class="agregar-button"> Agregar</button>
                 </div>
