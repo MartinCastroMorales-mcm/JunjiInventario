@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
 
-
+#pestaña principal de incidencias
 @incidencia.route("/incidencia")
 @incidencia.route("/incidencia/<page>")
 def Incidencia(page = 1):
@@ -35,6 +35,7 @@ def Incidencia(page = 1):
     return render_template("incidencia.html", Incidencia=data,
                            page=page, lastpage= page < (total/perpage)+1)
 
+#form que se accede desde equipo para crear incidencia
 @incidencia.route("/incidencia/form/<idEquipo>")
 def incidencia_form(idEquipo):
     cur = mysql.connection.cursor()
@@ -47,6 +48,7 @@ def incidencia_form(idEquipo):
     flash("se subio correctamente")
     return render_template("add_incidencia.html", equipo=equipo)
 
+#recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
 def add_incidencia():
     if request.method == "POST":
@@ -172,14 +174,24 @@ def listar_pdf(id):
         print(fileName)
         if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
             pdfTupla = pdfTupla + (fileName,)
-    print(pdfTupla)
-    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=pdfTupla)
+    #print(pdfTupla)
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM equipo e
+                WHERE e.idEquipo = %s
+                """, (id,))
+    data_equipo = cur.fetchone()
+
+
+    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=pdfTupla, equipo=data_equipo)
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
 def mostrar_pdf(id, nombrePdf):
     try:
         nombrePdf = nombrePdf
         dir = PDFS_INCIDENCIAS
+        #busca la carpeta de la incidencia asociada a la id
         carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
         file = os.path.join(carpeta_incidencias, nombrePdf)
         return send_file(file, as_attachment=True)

@@ -2,7 +2,7 @@
 -Agregar Marca a Equipo (foranea de modelo)
 -Agregar Equipo en asignacion y en devolucion
 -Editar Edit tipo_adquisicion 
--Falta tabla asignacion
+-Falta tabla asignacio
 
 
 
@@ -22,4 +22,5 @@ TODO:
         )
 
         Todos las pestañas de formularios deben tener un boton volver.
+        boton de opciones en equipo despliega los otros equipos
         OK añadir modelo a tabla traslado

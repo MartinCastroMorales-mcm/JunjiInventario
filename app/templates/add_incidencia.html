@@ -20,6 +20,44 @@
     <!-- Se termina la seccion de errores -->
 
 </div>
+<table id="posts">
+            <thead>
+                <tr>
+                    <td>Cod. inventario</td>
+                    <td>Num. serie</td>
+                    <td>Observacion</td>
+                    <td>Funcionario</td>
+                    <td>Codigo Proveedor</td>
+                    <td>Mac</td>
+                    <td>Imei</td>
+                    <td>Numero de Telefono</td>
+                    <td>Tipo equipo</td>
+                    <td>Estado equipo</td>
+                    <td>Unidad</td>
+                    <td>Nombre orden compra</td>
+                    <td>Modelo</td>
+                </tr>
+            </thead>
+            <tbody id="">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                <tr>
+                    <td>{{equipo.Cod_inventarioEquipo}}</td>
+                    <td>{{equipo.Num_serieEquipo}}</td>
+                    <td>{{equipo.ObservacionEquipo}}</td>
+                    <td>{{equipo.nombreFuncionario}}</td>
+                    <td>{{equipo.codigoproveedor_equipo}}</td>
+                    <td>{{equipo.macEquipo}}</td>
+                    <td>{{equipo.imeiEquipo}}</td>
+                    <td>{{equipo.numerotelefonicoEquipo}}</td>
+                    <td>{{equipo.nombreidTipoequipo}}</td>
+                    <td>{{equipo.nombreEstado_equipo}}</td>
+                    <td>{{equipo.nombreUnidad}}</td>
+                    <td>{{equipo.nombreOrden_compra}}</td>
+                    <td>{{equipo.nombreModeloequipo}}</td>
+                </tr>
+            </tbody>
+        </table>
+<div>
 
 <div class="row">
     <div class="col-md-4 offset-md-4">

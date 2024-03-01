@@ -139,11 +139,15 @@
                     {% endif %}
 
                     <td>
-                        <div>
-                            <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button">Editar</a>
-                            <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button">Eliminar</a>
-                            <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button">Detalles</a>
-                            <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button">Incidencia</a>
+                        {#clase para tener un boton que despliega los otros botones #}
+                        <div class="dropdown">
+                            <button class="options-button">Opciones</button>
+                            <div class="dropdown-options">
+                                <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button" style="width: 90%;">Editar</a>
+                                <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button" style="width: 90%;">Eliminar</a>
+                                <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button" style="width: 90%;">Detalles</a>
+                                <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button" style="width: 90%;">Incidencia</a>
+                            </div>
                         </div>
                     </td>
                 </tr>

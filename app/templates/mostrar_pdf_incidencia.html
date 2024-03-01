@@ -26,10 +26,10 @@
         <button class="nav-button" onclick="showDiv()">Agregar PDF</button>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/incidencia/adjuntar_pdf/{{idIncidencia}}" method="POST" class="mi-formulario"
-                    enctype="multipart/form-data">
+                enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="file">Añadir pdf</label>
-                    <input type="file" name="file"/>
+                    <input type="file" name="file" />
                     {# se nesesita una forma eficiente de añadir el equipo#}
                     <button class="agregar-button"> Agregar</button>
                 </div>
@@ -37,26 +37,64 @@
         </div>
     </div>
     <br />
-    <h2>Documentos de Incidencia</h2>
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <td onclick="sortTable(0)">Nombre pdf</td>
-                    <td>Operations</td>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-                {% for documento in documentos %}
-                <tr>
-                    <td>{{documento}}</td>
-                    <td>
-                        <a href="/incidencia/mostrar_pdf/{{idIncidencia}}/{{documento}}"
-                            class="info-button">Abrir</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endblock %}
+    <table id="posts">
+        <thead>
+            <tr>
+                <td>Cod. inventario</td>
+                <td>Num. serie</td>
+                <td>Observacion</td>
+                <td>Funcionario</td>
+                <td>Codigo Proveedor</td>
+                <td>Mac</td>
+                <td>Imei</td>
+                <td>Numero de Telefono</td>
+                <td>Tipo equipo</td>
+                <td>Estado equipo</td>
+                <td>Unidad</td>
+                <td>Nombre orden compra</td>
+                <td>Modelo</td>
+            </tr>
+        </thead>
+        <tbody id="">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            <tr>
+                <td>{{equipo.Cod_inventarioEquipo}}</td>
+                <td>{{equipo.Num_serieEquipo}}</td>
+                <td>{{equipo.ObservacionEquipo}}</td>
+                <td>{{equipo.nombreFuncionario}}</td>
+                <td>{{equipo.codigoproveedor_equipo}}</td>
+                <td>{{equipo.macEquipo}}</td>
+                <td>{{equipo.imeiEquipo}}</td>
+                <td>{{equipo.numerotelefonicoEquipo}}</td>
+                <td>{{equipo.nombreidTipoequipo}}</td>
+                <td>{{equipo.nombreEstado_equipo}}</td>
+                <td>{{equipo.nombreUnidad}}</td>
+                <td>{{equipo.nombreOrden_compra}}</td>
+                <td>{{equipo.nombreModeloequipo}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <h2>Documentos de Incidencia</h2>
+        <div style="overflow-x:auto;">
+            <table id="posts">
+                <thead>
+                    <tr>
+                        <td onclick="sortTable(0)">Nombre pdf</td>
+                        <td>Operations</td>
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+                    <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                    {% for documento in documentos %}
+                    <tr>
+                        <td>{{documento}}</td>
+                        <td>
+                            <a href="/incidencia/mostrar_pdf/{{idIncidencia}}/{{documento}}"
+                                class="info-button">Abrir</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endblock %}
