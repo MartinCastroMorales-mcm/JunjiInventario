@@ -20,10 +20,11 @@ def Incidencia(page = 1):
         """
                 SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
                     i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo
+                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, me.nombreModeloEquipo
                 FROM incidencia i 
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
                 INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
+                INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
                 LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -45,7 +46,6 @@ def incidencia_form(idEquipo):
                 WHERE e.idEquipo = idEquipo
                 """)
     equipo = cur.fetchone()
-    flash("se subio correctamente")
     return render_template("add_incidencia.html", equipo=equipo)
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
@@ -156,16 +156,16 @@ def adjuntar_pdf(id):
 @incidencia.route("/incidencia/listar_pdf/<id>")
 def listar_pdf(id):
     #verificar la existencia de la carpeta incidencia
-    try:
-        dir = PDFS_INCIDENCIAS
-        carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
-        if(not os.path.exists(carpeta_incidencias)):
-            return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=())
+    #try:
+    dir = PDFS_INCIDENCIAS
+    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
+    if(not os.path.exists(carpeta_incidencias)):
+        return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=())
 
         
-    except:
-        flash("ERROR")
-        return redirect(url_for("incidencia.Incidencia"))
+    #except:
+        #flash("ERROR")
+        #return redirect(url_for("incidencia.Incidencia"))
 
     #obtener un listado de los nombres de la carpeta
     #generar las tuplas tal que se pueda abrir en otra ventana
