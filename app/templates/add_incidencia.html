@@ -1,3 +1,6 @@
+
+{% extends "layout.html" %}
+{% block body %}
 <div class="col-md-5">
     <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
     {% with messages = get_flashed_messages() %}
@@ -17,12 +20,48 @@
     <!-- Se termina la seccion de errores -->
 
 </div>
-{% extends "layout.html" %}
-{% block body %}
+<table id="posts">
+            <thead>
+                <tr>
+                    <td>Cod. inventario</td>
+                    <td>Num. serie</td>
+                    <td>Observacion</td>
+                    <td>Funcionario</td>
+                    <td>Codigo Proveedor</td>
+                    <td>Mac</td>
+                    <td>Imei</td>
+                    <td>Numero de Telefono</td>
+                    <td>Tipo equipo</td>
+                    <td>Estado equipo</td>
+                    <td>Unidad</td>
+                    <td>Nombre orden compra</td>
+                    <td>Modelo</td>
+                </tr>
+            </thead>
+            <tbody id="">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                <tr>
+                    <td>{{equipo.Cod_inventarioEquipo}}</td>
+                    <td>{{equipo.Num_serieEquipo}}</td>
+                    <td>{{equipo.ObservacionEquipo}}</td>
+                    <td>{{equipo.nombreFuncionario}}</td>
+                    <td>{{equipo.codigoproveedor_equipo}}</td>
+                    <td>{{equipo.macEquipo}}</td>
+                    <td>{{equipo.imeiEquipo}}</td>
+                    <td>{{equipo.numerotelefonicoEquipo}}</td>
+                    <td>{{equipo.nombreidTipoequipo}}</td>
+                    <td>{{equipo.nombreEstado_equipo}}</td>
+                    <td>{{equipo.nombreUnidad}}</td>
+                    <td>{{equipo.nombreOrden_compra}}</td>
+                    <td>{{equipo.nombreModeloequipo}}</td>
+                </tr>
+            </tbody>
+        </table>
+<div>
 
 <div class="row">
     <div class="col-md-4 offset-md-4">
-        <h1>Añadiendo una Incidencia al Equipo {{equipo.idEquipo}}</h1>
+        <h2>Añadiendo una Incidencia un Equipo</h2>
         <div class="card card-body" id="formulario" style="display: bloc;">
             <form action="/incidencia/add_incidencia" method="POST" class="mi-formulario">
                 <div class="form-group">
@@ -35,10 +74,11 @@
                     <label for="fechaIncidencia">Fecha Incidencia: </label>
                     <input type="date" class="form-control" name="fechaIncidencia">
                     <br>
-                    <input style="display: none;" value="{{equipo.idEquipo}}" name="idEquipo"/>
+                    <input style="display: none;" value="{{equipo.idEquipo}}" name="idEquipo" />
                     {# se nesesita una forma eficiente de añadir el equipo#}
                     <button class="agregar-button"> Agregar</button>
+                </div>
             </form>
         </div>
 
-            {% endblock %}
+        {% endblock %}

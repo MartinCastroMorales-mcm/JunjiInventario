@@ -26,8 +26,8 @@ def Equipo(page=1):
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
-    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
+    LEFT OUTER JOIN asignacion a on a.idEquipo = e.idEquipo
+    LEFT OUTER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     LIMIT {} OFFSET {}
     """.format(
             perpage, offset
@@ -333,6 +333,22 @@ def mostrar_asociados_unidad(idUnidad, page=1):
 @equipo.route("/equipo_detalles/<idEquipo>")
 def equipo_detalles(idEquipo):
     cur = mysql.connection.cursor()
+    #Como funcionaria con la asignacion cambiada ¿?
+    #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
+    #TODO: Revisar que hacer con las observaciones de Traslado
+    cur.execute("""
+                SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
+                    "Incidencia" as evento, i.observacionIncidencia as observacion,
+                    i.nombreIncidencia as nombre
+                FROM incidencia i
+                WHERE i.idEquipo = %s
+                UNION ALL
+                SELECT traslado.fechaTraslado, traslado.idTraslado, "Traslado",
+                    "Nombre", "observacion"
+                FROM traslado, traslacion
+                WHERE traslacion.idTraslado = traslado.idTraslado AND traslacion.idEquipo = %s
+                """, (idEquipo, idEquipo,))
+    data_eventos = cur.fetchall()
     cur.execute(
         """
                 SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
@@ -347,5 +363,28 @@ def equipo_detalles(idEquipo):
     INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     WHERE e.idEquipo = {}
                 """.format(idEquipo))
-    equipo = cur.fetchone()
-    return render_template("equipo_detalles.html", equipo=equipo)
+    data_equipo = cur.fetchone()
+    return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos)
+
+#
+    #cur.execute("""
+            #SELECT *
+            #FROM (
+                #SELECT *
+                #FROM asignacion
+                #WHERE asignacion.idEquipo = %s 
+            #)
+            #LEFT OUTER JOIN (
+                #SELECT *
+                #FROM devolucion
+                #WHERE devolucion.idEquipo = %s
+            #)
+            #LEFT OUTER JOIN (
+                #SELECT *
+                #FROM incidencia
+                #WHERE incidencia.idEquipo = %s
+            #)
+            #LEFT OUTER JOIN (
+
+            #)
+                #""")

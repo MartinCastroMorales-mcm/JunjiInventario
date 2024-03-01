@@ -240,6 +240,7 @@ def create_traslado(origen):
                         FROM equipo
                         INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
                         INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                        INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
                         WHERE equipo.idEquipo = %s
                         """, (idEquipo))
             equipoTupla = cur.fetchone()
@@ -276,6 +277,8 @@ def create_traslado(origen):
 
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
 
+    #se añade el encabezado y footer creando una clase PDF que hereda de FPDF y sobreescribe los
+    #metodos
     class PDF(FPDF):
         def header(self):
             #logo
@@ -314,17 +317,23 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
 
     titulo = "ACTA DE TRASLADO N°" + str(traslado['idTraslado']) 
     parrafo_1 = "En Concepción {} se procede al traslado de bienes JUNJI de registro inventario desde {} hasta {} el siguiente detalle: ".format(traslado['fechatraslado'], UnidadOrigen['nombreUnidad'], UnidadDestino['nombreUnidad'])
+    #encabezado de la tabla
     TABLE_DATA = (
-    ("N°", "Articulos", "Serie", "Código Inventario", "Estado"),
+    ("N°", "Articulos", "Serie", "Código Inventario", "Estado", "Modelo"),
     )
     #print("$$$$$$$$$$$$$$$$$$$$$$$$$")
     #print(equipos) 
     #contadores de estado
+    
+    #ingresa los datos de la tabla como una tupla, donde la primera tupla es el encabezado
+    i = 0
     for equipo in equipos:
-        TABLE_DATA = TABLE_DATA + ((str((equipo['idEquipo'])), equipo['nombreidTipoequipo'],
+        i += 1
+        TABLE_DATA = TABLE_DATA + ((str((i)), equipo['nombreidTipoequipo'],
+                        equipo['nombreModeloequipo'],
                         str(equipo['Num_serieEquipo']),
                         str(equipo['Cod_inventarioEquipo']),
-                        equipo['nombreEstado_equipo'],
+                        equipo['nombreEstado_equipo']
                         ),)
     
     #print("#$$$$$$#############")
@@ -341,12 +350,13 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             
     pdf.set_font('times', '', 12)
     pdf.multi_cell(0, 10, parrafo_1)
+    #crea una tabla en base a los datos anteriores
     with pdf.table() as table:
         for datarow in TABLE_DATA:
             row = table.row()
             for datum in datarow:
                 row.cell(datum)
-    parrafo_2 = "Se ecuentran X en Bien, Y Regular y Z Mal"
+    #parrafo_2 = "Se ecuentran X en Bien, Y Regular y Z Mal"
 
 
     #pdf.multi_cell(0,10,parrafo_2, ln=True)
@@ -360,6 +370,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     nombreEncargadoUnidadTI = "Nombre Encargado TI"
     rutMinistro = "Numero de RUT:"
     firma = "Firma"
+    #crea dos columnas una para el espacio de firma y otra para los nombres
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(nombreEncargado)
         cols.ln()
@@ -411,10 +422,13 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
+    #crear pdf con la id para diferenciar pdfs
     nombrePdf = "traslado" + "_" + str(traslado['idTraslado']) + ".pdf"
     pdf.output(nombrePdf)
     #print("test")
     #print(str(os.curdir)) 
+
+    #mover pdf a la carpeta
     shutil.move(nombrePdf, "app/pdf")
     return redirect(url_for('traslado.Traslado'))
 

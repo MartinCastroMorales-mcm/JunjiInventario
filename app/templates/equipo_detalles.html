@@ -5,22 +5,22 @@
 <table id="posts">
             <thead>
                 <tr>
-                    <td onclick="sortTable(0)">Cod. inventario</td>
-                    <td onclick="sortTable(1)">Num. serie</td>
-                    <td onclick="sortTable(2)">Observacion</td>
-                    <td onclick="sortTable(3)">Funcionario</td>
-                    <td onclick="sortTable(4)">Codigo Proveedor</td>
-                    <td onclick="sortTable(5)">Mac</td>
-                    <td onclick="sortTable(6)">Imei</td>
-                    <td onclick="sortTable(7)">Numero de Telefono</td>
-                    <td onclick="sortTable(8)">Tipo equipo</td>
-                    <td onclick="sortTable(9)">Estado equipo</td>
-                    <td onclick="sortTable(10)">Unidad</td>
-                    <td onclick="sortTable(11)">Nombre orden compra</td>
-                    <td onclick="sortTable(12)">Modelo</td>
+                    <td>Cod. inventario</td>
+                    <td>Num. serie</td>
+                    <td>Observacion</td>
+                    <td>Funcionario</td>
+                    <td>Codigo Proveedor</td>
+                    <td>Mac</td>
+                    <td>Imei</td>
+                    <td>Numero de Telefono</td>
+                    <td>Tipo equipo</td>
+                    <td>Estado equipo</td>
+                    <td>Unidad</td>
+                    <td>Nombre orden compra</td>
+                    <td>Modelo</td>
                 </tr>
             </thead>
-            <tbody id="myTableBody">
+            <tbody id="">
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 <tr>
                     <td>{{equipo.Cod_inventarioEquipo}}</td>
@@ -40,6 +40,7 @@
             </tbody>
         </table>
 <div>
+    {#
     <button class="nav-button" onclick="showDivHideOthers('tabla-asignaciones')">Asignaciones</button>
     <button class="nav-button" onclick="showDivHideOthers('tabla-devoluciones')">Devoluciones</button>
     <button class="nav-button" onclick="showDivHideOthers('tabla-traslados')">Traslados</button>
@@ -57,23 +58,48 @@
 <div id="tabla-incidencias" style="display: none;">
     <p>Incidencias</p>
 </div>
+#}
 <table id="posts">
     <thead>
         <tr>
-            <th>Fecha</th>
-            <th>Evento</th>
+            <th onclick="sortTable(0)">Fecha</th>
+            <th onclick="sortTable(1)">Evento</th>
+            <th onclick="sortTable(2)">Nombre</th>
+            <th onclick="sortTable(3)">Observacion</th>
             <th>Acta</th>
-            <th>Botones</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="myTableBody">
         {# Se deberian tener una tupla de Asignaciones, Devoluciones y Asignaciones todas con un inner join#}
         {# tenerlas por separado y despues ordenarlas en js por fecha#}
         {% for evento in eventos %}
         <tr>
-            <td>evento.fecha</td>
-            <td>evento.tipo</td>
-            <td>evento.</td>
+            <td>{{evento.fecha}}</td>
+            <td>{{evento.evento}}</td>
+            {% if evento.evento != "Traslado" %}
+                <td>{{evento.nombre}}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            {% if evento.evento != "Traslado" %}
+            <td>{{evento.observacion}}</td>
+            {% else %}
+            <td></td>
+            {% endif%}
+            <td> 
+                {% if evento.evento == "Incidencia" %}
+                    <a href="/incidencia/listar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Acta</a>
+                {% endif %}
+                {% if evento.evento == "Traslado" %}
+                    <a href="/traslado/mostrar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Detalles</a>
+                {% endif %}
+                {% if evento.evento == "asignacion" %}
+                    <a href="TODO" class="info-button" style="width: 90%;">Detalles</a>
+                {% endif %}
+                {% if evento.evento == "devolucion" %}
+                    <a href="TODO" class="info-button" style="width: 90%;">Detalles</a>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
