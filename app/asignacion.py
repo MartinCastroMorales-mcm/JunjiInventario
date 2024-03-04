@@ -53,51 +53,6 @@ def Asignacion(page=1):
 
 
 
-
-@asignacion.route("/asignacion/add_asignacion", methods=["GET","POST"])
-def add_asignacion():
-    if request.method == "POST":
-        tipoEquipo = request.form["idasignacion"]  
-        fechaasignacion = request.form["fechaasignacion"]
-        observacionasignacion = request.form["observacionAsignacion"]
-        rutaactaasignacion = request.form["rutaactaasignacion"]
-        Activoasignacion = request.form["Activoasignacion"]
-        rutFuncionario = request.form["rutFuncionario"]
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                "INSERT INTO asignacion (fecha_inicioAsignacion, observacionAsignacion, rutaactaAsignacion, ActivoAsignacion, rutFuncionario) VALUES (%s, %s, %s, %s, %s)",
-                (
-                    fechaasignacion,
-                    observacionasignacion,
-                    rutaactaasignacion,
-                    Activoasignacion,
-                    rutFuncionario
-                ),
-            )
-            mysql.connection.commit()
-            flash("Estado de equipo agregado correctamente")
-            return redirect(url_for("asignacion.Asignacion"))
-        except Exception as e:
-            flash(e.args[1])
-            return redirect(url_for("asignacion.Asignacion"))
-                SELECT *
-                FROM funcionario
-        """
-    )
-    data_funcionarios = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM asignacion")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
-    return render_template(
-        "asignacion.html",
-        asignacion=data,
-        funcionarios=data_funcionarios,
-        page=page,
-        lastpage=page < (total / perpage) + 1,
-    )
-
-
 @asignacion.route("/add_asignacion", methods=["POST"])
 def add_asignacion():
     if request.method == "POST":
@@ -110,13 +65,16 @@ def add_asignacion():
                     WHERE f.rutFuncionario = %s
                     """, (rutFuncionario,))
         funcionario = cur.fetchone()
-
         cur.execute("""
                     SELECT * 
                     FROM equipo e
                     WHERE e.idUnidad = %s
                     """, (funcionario['idUnidad']))
-
+        equipos_data = cur.fetchall()
+        cur.execute("""
+                    SELECT *
+                    
+                    """)
         return render_template("add_asignacion.html", )
 
 

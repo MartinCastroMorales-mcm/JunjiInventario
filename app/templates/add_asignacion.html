@@ -4,15 +4,7 @@
             <form action="/add_asignacion" method="POST" class="mi-formulario">
                 <div class="form-group">
 
-                    <label>Tipo Equipo</label>
-                    <select name="Tipo de Equipo" id="">
-                        <option value="">Seleccione el Tipo de Equipo</option>
-                        {% for te in tiposEquipos %}
-                        <option value="{{te.nombreidTipoequipo }}">{{te.nombreidTipoequipo}}</option>
-                        {% endfor %}
-                    </select>
                     <div>
-
                         <label for="fechaInicio"> Fecha de Inicio:</label>
                         <input type="date" name="fechaInicio" id="fechaInicio">
                          <script>
