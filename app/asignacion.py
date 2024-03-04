@@ -8,15 +8,15 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
-def Asignacion(page = 1):
+def Asignacion(page=1):
     page = int(page)
     perpage = getPerPage()
-    offset = (page-1) * perpage
+    offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
+    #para la tabla
     cur.execute(
         """ 
     SELECT  
-    	te.nombreidTipoequipo,
         a.fecha_inicioAsignacion,
         a.observacionAsignacion,
         a.rutaactaAsignacion,
@@ -24,98 +24,53 @@ def Asignacion(page = 1):
         d.fechaDevolucion
     FROM asignacion a
     INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
-    INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
-    INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
     INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
     LIMIT {} OFFSET {}
-        """.format(perpage, offset)
+        """.format(
+            perpage, offset
+        )
     )
     data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM asignacion')
+    #para el select de funcionarios
+    cur.execute(
+        """
+                SELECT *
+                FROM funcionario
+        """
+    )
+    data_funcionarios = cur.fetchall()
+    cur.execute("SELECT COUNT(*) FROM asignacion")
     total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    return render_template("asignacion.html", asignacion=data,
-        page=page, lastpage= page < (total/perpage)+1
-    )
-
-
-@asignacion.route("/try_add_asignacion")
-def try_add_asignacion():
-    cur = mysql.connection.cursor()
-    cur.execute(
-        """ 
-    SELECT  
-    	te.nombreidTipoequipo,
-        a.fecha_inicioAsignacion,
-        a.observacionAsignacion,
-        a.rutaactaAsignacion,
-        f.nombreFuncionario,
-        d.fechaDevolucion
-    FROM asignacion a
-    INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
-    INNER JOIN equipo eq on a.idEquipo = eq.idEquipo
-    INNER JOIN tipo_equipo te on eq.idTipo_Equipo = te.idTipo_equipo 
-    INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-        """
-    )
-
-    data = cur.fetchall()
-    cur.execute(
-        """
-        SELECT * 
-        FROM tipo_equipo te
-        ORDER BY te.nombreidTipoequipo
-                 """
-    )
-    tipos = cur.fetchall()
-    cur.execute(
-        """
-        SELECT 
-                f.rutFuncionario,
-                f.nombreFuncionario 
-        FROM funcionario f
-        ORDER BY f.nombreFuncionario
-                 """
-    )
-    funcionarios = cur.fetchall()
+    total = int(str(total).split(":")[1].split("}")[0])
     return render_template(
         "asignacion.html",
         asignacion=data,
-        agregar=True,
-        tiposEquipos=tipos,
-        funcionarios=funcionarios,
+        funcionarios=data_funcionarios,
+        page=page,
+        lastpage=page < (total / perpage) + 1,
     )
 
 
 @asignacion.route("/add_asignacion", methods=["POST"])
-def add_estado_equipo():
+def add_asignacion():
     if request.method == "POST":
-        # idasignacion = request.form['idasignacion']
-        tipoEquipo = request.form["fechaasignacion"]
-        fechaInicio = request.form["observacionasignacion"]
-        Observaciones = request.form["rutaactaasignacion"]
-        Acta = request.form["Activoasignacion"]
         rutFuncionario = request.form["rutFuncionario"]
-        idequipo = request.form["idequipo"]
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                "INSERT INTO asignacion (fecha_inicioAsignacion,ObservacionAsignacion,rutaactaAsignacion,ActivoAsignacion,rutFuncionario,idEquipo) VALUES (%s, %s,%s,%s,%s,%s)",
-                (
-                    fechaasignacion,
-                    observacionasignacion,
-                    rutaactaasignacion,
-                    Activoasignacion,
-                    rutFuncionario,
-                    idequipo,
-                ),
-            )
-            mysql.connection.commit()
-            flash("Estado de equipo agregado correctamente")
-            return redirect(url_for("asignacion.Asignacion"))
-        except Exception as e:
-            flash(e.args[1])
-            return redirect(url_for("asignacion.Asignacion"))
+        
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT *
+                    FROM funcionario f
+                    WHERE f.rutFuncionario = %s
+                    """, (rutFuncionario,))
+        funcionario = cur.fetchone()
+
+        cur.execute("""
+                    SELECT * 
+                    FROM equipo e
+                    WHERE e.idUnidad = %s
+                    """, (funcionario['idUnidad']))
+
+        return render_template("add_asignacion.html", )
 
 
 # enviar datos a vista editar
@@ -201,54 +156,56 @@ def delete_asignacion(id):
         flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
 
+
 @asignacion.route("/test")
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 
     class PDF(FPDF):
         def header(self):
-            #logo
-            #imageUrl = url_for('static', filename='img/logo_junji.png')
-            #print(imageUrl)
-            self.image('logo_junji.png', 10, 8, 25)
-            #font
-            self.set_font('times', 'B', 12)
-            self.set_text_color(170,170,170)
-            #Title
-            self.cell(0, 30, '', border=False, ln=1, align='L')
-            self.cell(0, 5, 'JUNTA NACIONAL', border=False, ln=1, align='L')
-            self.cell(0, 5, 'INFANTILES', border=False, ln=1, align='L')
-            self.cell(0, 5, 'Unidad de Inventarios', border=False, ln=1, align='L')
-            #line break
+            # logo
+            # imageUrl = url_for('static', filename='img/logo_junji.png')
+            # print(imageUrl)
+            self.image("logo_junji.png", 10, 8, 25)
+            # font
+            self.set_font("times", "B", 12)
+            self.set_text_color(170, 170, 170)
+            # Title
+            self.cell(0, 30, "", border=False, ln=1, align="L")
+            self.cell(0, 5, "JUNTA NACIONAL", border=False, ln=1, align="L")
+            self.cell(0, 5, "INFANTILES", border=False, ln=1, align="L")
+            self.cell(0, 5, "Unidad de Inventarios", border=False, ln=1, align="L")
+            # line break
             self.ln(10)
 
         def footer(self):
-                self.set_y(-30)
-                self.set_font('times', 'B', 12)
-                self.set_text_color(170,170,170)
-                self.cell(0,0, "", ln=1)
-                self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-                self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
-                self.cell(0,12, "www.junji.cl", ln=1)
-        
-    pdf = PDF('P', 'mm', 'A4')
+            self.set_y(-30)
+            self.set_font("times", "B", 12)
+            self.set_text_color(170, 170, 170)
+            self.cell(0, 0, "", ln=1)
+            self.cell(0, 0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
+            self.cell(
+                0, 12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1
+            )  # problema con el caracter ’
+            self.cell(0, 12, "www.junji.cl", ln=1)
+
+    pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA De Asignacion de Equipo Informatico N°" + str(1)
 
-    pdf.set_font('times', '', 20)
-    pdf.cell(0, 10, titulo, ln=True, align='C')
-    pdf.set_font('times', '', 12)
+    pdf.set_font("times", "", 20)
+    pdf.cell(0, 10, titulo, ln=True, align="C")
+    pdf.set_font("times", "", 12)
     presentacion1 = "Por el presente se hace entrega a: "
     presentacion2 = "Dependiente de la Unidad: "
     presentacion22 = "En la Fecha: "
     presentacion3 = "Del siguiente equipo computacional"
 
-    nombreFuncionario = Funcionario['nombreFuncionario'] 
-    nombreUnidad = Unidad['nombreUnidad']
-    fechaAsignacion = Asignacion['fecha_inicioAsignacion']
-
+    nombreFuncionario = Funcionario["nombreFuncionario"]
+    nombreUnidad = Unidad["nombreUnidad"]
+    fechaAsignacion = Asignacion["fecha_inicioAsignacion"]
 
     pdf.ln(10)
-    with pdf.text_columns(text_align='J', ncols=2, gutter=20) as cols:
+    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(presentacion1)
         cols.ln()
         cols.write(presentacion2)
@@ -265,24 +222,22 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         cols.ln()
         cols.write(fechaAsignacion)
 
-
-     
-
     pdf.ln(20)
     TABLE_DATA = (
         ("id", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
     )
     for equipo in Equipos:
-        id = str(equipo['idEquipo']) 
-        tipo_equipo = equipo['nombreidTipoEquipo']
-        marca = equipo['nombreMarcaEquipo']
-        modelo = equipo['nombreModeloEquipo']
-        num_serie = str(equipo['Num_serieEquipo']) 
-        num_inventario = str(equipo['Cod_inventarioEquipo']) 
+        id = str(equipo["idEquipo"])
+        tipo_equipo = equipo["nombreidTipoEquipo"]
+        marca = equipo["nombreMarcaEquipo"]
+        modelo = equipo["nombreModeloEquipo"]
+        num_serie = str(equipo["Num_serieEquipo"])
+        num_inventario = str(equipo["Cod_inventarioEquipo"])
 
-        TABLE_DATA = TABLE_DATA + ((id, tipo_equipo, marca, modelo, num_serie,
-                                    num_inventario),)
-    
+        TABLE_DATA = TABLE_DATA + (
+            (id, tipo_equipo, marca, modelo, num_serie, num_inventario),
+        )
+
     with pdf.table() as table:
         for datarow in TABLE_DATA:
             row = table.row()
@@ -331,10 +286,12 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-    nombrePdf = "asignacion_" + str(Funcionario['nombreFuncionario'] + "_" + str(Asignacion['fecha_inicioAsignaion']) + "_" + str(Asignacion['idAsignacion']))
+    nombrePdf = "asignacion_" + str(
+        Funcionario["nombreFuncionario"]
+        + "_"
+        + str(Asignacion["fecha_inicioAsignaion"])
+        + "_"
+        + str(Asignacion["idAsignacion"])
+    )
     pdf.output(nombrePdf)
     return redirect(url_for("asignacion.Asignacion"))
-
-
-
-         

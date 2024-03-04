@@ -10,7 +10,7 @@ La asignacion, la unidad de la asignacion es
 la unidad del funcionario no la unidad donde se encuentre
 
 TODO:
-        Boton detalles para equipo
+        50% Boton detalles para equipo
                 (informacion, observacion, asignacion, devolucion, traslado, Incidencias),
         La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
         
@@ -21,6 +21,6 @@ TODO:
                 pdf? subir como usuario
         )
 
-        Todos las pestañas de formularios deben tener un boton volver.
+        OK Todos las pestañas de formularios deben tener un boton volver.
         OK boton de opciones en equipo despliega los otros botones
         OK añadir modelo a tabla traslado
