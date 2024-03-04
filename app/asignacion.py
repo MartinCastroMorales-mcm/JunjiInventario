@@ -52,51 +52,6 @@ def Asignacion(page=1):
     )
 
 
-@asignacion.route("/try_add_asignacion")
-def try_add_asignacion():
-    cur = mysql.connection.cursor()
-    cur.execute(
-        """ 
-        SELECT  
-            te.nombreidTipoequipo,
-            a.fecha_inicioAsignacion,
-            a.observacionAsignacion,
-            a.rutaactaAsignacion,
-            f.nombreFuncionario,
-            d.fechaDevolucion
-        FROM asignacion a
-        INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-        INNER JOIN devolucion d ON a.idDevolucion = d.idDevolucion
-        INNER JOIN equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
-        INNER JOIN equipo eq ON eha.idEquipo = eq.idEquipo
-        INNER JOIN tipo_equipo te ON eq.idTipo_Equipo = te.idTipo_equipo
-        """
-    INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
-    INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-    LIMIT {} OFFSET {}
-        """.format(
-            perpage, offset
-        )
-    )
-    data = cur.fetchall()
-    #para el select de funcionarios
-    cur.execute(
-        """
-        SELECT * 
-        FROM tipo_equipo te
-        ORDER BY te.nombreidTipoequipo
-        """
-    )
-    tipos = cur.fetchall()
-    
-    return render_template(
-        "asignacion.html",
-        asignacion=data,
-        agregar=True,
-        tiposEquipos=tipos,
-        funcionarios=funcionarios
-    )
-
 
 
 @asignacion.route("/asignacion/add_asignacion", methods=["GET","POST"])
