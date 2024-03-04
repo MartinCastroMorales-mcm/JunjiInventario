@@ -66,20 +66,25 @@
                                 }
                             }
                         </script>
-                        
+                                <select name="nombreidTipoequipo" id="tipoEquipo">
+            <option value="">Seleccione el Tipo de Equipo</option>
+            {% for te in tiposEquipos %}
+            <option value="{{ te.nombreidTipoequipo }}">{{ te.nombreidTipoequipo }}</option>
+            {% endfor %}
+        </select>
                     -->
                     {# select con busqueda #}
                     <label>Tipo Equipo</label>
-                    <select name="Tipo de Equipo" id="">
+                    <select name="idasignacion" id="tipoEquipo">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for te in tiposEquipos %}
-                        <option value="{{te.nombreidTipoequipo }}">{{te.nombreidTipoequipo}}</option>
+                        <option value="{{ te.nombreidTipoequipo }}">{{ te.nombreidTipoequipo }}</option>
                         {% endfor %}
                     </select>
                     <div>
 
-                        <label for="fechaInicio"> Fecha de Inicio:</label>
-                        <input type="date" name="fechaInicio" id="fechaInicio">
+                        <label for="fechaasignacion"> Fecha de Inicio:</label>
+                        <input type="date" name="fechaasignacion" id="fechaasignacion">
                          <script>
                             date = new Date();
                             year = date.getFullYear();
@@ -90,19 +95,19 @@
                             }
                             formatedDate = year + "-" + month + "-" + day
                             //console.log(formatedDate)
-                            document.getElementById("fechaInicio")
+                            document.getElementById("fechaasignacion")
                                 .setAttribute("value", formatedDate);
                         </script>
                     </div>
-                    <br> 
+                    <br>
                     <div>
                         <label>Observaciones</label>
-                        <textarea id="observacionDevolucion" name="observacionDevolucion" rows="4" cols="50"></textarea>
+                        <textarea id="observacionasignacion" name="observacionasignacion" rows="4" cols="50"></textarea>
                     </div>
                     <br>
                     <div class="info-button">Acta</div>
                     <label>Funcionario</label>
-                    <select name="nombre_tipo_equipo" id="">
+                    <select name="rutFuncionario" id="">
                         <option value="">Seleccione el funcionario</option>
                         {% for f in funcionarios %}
                         <option value="{{ f.nombreFuncionario }}">{{f.nombreFuncionario}}</option>
@@ -129,7 +134,7 @@
                     <br />
                     <br />
                     <br />
-                    <button class="agregar-button" type="submit"> Agregar</button>
+                    <a href="/try_add_asignacion" class="info-button">Agregar</a>
                 </div>
             </form>
 
@@ -169,10 +174,10 @@
                         <td>{{asig.fechaDevolucion}}</td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/asignacion/edit_asignacion/{{asignacion.idAsignacion}}"
+                            <a href="/edit_asignacion/{{asig.idAsignacion}}"
                                 class="success-button">Editar</a>
                             <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                            <a href="/asignacion/asignacion/{{asignacion.idAsignacion}}"
+                            <a href="/delete_asignacion/{{asig.idAsignacion}}"
                                 class="delete-button">Eliminar</a>
                         </td>
                     </tr>
@@ -180,7 +185,6 @@
                     <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
-
-        {{ paginacion("asignacion", page, lastpage) }}
+            {{ paginacion("asignacion", page, lastpage) }}
 
             {% endblock %}
