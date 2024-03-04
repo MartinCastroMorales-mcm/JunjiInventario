@@ -70,14 +70,8 @@ def try_add_asignacion():
         INNER JOIN equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
         INNER JOIN equipo eq ON eha.idEquipo = eq.idEquipo
         INNER JOIN tipo_equipo te ON eq.idTipo_Equipo = te.idTipo_equipo
-        """
-    INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
-    INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
-    LIMIT {} OFFSET {}
-        """.format(
-            perpage, offset
-        )
-    )
+  """
+      )
     data = cur.fetchall()
     #para el select de funcionarios
     cur.execute(
@@ -94,7 +88,6 @@ def try_add_asignacion():
         asignacion=data,
         agregar=True,
         tiposEquipos=tipos,
-        funcionarios=funcionarios
     )
 
 
@@ -126,21 +119,6 @@ def add_asignacion():
         except Exception as e:
             flash(e.args[1])
             return redirect(url_for("asignacion.Asignacion"))
-                SELECT *
-                FROM funcionario
-        """
-    )
-    data_funcionarios = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM asignacion")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
-    return render_template(
-        "asignacion.html",
-        asignacion=data,
-        funcionarios=data_funcionarios,
-        page=page,
-        lastpage=page < (total / perpage) + 1,
-    )
 
 
 @asignacion.route("/add_asignacion", methods=["POST"])
