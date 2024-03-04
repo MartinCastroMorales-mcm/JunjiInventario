@@ -1,7 +1,9 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
+from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
+import os
+import shutil
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -9,6 +11,7 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
 def Asignacion(page=1):
+    
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
@@ -18,7 +21,6 @@ def Asignacion(page=1):
         """ 
     SELECT  
         a.idAsignacion,
-        te.nombreidTipoequipo,
         a.fecha_inicioAsignacion,
         a.observacionAsignacion,
         a.rutaactaAsignacion,
@@ -26,10 +28,8 @@ def Asignacion(page=1):
         d.fechaDevolucion
     FROM asignacion a
     INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
-    INNER JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
-    INNER JOIN Equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
-    INNER JOIN Equipo eq ON eha.idEquipo = eq.idEquipo
-    INNER JOIN Tipo_Equipo te ON eq.idTipo_Equipo = te.idTipo_equipo
+    LEFT JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
+
     LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -53,29 +53,25 @@ def Asignacion(page=1):
 
 
 
-@asignacion.route("/add_asignacion", methods=["POST"])
+@asignacion.route("/add_asignacion", methods=["GET"])
 def add_asignacion():
-    if request.method == "POST":
-        rutFuncionario = request.form["rutFuncionario"]
-        
-        cur = mysql.connection.cursor()
-        cur.execute("""
-                    SELECT *
-                    FROM funcionario f
-                    WHERE f.rutFuncionario = %s
-                    """, (rutFuncionario,))
-        funcionario = cur.fetchone()
-        cur.execute("""
-                    SELECT * 
-                    FROM equipo e
-                    WHERE e.idUnidad = %s
-                    """, (funcionario['idUnidad']))
-        equipos_data = cur.fetchall()
-        cur.execute("""
-                    SELECT *
-                    
-                    """)
-        return render_template("add_asignacion.html", )
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM funcionario f
+                """)
+    funcionarios_data = cur.fetchall()
+
+    cur.execute("""
+                SELECT * 
+                FROM equipo e
+                INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+                INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
+                INNER JOIN unidad u ON e.idUnidad = u.idUnidad
+                """)
+    equipos_data = cur.fetchall()
+    return render_template("add_asignacion.html",equipos=equipos_data,
+                            funcionarios=funcionarios_data )
 
 
 
@@ -86,23 +82,26 @@ def edit_asignacion(id):
         cur = mysql.connection.cursor()
         cur.execute(
             """ 
-        SELECT a.idAsignacion, a.fecha_inicioAsignacion, 
-                a.observacionAsignacion, a.rutaactaAsignacion , a.ActivoAsignacion, 
-                a.rutFuncionario, f.rutFuncionario, a.idEquipo, eq.idEquipo
+           SELECT  
+                a.idAsignacion,
+                a.fecha_inicioAsignacion,
+                a.observacionAsignacion,
+                a.rutaactaAsignacion,
+                f.nombreFuncionario,
+                d.fechaDevolucion
                 FROM asignacion a
-                INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-                INNER JOIN Equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
-                INNER JOIN Equipo eq ON eha.idEquipo = eq.idEquipo
+                INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+                LEFT JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
             WHERE idAsignacion = %s""",
             (id,),
         )
         data = cur.fetchall()
-        cur.execute("SELECT rutFuncionario FROM funcionario")
+        cur.execute("SELECT * FROM funcionario")
         f_data = cur.fetchall()
-        cur.execute("SELECT idEquipo FROM equipo")
+        cur.execute("SELECT * FROM equipo")
         eq_data = cur.fetchall()
         return render_template(
-            "editasignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
+            "editAsignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
         )
     except Exception as e:
         flash(e.args[1])
@@ -178,16 +177,15 @@ def delete_asignacion(id):
         flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
     
-@asignacion.route("/asignacion/create_asignacion/<rut>", methods=["POST"])
-def create_asignacion(rut):
+@asignacion.route("/asignacion/create_asignacion", methods=["POST"])
+def create_asignacion():
     if request.method == "POST":
         # Extraer datos del formulario
-        fecha_inicio_asignacion = request.form['fecha_inicio_asignacion']
-        observacion_asignacion = request.form['observacion_asignacion']
-        ruta_acta_asignacion = request.form['ruta_acta_asignacion']
-        activo_asignacion = request.form['activo_asignacion']
-        id_devolucion = request.form['id_devolucion']
-        rut=rut
+        fechaasignacion = request.form['fechaasignacion']
+        observacion = request.form['observacion']
+        #rutadocumento = request.form['']
+        #activo_asignacion = request.form['activo_asignacion']
+        rut=request.form['rut']
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -195,39 +193,67 @@ def create_asignacion(rut):
                 fecha_inicioAsignacion,
                 ObservacionAsignacion,
                 rutaactaAsignacion, 
-                ActivoAsignacion,
-                rutFuncionario,
-                idDevolucion
+                rutFuncionario
             )
-            VALUES (%s, %s, %s, %s, %s, %s)
-            """, (fecha_inicio_asignacion, observacion_asignacion, ruta_acta_asignacion, activo_asignacion, rut, id_devolucion))
+            VALUES (%s, %s, %s, %s)
+            """, (fechaasignacion, observacion, 'ruta', rut,))
         mysql.connection.commit()
 
         # Recuperar el ID de la asignación recién insertada
         asignacion_id = cur.lastrowid
 
         # Obtener la lista de equipos asignados desde el formulario
-        equipos = request.form.getlist('equipos[]')
+        equipos = request.form.getlist('asignaciones[]')
 
+        TuplaEquipos = ()
         # Iterar sobre los equipos y realizar las operaciones necesarias
         for equipo_id in equipos:
             # Insertar en la tabla Equipo_asignacion
             cur.execute("""
-                INSERT INTO equipo_asignacion (idEquipo, idAsignacion)
+                INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
                 VALUES (%s, %s)
-                """, (equipo_id, asignacion_id))
+                """, (str(asignacion_id),equipo_id))
             mysql.connection.commit()
+            cur.execute("""
+                        SELECT *
+                        FROM equipo
+                        INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
+                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                        INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
+                        WHERE equipo.idEquipo = %s
+                        """, (equipo_id,))
+            equipoTupla = cur.fetchone()
+            TuplaEquipos = TuplaEquipos + (equipoTupla,)
 
         flash("Asignación creada correctamente")
-        return redirect(url_for('traslado.Traslado'))
-    return redirect(url_for('traslado.Traslado'))
+        #agregar argumentos
+        cur.execute("""
+                    SELECT *
+                    FROM funcionario f
+                    WHERE f.rutFuncionario = %s
+                    """, (rut,))
+        Funcionario = cur.fetchone()
+        cur.execute("""
+                    SELECT *
+                    FROM Unidad u
+                    WHERE u.idUnidad = %s
+                    """, (Funcionario['idUnidad'],))
+        Unidad = cur.fetchone()
+        cur.execute("""
+                    SELECT *
+                    FROM asignacion a
+                    WHERE a.idAsignacion = %s
+                    """, (asignacion_id,))
+        Asignacion = cur.fetchone()
+
+
+        crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
+        return redirect(url_for('asignacion.Asignacion'))
+    return redirect(url_for('asignacion.Asignacion'))
 
 
 
-
-@asignacion.route("/test")
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
-
     class PDF(FPDF):
         def header(self):
             # logo
@@ -364,3 +390,13 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     pdf.output(nombrePdf)
     return redirect(url_for("asignacion.Asignacion"))
 
+@asignacion.route("/asignacion/mostrar_pdf/<id>")
+def mostrar_pdf(id):
+    try:
+        nombrePdf = "asignacion_" + str(id) + ".pdf"
+        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        file = os.path.join(dir, nombrePdf)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("no se encontro el pdf")
+        return redirect(url_for('asignacion.Asignacion'))

@@ -19,15 +19,13 @@ def Equipo(page=1):
     cur.execute(
         """ 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT OUTER JOIN asignacion a on a.idEquipo = e.idEquipo
-    LEFT OUTER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     LIMIT {} OFFSET {}
     """.format(
             perpage, offset
@@ -233,15 +231,13 @@ def mostrar_asociados_traslado(idTraslado):
     cur.execute(
         """ 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
-    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     INNER JOIN traslacion tras on tras.idEquipo = e.idEquipo
     WHERE tras.idTraslado = %s
     LIMIT %s OFFSET %s
@@ -287,15 +283,13 @@ def mostrar_asociados_unidad(idUnidad, page=1):
     cur.execute(
         """ 
     SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
-    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     WHERE e.idUnidad = %s
     LIMIT %s OFFSET %s
     """,
@@ -352,15 +346,13 @@ def equipo_detalles(idEquipo):
     cur.execute(
         """
                 SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN asignacion a on a.idEquipo = e.idEquipo
-    INNER JOIN funcionario f on f.rutfuncionario = a.rutfuncionario
     WHERE e.idEquipo = {}
                 """.format(idEquipo))
     data_equipo = cur.fetchone()

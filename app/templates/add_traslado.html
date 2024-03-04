@@ -77,11 +77,7 @@
                 <thead>
                     <tr>
 
-                        <td>Tipo Equipo
-                            <br />
-                            <a href="/traslado/ASC" class="text-sort">ASC</a>
-                            <a href="/traslado/DESC" class="text-sort">DESC</a>
-                        </td>
+                        <td>Tipo Equipo</td>
                         <td>Codigo Inventario</td>
                         <td>N° Serie</td>
                         <td>Codigo Proovedor</td>
@@ -90,7 +86,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for eq in equipo %}
+                    {% for eq in equipos %}
                     <tr>
                         <td>{{eq.nombreidTipoequipo}}</td>
                         <td>{{eq.Cod_inventarioEquipo}}</td>

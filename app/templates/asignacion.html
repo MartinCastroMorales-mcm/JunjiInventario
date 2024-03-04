@@ -22,23 +22,7 @@
         En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
         y se muestra el formulario para agregar un item.
         #}
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/add_asignacion" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <label>Funcionario</label>
-                    <select name="rutFuncionario" id="">
-                        <option value="">Seleccione el funcionario</option>
-                        {% for f in funcionarios %}
-                        <option value="{{ f.rutFuncionario }}">{{f.nombreFuncionario}}</option>
-                        {% endfor %}
-                    </select>
-                    <button class="agregar-button" type="submit"> Agregar</button>
-                </div>
-            </form>
-
-
-        </div>
+        <a href="/add_asignacion" class="nav-button">Crear Asignacion</a>
 
     </div>
     <h2>Asignaciones</h2>
@@ -51,9 +35,8 @@
                 <thead>
                     <tr>
 
-                        <td onclick="sortTable(0)">NombreTipoEquipo</td>
-                        <td onclick="sortTable(1)">Fecha Inicio</td>
-                        <td onclick="sortTable(2)">Observacion</td>
+                        <td onclick="sortTable(0)">Fecha Inicio</td>
+                        <td onclick="sortTable(1)">Observacion</td>
                         <td>Acta</td>
                         <td onclick="sortTable(3)">nombreFuncionario</td>
                         <td onclick="sortTable(4)">fechaDevolucion</td>
@@ -65,16 +48,17 @@
                     {% for asig in asignacion %}
                     <tr>
                         <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                        <td>{{asig.nombreidTipoequipo}}</td>
                         <td>{{asig.fecha_inicioAsignacion}}</td>
                         <td>{{asig.observacionAsignacion}}</td>
-                        <td>{{asig.rutaactaAsignacion}}</td>
+                        <td>
+                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}" class="info-button">Acta</a>
+                        </td>
                         <td>{{asig.nombreFuncionario}}</td>
                         <td>{{asig.fechaDevolucion}}</td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/edit_asignacion/{{asig.idAsignacion}}"
-                                class="success-button">Editar</a>
+                            <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}" class="success-button">Editar</a>
+
                             <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
                             <a href="/delete_asignacion/{{asig.idAsignacion}}"
                                 class="delete-button">Eliminar</a>
