@@ -41,38 +41,6 @@ def Traslado(page = 1):
                            page=page, lastpage= page < (total/perpage)+1)
 
 
-@traslado.route("/try_add_traslado")
-def try_add_traslado():
-    cur = mysql.connection.cursor()
-    cur.execute(
-        """
-                SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
-                    origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
-                FROM traslado t
-                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
-                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-        """
-    )
-
-    data = cur.fetchall()
-    cur.execute(
-        """
-        SELECT * 
-        FROM unidad u
-        ORDER BY u.nombreUnidad
-                 """
-    )
-    unidades = cur.fetchall()
-    cur.execute(
-        """
-        SELECT * 
-        FROM equipo e
-        ORDER BY e.idEquipo
-                 """
-    )
-    equipos = cur.fetchall()
-
-    return render_template("traslado.html", traslado=data, agregar=True, unidades=unidades, equipo= equipos)
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])
 def add_traslado():
@@ -92,7 +60,7 @@ def add_traslado():
                         
                         """, (Origen,))
                     
-            equipo = cur.fetchall()
+            equipos_data = cur.fetchall()
             cur.execute(
                 """
                 SELECT * 
@@ -101,13 +69,13 @@ def add_traslado():
                         """
             )
             print("equipos: ")
-            print(equipo)
+            print(equipos_data)
             unidades = cur.fetchall()
-            if len(equipo) == 0:
-                equipo = []
+            if len(equipos_data) == 0:
+                equipos_data = []
                 flash("no hay equipos en esta Unidad")
                 return redirect(url_for('traslado.Traslado'))
-            return render_template("add_traslado.html", equipo=equipo, unidades=unidades)
+            return render_template("add_traslado.html", equipos=equipos_data, unidades=unidades)
 
         except Exception as e:
             flash(e.args[1])
