@@ -33,6 +33,7 @@
                         <option value="{{ f.rutFuncionario }}">{{f.nombreFuncionario}}</option>
                         {% endfor %}
                     </select>
+                    <a href="/try_add_asignacion" class="info-button">Agregar</a>
                     <button class="agregar-button" type="submit"> Agregar</button>
                 </div>
             </form>
@@ -73,10 +74,10 @@
                         <td>{{asig.fechaDevolucion}}</td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/asignacion/edit_asignacion/{{asignacion.idAsignacion}}"
+                            <a href="/edit_asignacion/{{asig.idAsignacion}}"
                                 class="success-button">Editar</a>
                             <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                            <a href="/asignacion/asignacion/{{asignacion.idAsignacion}}"
+                            <a href="/delete_asignacion/{{asig.idAsignacion}}"
                                 class="delete-button">Eliminar</a>
                         </td>
                     </tr>
@@ -84,7 +85,6 @@
                     <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
-
-        {{ paginacion("asignacion", page, lastpage) }}
+            {{ paginacion("asignacion", page, lastpage) }}
 
             {% endblock %}

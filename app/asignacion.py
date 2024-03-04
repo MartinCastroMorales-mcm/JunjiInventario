@@ -17,12 +17,60 @@ def Asignacion(page=1):
     cur.execute(
         """ 
     SELECT  
+        a.idAsignacion,
+        te.nombreidTipoequipo,
         a.fecha_inicioAsignacion,
         a.observacionAsignacion,
         a.rutaactaAsignacion,
         f.nombreFuncionario,
         d.fechaDevolucion
     FROM asignacion a
+    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    INNER JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
+    INNER JOIN Equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
+    INNER JOIN Equipo eq ON eha.idEquipo = eq.idEquipo
+    INNER JOIN Tipo_Equipo te ON eq.idTipo_Equipo = te.idTipo_equipo
+    LIMIT {} OFFSET {}
+        """.format(perpage, offset)
+    )
+    data = cur.fetchall()
+    cur.execute(
+        """
+        SELECT 
+            f.rutFuncionario,
+            f.nombreFuncionario 
+        FROM funcionario f
+        ORDER BY f.nombreFuncionario
+        """
+    )
+    funcionarios = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM asignacion')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    return render_template("asignacion.html",  funcionarios=funcionarios, asignacion=data,
+        page=page, lastpage= page < (total/perpage)+1
+    )
+
+
+@asignacion.route("/try_add_asignacion")
+def try_add_asignacion():
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """ 
+        SELECT  
+            te.nombreidTipoequipo,
+            a.fecha_inicioAsignacion,
+            a.observacionAsignacion,
+            a.rutaactaAsignacion,
+            f.nombreFuncionario,
+            d.fechaDevolucion
+        FROM asignacion a
+        INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+        INNER JOIN devolucion d ON a.idDevolucion = d.idDevolucion
+        INNER JOIN equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
+        INNER JOIN equipo eq ON eha.idEquipo = eq.idEquipo
+        INNER JOIN tipo_equipo te ON eq.idTipo_Equipo = te.idTipo_equipo
+        """
     INNER JOIN funcionario f on a.rutFuncionario = f.rutFuncionario
     INNER JOIN devolucion d on a.idDevolucion = d.idDevolucion
     LIMIT {} OFFSET {}
@@ -34,6 +82,50 @@ def Asignacion(page=1):
     #para el select de funcionarios
     cur.execute(
         """
+        SELECT * 
+        FROM tipo_equipo te
+        ORDER BY te.nombreidTipoequipo
+        """
+    )
+    tipos = cur.fetchall()
+    
+    return render_template(
+        "asignacion.html",
+        asignacion=data,
+        agregar=True,
+        tiposEquipos=tipos,
+        funcionarios=funcionarios
+    )
+
+
+
+@asignacion.route("/asignacion/add_asignacion", methods=["GET","POST"])
+def add_asignacion():
+    if request.method == "POST":
+        tipoEquipo = request.form["idasignacion"]  
+        fechaasignacion = request.form["fechaasignacion"]
+        observacionasignacion = request.form["observacionAsignacion"]
+        rutaactaasignacion = request.form["rutaactaasignacion"]
+        Activoasignacion = request.form["Activoasignacion"]
+        rutFuncionario = request.form["rutFuncionario"]
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(
+                "INSERT INTO asignacion (fecha_inicioAsignacion, observacionAsignacion, rutaactaAsignacion, ActivoAsignacion, rutFuncionario) VALUES (%s, %s, %s, %s, %s)",
+                (
+                    fechaasignacion,
+                    observacionasignacion,
+                    rutaactaasignacion,
+                    Activoasignacion,
+                    rutFuncionario
+                ),
+            )
+            mysql.connection.commit()
+            flash("Estado de equipo agregado correctamente")
+            return redirect(url_for("asignacion.Asignacion"))
+        except Exception as e:
+            flash(e.args[1])
+            return redirect(url_for("asignacion.Asignacion"))
                 SELECT *
                 FROM funcionario
         """
@@ -73,20 +165,22 @@ def add_asignacion():
         return render_template("add_asignacion.html", )
 
 
+
 # enviar datos a vista editar
-@asignacion.route("/edit_asignacion/<id>", methods=["POST", "GET"])
+@asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
 def edit_asignacion(id):
     try:
         cur = mysql.connection.cursor()
         cur.execute(
             """ 
-    SELECT d.idAsignacion, d.fecha_inicioAsignacion, 
-        d.ObservacionAsignacion, d.rutaactaAsignacion , d.ActivoAsignacion, 
-        d.rutFuncionario, f.rutFuncionario, d.idEquipo, eq.idEquipo
-    FROM asignacion d
-    INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-    INNER JOIN equipo eq on d.idEquipo = eq.idEquipo
-    WHERE idAsignacion = %s""",
+        SELECT a.idAsignacion, a.fecha_inicioAsignacion, 
+                a.observacionAsignacion, a.rutaactaAsignacion , a.ActivoAsignacion, 
+                a.rutFuncionario, f.rutFuncionario, a.idEquipo, eq.idEquipo
+                FROM asignacion a
+                INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
+                INNER JOIN Equipo_asignacion eha ON a.idAsignacion = eha.idAsignacion
+                INNER JOIN Equipo eq ON eha.idEquipo = eq.idEquipo
+            WHERE idAsignacion = %s""",
             (id,),
         )
         data = cur.fetchall()
@@ -103,7 +197,7 @@ def edit_asignacion(id):
 
 
 # actualizar
-@asignacion.route("/update_asignacion/<id>", methods=["POST"])
+@asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
 def update_asignacion(id):
     if request.method == "POST":
         fechaasignacion = request.form["fechaasignacion"]
@@ -111,7 +205,6 @@ def update_asignacion(id):
         rutaactaasignacion = request.form["rutaactaasignacion"]
         ActivoAsignacion = request.form["Activoasignacion"]
         rutFuncionario = request.form["rutFuncionario"]
-        idequipo = request.form["idequipo"]
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -121,8 +214,7 @@ def update_asignacion(id):
                 ObservacionAsignacion = %s
                 rutaactaAsignacion = %s,
                 ActivoAsignacion = %s,
-                rutFuncionario = %s,
-                idEquipo=%s
+                rutFuncionario = %s
             WHERE idAsignacion = %s
             """,
                 (
@@ -131,7 +223,6 @@ def update_asignacion(id):
                     rutaactaasignacion,
                     ActivoAsignacion,
                     rutFuncionario,
-                    idequipo,
                     id,
                 ),
             )
@@ -148,13 +239,77 @@ def update_asignacion(id):
 def delete_asignacion(id):
     try:
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM asignacion WHERE idasignacion = %s", (id,))
+        cur.execute("""
+                    SELECT *
+                    FROM asignacion
+                    WHERE idAsignacion = %s
+                    """, (id,))
+        asignacionAborrar = cur.fetchall()
+        cur.execute("""SELECT *
+                        FROM equipo_asignacion
+                        WHERE idAsignacion= %s
+        """, (id,))
+        asignaciones = cur.fetchall()
+        for asignacion in asignaciones:
+            cur.execute(""" 
+                        UPDATE equipo
+                        SET idTipo_equipo= %s
+                        WHERE idEquipo= %s""", (asignacionAborrar[1]['idAsignacion'],asignacion['idEquipo']))
+        cur.execute("DELETE FROM equipo_asignacion WHERE idAsignacion = %s", (id,))
+        mysql.connection.commit()
+        cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
         mysql.connection.commit()
         flash("asignacion eliminado correctamente")
         return redirect(url_for("asignacion.Asignacion"))
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
+    
+@asignacion.route("/asignacion/create_asignacion/<rut>", methods=["POST"])
+def create_asignacion(rut):
+    if request.method == "POST":
+        # Extraer datos del formulario
+        fecha_inicio_asignacion = request.form['fecha_inicio_asignacion']
+        observacion_asignacion = request.form['observacion_asignacion']
+        ruta_acta_asignacion = request.form['ruta_acta_asignacion']
+        activo_asignacion = request.form['activo_asignacion']
+        id_devolucion = request.form['id_devolucion']
+        rut=rut
+        # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO ASIGNACION (
+                fecha_inicioAsignacion,
+                ObservacionAsignacion,
+                rutaactaAsignacion, 
+                ActivoAsignacion,
+                rutFuncionario,
+                idDevolucion
+            )
+            VALUES (%s, %s, %s, %s, %s, %s)
+            """, (fecha_inicio_asignacion, observacion_asignacion, ruta_acta_asignacion, activo_asignacion, rut, id_devolucion))
+        mysql.connection.commit()
+
+        # Recuperar el ID de la asignación recién insertada
+        asignacion_id = cur.lastrowid
+
+        # Obtener la lista de equipos asignados desde el formulario
+        equipos = request.form.getlist('equipos[]')
+
+        # Iterar sobre los equipos y realizar las operaciones necesarias
+        for equipo_id in equipos:
+            # Insertar en la tabla Equipo_asignacion
+            cur.execute("""
+                INSERT INTO equipo_asignacion (idEquipo, idAsignacion)
+                VALUES (%s, %s)
+                """, (equipo_id, asignacion_id))
+            mysql.connection.commit()
+
+        flash("Asignación creada correctamente")
+        return redirect(url_for('traslado.Traslado'))
+    return redirect(url_for('traslado.Traslado'))
+
+
 
 
 @asignacion.route("/test")
@@ -295,3 +450,4 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     )
     pdf.output(nombrePdf)
     return redirect(url_for("asignacion.Asignacion"))
+
