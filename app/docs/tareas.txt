@@ -33,13 +33,14 @@ TODO:
         ¿devoluciones?
         pdf de asignacion y devolucion
         detalles asignacion y devolucion
-        usar el estado de equipo en caso de sin asignar
+        OK usar el estado de equipo en caso de sin asignar
         detalle de traslado
         ventana emergente para observacion
         comentar codigos
         buscador
         mostrar numero de incidencias en la pestaña detalles. Esto 
         probablemente requeriria modificar la BBDD
+        agregar boton para ver equipos de un funcionario
         
         **
         By default openpyxl does not guard against quadratic 
