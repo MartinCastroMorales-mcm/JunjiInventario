@@ -18,6 +18,7 @@ def validarRut(rut):
     try:
         num = int(num)
     except:
+        #Si no es posible convertir el num a int tiene un formato incorrecto
         return False
     mod = num % 11
     if digVerificador == "k":
@@ -33,5 +34,6 @@ def validarRut(rut):
     else:
         return False
 
+#define el numero de filas en las tablas para la paginacion
 def getPerPage():
     return 10

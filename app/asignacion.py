@@ -68,7 +68,9 @@ def add_asignacion():
                 INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
                 INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
                 INNER JOIN unidad u ON e.idUnidad = u.idUnidad
-                """)
+                INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
+                WHERE ee.nombreEstado_equipo = %s
+                """, ("SIN ASIGNAR",))
     equipos_data = cur.fetchall()
     return render_template("add_asignacion.html",equipos=equipos_data,
                             funcionarios=funcionarios_data )
@@ -163,8 +165,19 @@ def delete_asignacion(id):
         """, (id,))
         asignaciones = cur.fetchall()
         for asignacion in asignaciones:
-            #modificar estado
-            pass
+            idEquipo = asignacion['idEquipo']
+            cur.execute("""
+                        SELECT *
+                        FROM estado_equipo
+                        WHERE nombreEstado_equipo = %s
+                        """, ("SIN ASIGNAR",))
+            estado_equipo_data = cur.fetchone()
+            cur.execute("""
+                        UPDATE equipo
+                        SET idEstado_equipo = %s
+                        WHERE idEquipo = %s
+                        """, (estado_equipo_data['idEstado_equipo'], idEquipo))
+            mysql.connection.commit()
         cur.execute("DELETE FROM equipo_asignacion WHERE idAsignacion = %s", (id,))
         mysql.connection.commit()
         cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
@@ -215,6 +228,20 @@ def create_asignacion():
             mysql.connection.commit()
             cur.execute("""
                         SELECT *
+                        FROM estado_equipo
+                        WHERE nombreEstado_equipo = %s
+                        """, ("EN USO",))
+            estado_equipo_data = cur.fetchone() 
+            
+            cur.execute("""
+                        UPDATE equipo
+                        SET idEstado_equipo = %s
+                        WHERE idEquipo = %s
+                        """, (estado_equipo_data['idEstado_equipo'], equipo_id))
+            mysql.connection.commit()
+            
+            cur.execute("""
+                        SELECT *
                         FROM equipo
                         INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
                         INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
@@ -223,8 +250,6 @@ def create_asignacion():
                         WHERE equipo.idEquipo = %s
                         """, (equipo_id,))
             equipoTupla = cur.fetchone()
-            print("####################3")
-            print(equipoTupla)
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
 
         flash("Asignación creada correctamente")

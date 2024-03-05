@@ -341,7 +341,14 @@ def equipo_detalles(idEquipo):
                     "Nombre", "observacion"
                 FROM traslado, traslacion
                 WHERE traslacion.idTraslado = traslado.idTraslado AND traslacion.idEquipo = %s
-                """, (idEquipo, idEquipo,))
+                UNION ALL
+                SELECT a.fecha_inicioAsignacion, a.idAsignacion, "Asignacion",
+                    a.ObservacionAsignacion, f.nombreFuncionario 
+                FROM asignacion a
+                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+                INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
+                WHERE ea.idEquipo = %s
+                """, (idEquipo, idEquipo, idEquipo,))
     data_eventos = cur.fetchall()
     cur.execute(
         """

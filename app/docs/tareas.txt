@@ -29,7 +29,8 @@ TODO:
 
         Exportar a excel
         OK asignacion(pdf)
-        asignacion(editar, eliminar)
+        OK asignacion(editar, eliminar)
+        ¿devoluciones?
         pdf de asignacion y devolucion
         detalles asignacion y devolucion
         usar el estado de equipo en caso de sin asignar
@@ -37,3 +38,11 @@ TODO:
         ventana emergente para observacion
         comentar codigos
         buscador
+        mostrar numero de incidencias en la pestaña detalles. Esto 
+        probablemente requeriria modificar la BBDD
+        
+        **
+        By default openpyxl does not guard against quadratic 
+        blowup or billion laughs xml attacks. 
+        To guard against these attacks install defusedxml.
+        **
