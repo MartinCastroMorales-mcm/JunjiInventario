@@ -156,17 +156,15 @@ def delete_asignacion(id):
                     FROM asignacion
                     WHERE idAsignacion = %s
                     """, (id,))
-        asignacionAborrar = cur.fetchall()
+        asignacionAborrar = cur.fetchone()
         cur.execute("""SELECT *
                         FROM equipo_asignacion
                         WHERE idAsignacion= %s
         """, (id,))
         asignaciones = cur.fetchall()
         for asignacion in asignaciones:
-            cur.execute(""" 
-                        UPDATE equipo
-                        SET idTipo_equipo= %s
-                        WHERE idEquipo= %s""", (asignacionAborrar[1]['idAsignacion'],asignacion['idEquipo']))
+            #modificar estado
+            pass
         cur.execute("DELETE FROM equipo_asignacion WHERE idAsignacion = %s", (id,))
         mysql.connection.commit()
         cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
@@ -193,9 +191,10 @@ def create_asignacion():
                 fecha_inicioAsignacion,
                 ObservacionAsignacion,
                 rutaactaAsignacion, 
-                rutFuncionario
+                rutFuncionario,
+                idDevolucion
             )
-            VALUES (%s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s, NULL)
             """, (fechaasignacion, observacion, 'ruta', rut,))
         mysql.connection.commit()
 
@@ -220,9 +219,12 @@ def create_asignacion():
                         INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
                         INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
                         INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
+                        INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
                         WHERE equipo.idEquipo = %s
                         """, (equipo_id,))
             equipoTupla = cur.fetchone()
+            print("####################3")
+            print(equipoTupla)
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
 
         flash("Asignación creada correctamente")
@@ -296,7 +298,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 
     nombreFuncionario = Funcionario["nombreFuncionario"]
     nombreUnidad = Unidad["nombreUnidad"]
-    fechaAsignacion = Asignacion["fecha_inicioAsignacion"]
+    fechaAsignacion = str(Asignacion["fecha_inicioAsignacion"])
 
     pdf.ln(10)
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
@@ -318,20 +320,22 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 
     pdf.ln(20)
     TABLE_DATA = (
-        ("id", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
+        ("N°", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
     )
+    i = 0
     for equipo in Equipos:
         id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreidTipoEquipo"]
+        tipo_equipo = equipo["nombreidTipoequipo"]
         marca = equipo["nombreMarcaEquipo"]
-        modelo = equipo["nombreModeloEquipo"]
+        modelo = equipo["nombreModeloequipo"]
         num_serie = str(equipo["Num_serieEquipo"])
         num_inventario = str(equipo["Cod_inventarioEquipo"])
 
-        TABLE_DATA = TABLE_DATA + (
-            (id, tipo_equipo, marca, modelo, num_serie, num_inventario),
-        )
+        i += 1
 
+        TABLE_DATA = TABLE_DATA + (
+            (str(i), tipo_equipo, marca, modelo, num_serie, num_inventario),
+        )
     with pdf.table() as table:
         for datarow in TABLE_DATA:
             row = table.row()
@@ -380,14 +384,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-    nombrePdf = "asignacion_" + str(
-        Funcionario["nombreFuncionario"]
-        + "_"
-        + str(Asignacion["fecha_inicioAsignaion"])
-        + "_"
-        + str(Asignacion["idAsignacion"])
-    )
+    nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
+    shutil.move(nombrePdf, "app/pdf")
     return redirect(url_for("asignacion.Asignacion"))
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")

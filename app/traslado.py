@@ -137,10 +137,6 @@ def delete_traslado(id):
                     """, (id,))
         traslaciones = cur.fetchall()
         for traslacion in traslaciones:
-            #print("###############")
-            #print(trasladoABorrar)
-            #print("###############")
-            #print(traslacion)
             cur.execute("""
                         UPDATE equipo
                         SET idUnidad = %s

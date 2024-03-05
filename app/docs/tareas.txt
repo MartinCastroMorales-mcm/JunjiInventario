@@ -23,4 +23,17 @@ TODO:
 
         OK Todos las pestañas de formularios deben tener un boton volver.
         OK boton de opciones en equipo despliega los otros botones
+        
+        
         OK añadir modelo a tabla traslado
+
+        Exportar a excel
+        OK asignacion(pdf)
+        asignacion(editar, eliminar)
+        pdf de asignacion y devolucion
+        detalles asignacion y devolucion
+        usar el estado de equipo en caso de sin asignar
+        detalle de traslado
+        ventana emergente para observacion
+        comentar codigos
+        buscador
