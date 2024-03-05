@@ -47,3 +47,6 @@ TODO:
         blowup or billion laughs xml attacks. 
         To guard against these attacks install defusedxml.
         **
+
+        en la paginacion no funciona correctamente. Al ordenar las tablas solo se ordenan
+        las que ya se mostraban antes
