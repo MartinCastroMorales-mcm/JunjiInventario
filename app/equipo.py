@@ -404,13 +404,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     ultimaAsignacion = asignaciones[0]
     primeraAsignacion = asignaciones[-1] #-1 deberia dar el ultimo elemento
 
-    print("####################")
-    print(ultimaAsignacion['fecha_inicioAsignacion'])
-    print(primeraAsignacion['fecha_inicioAsignacion'])
-    
-
-    cur.execute(
-        """ 
+    cur.execute(""" 
     SELECT *
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
@@ -420,12 +414,12 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
     INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
     INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-    WHERE a.fecha_inicioAsignacion
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    WHERE a.idAsignacion = %s AND f.rutFuncionario = %s
     LIMIT %s OFFSET %s
-
     """,
         (
-            ultimaAsignacion['fecha_inicioAsignacion'],
+            ultimaAsignacion['idAsignacion'],
             rutFuncionario,
             perpage,
             offset,
