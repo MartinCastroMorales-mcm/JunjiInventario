@@ -23,4 +23,26 @@ TODO:
 
         OK Todos las pestañas de formularios deben tener un boton volver.
         OK boton de opciones en equipo despliega los otros botones
+        
+        
         OK añadir modelo a tabla traslado
+
+        Exportar a excel
+        OK asignacion(pdf)
+        OK asignacion(editar, eliminar)
+        ¿devoluciones?
+        pdf de asignacion y devolucion
+        detalles asignacion y devolucion
+        usar el estado de equipo en caso de sin asignar
+        detalle de traslado
+        ventana emergente para observacion
+        comentar codigos
+        buscador
+        mostrar numero de incidencias en la pestaña detalles. Esto 
+        probablemente requeriria modificar la BBDD
+        
+        **
+        By default openpyxl does not guard against quadratic 
+        blowup or billion laughs xml attacks. 
+        To guard against these attacks install defusedxml.
+        **

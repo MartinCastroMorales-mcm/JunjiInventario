@@ -157,10 +157,18 @@ def adjuntar_pdf(id):
 def listar_pdf(id):
     #verificar la existencia de la carpeta incidencia
     #try:
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT *
+                FROM equipo e
+                WHERE e.idEquipo = %s
+                """, (id,))
+    data_equipo = cur.fetchone()
     dir = PDFS_INCIDENCIAS
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     if(not os.path.exists(carpeta_incidencias)):
-        return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=())
+        return render_template("mostrar_pdf_incidencia.html", idIncidencia=id,
+                documentos=(), equipo=data_equipo)
 
         
     #except:
@@ -175,13 +183,6 @@ def listar_pdf(id):
         if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
             pdfTupla = pdfTupla + (fileName,)
     #print(pdfTupla)
-    cur = mysql.connection.cursor()
-    cur.execute("""
-                SELECT *
-                FROM equipo e
-                WHERE e.idEquipo = %s
-                """, (id,))
-    data_equipo = cur.fetchone()
 
 
     return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=pdfTupla, equipo=data_equipo)
