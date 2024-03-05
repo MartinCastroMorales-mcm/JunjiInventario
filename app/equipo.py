@@ -16,20 +16,49 @@ def Equipo(page=1):
     cur.execute("SELECT COUNT(*) FROM EQUIPO")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
-    cur.execute(
-        """ 
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    cur.execute(""" 
+    SELECT *
+    FROM
+    (
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+           e.Num_serieEquipo, e.ObservacionEquipo,
+           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+           e.numerotelefonicoEquipo,
+           te.idTipo_equipo, 
+           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    UNION 
+    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+            e.Num_serieEquipo, e.ObservacionEquipo, 
+            e.codigoproveedor_equipo, e.macEquipo, 
+            e.imeiEquipo, e.numerotelefonicoEquipo,
+            te.idTipo_equipo, te.nombreidTipoequipo,
+            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
     INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    ) as subquery
     LIMIT {} OFFSET {}
+
     """.format(
             perpage, offset
         )
@@ -391,8 +420,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
     INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
     INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-    WHERE a.fecha_inicioAsignacion = %s AND 
-            a.rutFuncionario = %s
+    WHERE a.fecha_inicioAsignacion
     LIMIT %s OFFSET %s
 
     """,
