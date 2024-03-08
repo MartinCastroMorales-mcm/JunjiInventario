@@ -1,6 +1,7 @@
 from flask import request, flash, render_template, url_for, redirect, Blueprint
 from db import mysql
 from funciones import getPerPage
+from openpyxl import Workbook, load_workbook
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -502,3 +503,15 @@ def equipo_detalles(idEquipo):
 
             #)
                 #""")
+#exportar a pdf
+@equipo.route("/equipo/crear_excel")
+def crear_excel():
+    #buscar columnas
+    wb = Workbook()
+    ws = wb.active
+    #ingresar datos
+    pass
+
+@equipo.route("/equipo/importar_excel")
+def importar_excel(url):
+    pass

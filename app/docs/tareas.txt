@@ -30,7 +30,7 @@ TODO:
         Exportar a excel(falta un ejemplo)
         OK asignacion(pdf)
         OK asignacion(editar, eliminar)
-        ¿devoluciones?
+        combinar devolucion y asignacion
         pdf de asignacion y devolucion
         detalles asignacion y devolucion(asignacion ya esta)
         OK usar el estado de equipo en caso de sin asignar

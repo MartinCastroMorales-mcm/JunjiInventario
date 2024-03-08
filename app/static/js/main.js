@@ -14,6 +14,22 @@ $(document).ready(function() {
   $('#table').DataTable(); //Para inicializar datatables de la manera más simple
 });
 */
+function fechaPorDefecto() {
+  date = new Date();
+  year = date.getFullYear();
+  month = date.getMonth() + 1;
+  day = date.getDate();
+  if (month < 10) {
+    month = "0" + month
+  }
+  if (day < 10) {
+    day = "0" + day
+  }
+  formatedDate = year + "-" + month + "-" + day
+  document.getElementById("inputFecha")
+    .setAttribute("value", formatedDate);
+
+}
 console.log("jsLink")
 
 function showDiv(id = "formulario") {
@@ -35,10 +51,10 @@ function showDivHideOthers(id = "formulario") {
   for (const [key, value] of Object.entries(divs)) {
     if (key != id) {
       value.style.display = "none"
-    }else {
+    } else {
       value.style.display = "block"
     }
-    
+
   }
 }
 
