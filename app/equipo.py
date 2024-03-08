@@ -2,6 +2,7 @@ from flask import request, flash, render_template, url_for, redirect, Blueprint
 from db import mysql
 from funciones import getPerPage
 from openpyxl import Workbook, load_workbook
+from openpyxl.styles import PatternFill
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -519,16 +520,101 @@ def crear_excel():
     wb = Workbook()
     ws = wb.active
 
-    #generar encabezado
+    #consulta datos
+    cur = mysql.connection.cursor()
+    cur.execute(""" 
+    SELECT *
+    FROM
+    (
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+           e.Num_serieEquipo, e.ObservacionEquipo,
+           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+           e.numerotelefonicoEquipo,
+           te.idTipo_equipo, 
+           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+           com.nombreComuna, pro.nombreProvincia,
+    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
+                me.nombreMarcaEquipo
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+
+    INNER JOIN comuna com ON com.idComuna = u.idComuna
+    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+
+    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    UNION 
+    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+            e.Num_serieEquipo, e.ObservacionEquipo, 
+            e.codigoproveedor_equipo, e.macEquipo, 
+            e.imeiEquipo, e.numerotelefonicoEquipo,
+            te.idTipo_equipo, te.nombreidTipoequipo,
+            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
+            com.nombreComuna, pro.nombreProvincia,
+            me.nombreMarcaEquipo
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+
+    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    INNER JOIN comuna com ON com.idComuna = u.idComuna
+    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    ) as subquery
     
-    for fila in range(0, 10):
-        for columna in range(0, 10):
-            #65 = A en ASCII
-            char = chr(65 + columna)
+                """)
+    equipo_data = cur.fetchall()
+
+    #generar encabezado
+    #encabezado
+
+    encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", "Tipo de Bien", "Marca", "Modelo", 
+               "N° Serie", "Codigo Inventario"])
+    for i in range(0, 10):
+        char = chr(65 + i)
+        ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type = "solid")
+        ws.column_dimensions[char].width = 20
+        ws[char + str(1)] = encabezado[i]
+
+    i = 0
+    def fillCell(data, fila):
+        nonlocal i
+        char = chr(65 + i)
+        i += 1
+        ws[char + str(fila)] = data 
+    for fila in range(0, len(equipo_data)):
+        i = 0
+        #65 = A en ASCII
+        #consegir lista de valores y extraer la lista de valires en cada for interior
+        fillCell(equipo_data[fila]['nombreProvincia'], fila + 2)
+        fillCell(equipo_data[fila]['nombreComuna'], fila + 2)
+        fillCell("¿?", fila + 2)
+        fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
+        fillCell(equipo_data[fila]['nombreidTipoequipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreMarcaEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
+        fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['Cod_inventarioEquipo'], fila + 2)
+
+
 
     #ingresar datos
-    wb.save()
-    pass
+    wb.save("test.xlsx")
+    return redirect(url_for("equipo.Equipo"))
 
 @equipo.route("/equipo/importar_excel")
 def importar_excel(url):
