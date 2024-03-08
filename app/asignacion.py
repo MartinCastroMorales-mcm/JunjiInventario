@@ -479,6 +479,19 @@ def devolver(id):
         WHERE e.idEquipo = %s
                     """, (str(equipo_asignacion['idEquipo']),))
         equipo = cur.fetchone()
+
+        cur.execute("""
+        SELECT *
+        FROM estado_equipo ee
+        WHERE ee.nombreEstado_equipo = "SIN ASIGNAR"
+                    """)
+        estadoEquipo = cur.fetchone()
+        cur.execute("""
+        UPDATE equipo
+        SET idEstado_equipo = %s
+        WHERE idEquipo = %s
+                    """, (str(estadoEquipo['idEstado_equipo']), str(equipo['idEquipo'])))
+        mysql.connection.commit()
         tupla_equipos = tupla_equipos + (equipo,)
 
 
