@@ -25,6 +25,7 @@ def Incidencia(page = 1):
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
                 INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
                 INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
+                
                 LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )

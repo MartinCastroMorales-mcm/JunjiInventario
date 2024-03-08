@@ -55,7 +55,7 @@
                             {% if asig.ActivoAsignacion != 1 %}
                                 <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}" class="info-button">Devolucion</a>
                             {% else %}
-                                <a href="/asignacion/devolver/{{ asig.idAsignacion }}" class="success-button">Devolver</a>
+                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}" class="success-button">Devolver</a>
                             {% endif %}
                         </td>
                         <td>{{asig.nombreFuncionario}}</td>

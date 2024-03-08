@@ -19,6 +19,11 @@ TODO:
                 Edit Incidencias
                 Eliminar Incidencias
                 pdf? subir como usuario
+
+                para agregar el funcionario a incidencias, deberia mostrar el 
+                funcionario que usaba el equipo al momento de realizar la incidencia.
+                Por lo que seria conveniente tener una referencia al rut directamente 
+                en incidencia
         )
 
         OK Todos las pestañas de formularios deben tener un boton volver.
@@ -30,9 +35,9 @@ TODO:
         Exportar a excel(falta un ejemplo)
         OK asignacion(pdf)
         OK asignacion(editar, eliminar)
-        combinar devolucion y asignacion
-        pdf de asignacion y devolucion
-        detalles asignacion y devolucion(asignacion ya esta)
+        OK combinar devolucion y asignacion
+        OK pdf de asignacion y devolucion
+        OK detalles asignacion y devolucion(asignacion ya esta)
         OK usar el estado de equipo en caso de sin asignar
         detalle de traslado(no esta claro como se deberia acceder)
         ventana emergente para observacion

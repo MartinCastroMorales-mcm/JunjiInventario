@@ -445,7 +445,8 @@ def equipo_detalles(idEquipo):
     cur = mysql.connection.cursor()
     #Como funcionaria con la asignacion cambiada ¿?
     #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
-    #TODO: Revisar que hacer con las observaciones de Traslado
+    #TODO: Revisar que hacer con las observaciones de Traslado, 
+    #Revisar que hacer con observacion de Devolucion
     cur.execute("""
                 SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
                     "Incidencia" as evento, i.observacionIncidencia as observacion,
@@ -464,7 +465,15 @@ def equipo_detalles(idEquipo):
                 INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
                 INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
                 WHERE ea.idEquipo = %s
-                """, (idEquipo, idEquipo, idEquipo,))
+                UNION ALL
+                SELECT a.fechaDevolucion, a.idAsignacion, "Devolucion",
+                    a.ObservacionAsignacion, f.nombreFuncionario
+                FROM asignacion a
+                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+                INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
+                WHERE ea.idEquipo = %s
+                ORDER BY fecha DESC
+                """, (idEquipo, idEquipo, idEquipo, idEquipo))
     data_eventos = cur.fetchall()
     cur.execute(
         """
@@ -509,7 +518,16 @@ def crear_excel():
     #buscar columnas
     wb = Workbook()
     ws = wb.active
+
+    #generar encabezado
+    
+    for fila in range(0, 10):
+        for columna in range(0, 10):
+            #65 = A en ASCII
+            char = chr(65 + columna)
+
     #ingresar datos
+    wb.save()
     pass
 
 @equipo.route("/equipo/importar_excel")

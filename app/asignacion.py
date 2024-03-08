@@ -436,8 +436,6 @@ def devolver(id):
     WHERE a.idAsignacion = %s
                 """, (today, id,))
     mysql.connection.commit()
-    #TODO
-    #cambiar todos los equipos a SIN ASIGNAR
 
     #buscar argumentos
     cur.execute("""
