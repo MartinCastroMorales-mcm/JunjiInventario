@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block body %}
+<h3>Buscando {{busqueda}}</h3>
+<table id="posts">
+    <thead>
+        <tr>
+            <td>Clave</td>
+            <td>Nombre</td>
+            <td>Botones</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{item.clave}}</td>
+            <td>{{item.nombre}}</td>
+            <td>
+                {% if item.tipo == "equipo" %}
+                 <a href="/equipo/buscar_equipo" class="nav-button2">Buscar</a>
+                {% endif %}
+                {% if item.tipo == "funcionario" %}
+                    <a href="/funcionario/buscar_funcionario" class="nav-button2">Buscar</a>
+                {% endif %}
+                {% if item.tipo == "unidad" %}
+                    <a href="/unidad/buscar_funcionario" class="nav-button2">Buscar</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+    </tbody>
+</table>
+{% endblock %}
