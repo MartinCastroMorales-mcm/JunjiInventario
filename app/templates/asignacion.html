@@ -37,7 +37,7 @@
 
                         <td onclick="sortTable(0)">Fecha Inicio</td>
                         <td onclick="sortTable(1)">Observacion</td>
-                        <td>Acta</td>
+                        <td>Actas</td>
                         <td onclick="sortTable(3)">nombreFuncionario</td>
                         <td onclick="sortTable(4)">fechaDevolucion</td>
                         <td>Botones</td>
@@ -51,10 +51,21 @@
                         <td>{{asig.fecha_inicioAsignacion}}</td>
                         <td>{{asig.observacionAsignacion}}</td>
                         <td>
-                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}" class="info-button">Acta</a>
+                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}" class="info-button">Asignacion</a>
+                            {% if asig.ActivoAsignacion != 1 %}
+                                <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}" class="info-button">Devolucion</a>
+                            {% else %}
+                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}" class="success-button">Devolver</a>
+                            {% endif %}
                         </td>
                         <td>{{asig.nombreFuncionario}}</td>
-                        <td>{{asig.fechaDevolucion}}</td>
+                        <td>
+                            {% if asig.fechaDevolucion == None%}
+                            Sin Devolver
+                            {% else %}
+                            {{asig.fechaDevolucion}}
+                            {% endif %}
+                        </td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
                             <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}" class="success-button">Editar</a>

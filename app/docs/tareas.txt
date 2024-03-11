@@ -19,6 +19,11 @@ TODO:
                 Edit Incidencias
                 Eliminar Incidencias
                 pdf? subir como usuario
+
+                para agregar el funcionario a incidencias, deberia mostrar el 
+                funcionario que usaba el equipo al momento de realizar la incidencia.
+                Por lo que seria conveniente tener una referencia al rut directamente 
+                en incidencia
         )
 
         OK Todos las pestañas de formularios deben tener un boton volver.
@@ -27,22 +32,28 @@ TODO:
         
         OK añadir modelo a tabla traslado
 
-        Exportar a excel
+        Exportar a excel(falta un ejemplo)
         OK asignacion(pdf)
         OK asignacion(editar, eliminar)
-        ¿devoluciones?
-        pdf de asignacion y devolucion
-        detalles asignacion y devolucion
-        usar el estado de equipo en caso de sin asignar
-        detalle de traslado
+        OK combinar devolucion y asignacion
+        OK pdf de asignacion y devolucion
+        OK detalles asignacion y devolucion(asignacion ya esta)
+        OK usar el estado de equipo en caso de sin asignar
+        detalle de traslado(no esta claro como se deberia acceder)
         ventana emergente para observacion
         comentar codigos
         buscador
         mostrar numero de incidencias en la pestaña detalles. Esto 
         probablemente requeriria modificar la BBDD
+        OK agregar boton para ver equipos de un funcionario
         
         **
         By default openpyxl does not guard against quadratic 
         blowup or billion laughs xml attacks. 
         To guard against these attacks install defusedxml.
         **
+
+        en la paginacion no funciona correctamente. Al ordenar las tablas solo se ordenan
+        las que ya se mostraban antes
+
+        El mostrar_asociados_funcionario no funciona correctamente

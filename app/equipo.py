@@ -1,6 +1,8 @@
 from flask import request, flash, render_template, url_for, redirect, Blueprint
 from db import mysql
 from funciones import getPerPage
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import PatternFill
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -16,17 +18,49 @@ def Equipo(page=1):
     cur.execute("SELECT COUNT(*) FROM EQUIPO")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
-    cur.execute(
-        """ 
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo
+    cur.execute(""" 
+    SELECT *
+    FROM
+    (
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+           e.Num_serieEquipo, e.ObservacionEquipo,
+           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+           e.numerotelefonicoEquipo,
+           te.idTipo_equipo, 
+           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    UNION 
+    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+            e.Num_serieEquipo, e.ObservacionEquipo, 
+            e.codigoproveedor_equipo, e.macEquipo, 
+            e.imeiEquipo, e.numerotelefonicoEquipo,
+            te.idTipo_equipo, te.nombreidTipoequipo,
+            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    ) as subquery
     LIMIT {} OFFSET {}
+
     """.format(
             perpage, offset
         )
@@ -323,13 +357,97 @@ def mostrar_asociados_unidad(idUnidad, page=1):
         lastpage=False,
     )
 
+@equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>")
+@equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>/<page>")
+def mostrar_asociados_funcionario(rutFuncionario, page=1):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipoe_data = cur.fetchall()
+    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    estadoe_data = cur.fetchall()
+    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    ubi_data = cur.fetchall()
+    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    ordenc_data = cur.fetchall()
+    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    modeloe_data = cur.fetchall()
+
+    page = int(page)
+    page = 1
+    perpage = 200 #porque ningun funcionario tendra tantos 
+                    #equipos que la paginacion sea nesesaria
+    offset = (page - 1) * perpage
+    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    total = cur.fetchone()
+    total = int(str(total).split(":")[1].split("}")[0])
+    #encontar la fecha de la ultima asignacion
+    cur.execute("""
+                SELECT *
+                FROM asignacion a
+                WHERE a.rutFuncionario = %s
+                ORDER BY a.fecha_inicioAsignacion DESC
+                """, (rutFuncionario,))
+    asignaciones = cur.fetchall()
+    print("########################")
+    print(asignaciones)
+    if(len(asignaciones) == 0):
+        
+        return render_template(
+            "equipo.html",
+            equipo=(),
+            tipo_equipo=tipoe_data,
+            estado_equipo=estadoe_data,
+            orden_compra=ordenc_data,
+            Unidad=ubi_data,
+            modelo_equipo=modeloe_data,
+            page=page,
+            lastpage=False,
+        )
+    ultimaAsignacion = asignaciones[0]
+    primeraAsignacion = asignaciones[-1] #-1 deberia dar el ultimo elemento
+
+    cur.execute(""" 
+    SELECT *
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    WHERE a.idAsignacion = %s AND f.rutFuncionario = %s
+    LIMIT %s OFFSET %s
+    """,
+        (
+            ultimaAsignacion['idAsignacion'],
+            rutFuncionario,
+            perpage,
+            offset,
+        ),
+    )
+    data = cur.fetchall()
+    return render_template(
+        "equipo.html",
+        equipo=data,
+        tipo_equipo=tipoe_data,
+        estado_equipo=estadoe_data,
+        orden_compra=ordenc_data,
+        Unidad=ubi_data,
+        modelo_equipo=modeloe_data,
+        page=page,
+        lastpage=False,
+    )
+
 
 @equipo.route("/equipo_detalles/<idEquipo>")
 def equipo_detalles(idEquipo):
     cur = mysql.connection.cursor()
     #Como funcionaria con la asignacion cambiada ¿?
     #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
-    #TODO: Revisar que hacer con las observaciones de Traslado
+    #TODO: Revisar que hacer con las observaciones de Traslado, 
+    #Revisar que hacer con observacion de Devolucion
     cur.execute("""
                 SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
                     "Incidencia" as evento, i.observacionIncidencia as observacion,
@@ -348,7 +466,15 @@ def equipo_detalles(idEquipo):
                 INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
                 INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
                 WHERE ea.idEquipo = %s
-                """, (idEquipo, idEquipo, idEquipo,))
+                UNION ALL
+                SELECT a.fechaDevolucion, a.idAsignacion, "Devolucion",
+                    a.ObservacionAsignacion, f.nombreFuncionario
+                FROM asignacion a
+                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+                INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
+                WHERE ea.idEquipo = %s
+                ORDER BY fecha DESC
+                """, (idEquipo, idEquipo, idEquipo, idEquipo))
     data_eventos = cur.fetchall()
     cur.execute(
         """
@@ -387,3 +513,111 @@ def equipo_detalles(idEquipo):
 
             #)
                 #""")
+#exportar a pdf
+@equipo.route("/equipo/crear_excel")
+def crear_excel():
+    #buscar columnas
+    wb = Workbook()
+    ws = wb.active
+
+    #consulta datos
+    cur = mysql.connection.cursor()
+    cur.execute(""" 
+    SELECT *
+    FROM
+    (
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+           e.Num_serieEquipo, e.ObservacionEquipo,
+           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+           e.numerotelefonicoEquipo,
+           te.idTipo_equipo, 
+           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+           com.nombreComuna, pro.nombreProvincia,
+    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
+                me.nombreMarcaEquipo, mo.nombreModalidad
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
+
+    INNER JOIN comuna com ON com.idComuna = u.idComuna
+    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+
+    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    UNION 
+    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+            e.Num_serieEquipo, e.ObservacionEquipo, 
+            e.codigoproveedor_equipo, e.macEquipo, 
+            e.imeiEquipo, e.numerotelefonicoEquipo,
+            te.idTipo_equipo, te.nombreidTipoequipo,
+            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
+            com.nombreComuna, pro.nombreProvincia,
+            me.nombreMarcaEquipo, mo.nombreModalidad
+    FROM equipo e
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
+
+    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    INNER JOIN comuna com ON com.idComuna = u.idComuna
+    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    ) as subquery
+    
+                """)
+    equipo_data = cur.fetchall()
+
+    #generar encabezado
+    #encabezado
+
+    encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", "Tipo de Bien", "Marca", "Modelo", 
+               "N° Serie", "Codigo Inventario"])
+    for i in range(0, 10):
+        char = chr(65 + i)
+        ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type = "solid")
+        ws.column_dimensions[char].width = 20
+        ws[char + str(1)] = encabezado[i]
+
+    i = 0
+    def fillCell(data, fila):
+        nonlocal i
+        char = chr(65 + i)
+        i += 1
+        ws[char + str(fila)] = data 
+    for fila in range(0, len(equipo_data)):
+        i = 0
+        #65 = A en ASCII
+        #consegir lista de valores y extraer la lista de valires en cada for interior
+        fillCell(equipo_data[fila]['nombreProvincia'], fila + 2)
+        fillCell(equipo_data[fila]['nombreComuna'], fila + 2)
+        fillCell(equipo_data[fila]['nombreModalidad'], fila + 2)
+        fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
+        fillCell(equipo_data[fila]['nombreidTipoequipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreMarcaEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
+        fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['Cod_inventarioEquipo'], fila + 2)
+
+
+
+    #ingresar datos
+    wb.save("test.xlsx")
+    return redirect(url_for("equipo.Equipo"))
+
+@equipo.route("/equipo/importar_excel")
+def importar_excel(url):
+    pass
