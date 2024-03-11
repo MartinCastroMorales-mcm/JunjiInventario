@@ -13,9 +13,13 @@ def UNIDAD(page=1):
     offset = (page-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(""" 
-        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna, COUNT(e.idEquipo) as num_equipos
+        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
+               u.direccionUnidad, u.idComuna, co.nombreComuna,
+               co.idComuna, COUNT(e.idEquipo) as num_equipos,
+               mo.nombreModalidad
         FROM Unidad u
         INNER JOIN comuna co on u.idComuna = co.idComuna
+        LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
         GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
         LIMIT {} OFFSET {}
@@ -27,24 +31,28 @@ def UNIDAD(page=1):
     cur.execute("SELECT COUNT(*) FROM unidad")
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
+    
+    cur.execute("SELECT * FROM modalidad")
+    modalidades_data = cur.fetchall()
+
    
     cur.close()
     return render_template('Unidad.html', Unidad = data, comuna = c_data, 
-                           page=page, lastpage= page < (total/perpage)+1)
+                           page=page, lastpage= page < (total/perpage)+1, Modalidades=modalidades_data)
 
 #ruta y metodo para poder agregar una Unidad
 @Unidad.route('/add_Unidad', methods = ['POST'])
 def add_Unidad():
     if request.method == 'POST':
-        codigo_Unidad = request.form['codigo_Unidad']
         nombreUnidad = request.form['nombreUnidad']
         contactoUnidad = request.form['contactoUnidad']
         direccionUnidad = request.form['direccionUnidad']
         idComuna= request.form['idComuna']
+        idModalidad = request.form['idModalidad']
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO Unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna) VALUES (%s, %s, %s, %s, %s)'
-            , (codigo_Unidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna))
+            cur.execute('INSERT INTO Unidad (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
+            , (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
             mysql.connection.commit()
             flash('Unidad agregada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))

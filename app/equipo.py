@@ -535,7 +535,7 @@ def crear_excel():
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
-                me.nombreMarcaEquipo
+                me.nombreMarcaEquipo, mo.nombreModalidad
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -543,6 +543,7 @@ def crear_excel():
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
     INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN comuna com ON com.idComuna = u.idComuna
     INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
@@ -558,13 +559,14 @@ def crear_excel():
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
             com.nombreComuna, pro.nombreProvincia,
-            me.nombreMarcaEquipo
+            me.nombreMarcaEquipo, mo.nombreModalidad
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
     INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -601,7 +603,7 @@ def crear_excel():
         #consegir lista de valores y extraer la lista de valires en cada for interior
         fillCell(equipo_data[fila]['nombreProvincia'], fila + 2)
         fillCell(equipo_data[fila]['nombreComuna'], fila + 2)
-        fillCell("¿?", fila + 2)
+        fillCell(equipo_data[fila]['nombreModalidad'], fila + 2)
         fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
         fillCell(equipo_data[fila]['nombreidTipoequipo'], fila + 2)
