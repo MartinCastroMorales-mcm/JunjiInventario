@@ -1,11 +1,3 @@
--Investigar sobre pagination de flask
--Agregar Marca a Equipo (foranea de modelo)
--Agregar Equipo en asignacion y en devolucion
--Editar Edit tipo_adquisicion 
--Falta tabla asignacio
-
-
-
 La asignacion, la unidad de la asignacion es 
 la unidad del funcionario no la unidad donde se encuentre
 
@@ -16,14 +8,9 @@ TODO:
         
 
         OK Pestaña de Incidencias (
-                Edit Incidencias
-                Eliminar Incidencias
-                pdf? subir como usuario
-
-                para agregar el funcionario a incidencias, deberia mostrar el 
-                funcionario que usaba el equipo al momento de realizar la incidencia.
-                Por lo que seria conveniente tener una referencia al rut directamente 
-                en incidencia
+                OK Edit Incidencias
+                OK Eliminar Incidencias
+                OK pdf? subir como usuario
         )
 
         OK Todos las pestañas de formularios deben tener un boton volver.
@@ -32,7 +19,7 @@ TODO:
         
         OK añadir modelo a tabla traslado
 
-        Exportar a excel(falta un ejemplo)
+        OK Exportar a excel
         OK asignacion(pdf)
         OK asignacion(editar, eliminar)
         OK combinar devolucion y asignacion
@@ -54,6 +41,7 @@ TODO:
         **
 
         en la paginacion no funciona correctamente. Al ordenar las tablas solo se ordenan
-        las que ya se mostraban antes
+        las que ya se mostraban antes(posible solucion aumentar cantidad por pagina)
 
-        El mostrar_asociados_funcionario no funciona correctamente
+        OK El mostrar_asociados_funcionario no funciona correctamente
+        OK falta editar edicion de unidad

@@ -82,8 +82,11 @@ def edit_Unidad(id):
        #         c_data[0] = c_data[i]
        #         c_data[i] = tmp
        #         break
+        cur.execute("SELECT * FROM modalidad")
+        modalidades_data = cur.fetchall()
         curs.close()
-        return render_template('editUnidad.html', Unidad = data[0], comuna = c_data)
+        return render_template('editUnidad.html', Unidad = data[0], 
+                comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('Unidad.UNIDAD'))
@@ -97,6 +100,8 @@ def update_Unidad(id):
         contactoUnidad = request.form['contactoUnidad']
         direccionUnidad = request.form['direccionUnidad']
         idComuna = request.form['nombreComuna']
+        idModalidad = request.form['idModalidad']
+
         try:
             cur = mysql.connection.cursor()
             cur.execute(""" 
@@ -105,9 +110,11 @@ def update_Unidad(id):
                 nombreUnidad = %s,
                 contactoUnidad = %s,
                 direccionUnidad = %s,
-                idComuna = %s
+                idComuna = %s,
+                idModalidad = %s
                 WHERE idUnidad = %s
-            """, (codigo_Unidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, id))
+            """, (codigo_Unidad, nombreUnidad, contactoUnidad, 
+                  direccionUnidad, idComuna, idModalidad ,id))
             mysql.connection.commit()
             flash('Unidad actualizada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
