@@ -133,3 +133,16 @@ function busqueda() {
     }
   }
 }
+function todoCheck() {
+  checkboxContainer = document.getElementById("checkbox_container")
+  checkboxes = checkboxContainer.getElementsByTagName("input")
+  for(let i = 0; i < checkboxes.length; i++) {
+    checkboxes[i].checked = false
+  }
+}
+function sheetCheck() {
+  todo_check = document.getElementById("todo_check")
+  todo_check.checked = false
+
+
+}

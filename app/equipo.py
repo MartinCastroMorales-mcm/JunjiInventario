@@ -516,6 +516,7 @@ def equipo_detalles(idEquipo):
 #exportar a pdf
 @equipo.route("/equipo/crear_excel")
 def crear_excel():
+    todo_check = request.form['todo_check']
     #buscar columnas
     wb = Workbook()
     ws = wb.active
