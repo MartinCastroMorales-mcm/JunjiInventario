@@ -45,4 +45,9 @@ TODO:
 
         OK El mostrar_asociados_funcionario no funciona correctamente
         OK falta editar edicion de unidad
-        arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
+        OK arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
+        excel por tipo_equipo
+        cambiar cabeceras 
+        cambiar cod_inventario varchar()
+        buscar(unidades, funcionarios, equipos, asignacions, 
+        devoluciones, incidencias, traslados)
