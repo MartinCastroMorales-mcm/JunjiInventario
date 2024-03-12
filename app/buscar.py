@@ -10,7 +10,7 @@ def Buscar():
     cur.execute("""
     SELECT e.Cod_inventarioEquipo as clave,
             e.Num_serieEquipo as nombre,
-            e.idEquipo, "equipo" as tipo
+            e.idEquipo as id, "equipo" as tipo
     FROM equipo e
     UNION
     SELECT f.rutFuncionario, f.nombreFuncionario, f.rutFuncionario,
@@ -22,4 +22,5 @@ def Buscar():
                 """)
     items_data = cur.fetchall()
 
-    return render_template("buscar.html", busqueda=busqueda_data, items=items_data)
+    return render_template("buscar.html", busqueda=busqueda_data, 
+                items=items_data)

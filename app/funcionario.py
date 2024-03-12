@@ -108,3 +108,23 @@ def delete_funcionario(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('funcionario.Funcionario'))
+
+@funcionario.route("/funcionario/buscar_funcionario/<id>")
+def buscar_funcionario(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+    SELECT * 
+    FROM funcionario f
+    INNER JOIN Unidad u on f.idUnidad = u.idUnidad
+    WHERE f.rutFuncionario = %s
+    """, (id,))
+    funcionarios = cur.fetchall()
+
+    cur.execute("""
+    SELECT *
+    FROM unidad u 
+                """)
+    unidades = cur.fetchall()
+    return render_template('funcionario.html', funcionario = funcionarios, 
+                           Unidad = unidades, page=1, lastpage=True)
+    pass

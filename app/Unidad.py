@@ -134,3 +134,32 @@ def delete_Unidad(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('Unidad.UNIDAD'))
+@Unidad.route("/unidad/buscar_unidad/<id>")
+def buscar_unidad(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
+               u.direccionUnidad, u.idComuna, co.nombreComuna,
+               co.idComuna, COUNT(e.idEquipo) as num_equipos,
+               mo.nombreModalidad
+        FROM Unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
+        LEFT JOIN equipo e on u.idUnidad = e.idUnidad
+        WHERE u.idUnidad = %s
+        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
+                """, (id,))
+    data = cur.fetchall()
+    cur.execute("""
+    SELECT *
+    FROM comuna c
+                """)
+    c_data = cur.fetchall()
+    cur.execute("""
+    SELECT *
+    FROM modalidad mo
+                """) 
+    modalidades_data = cur.fetchall()
+
+    return render_template('Unidad.html', Unidad = data, comuna = c_data, 
+        page=1, lastpage= True, Modalidades=modalidades_data)

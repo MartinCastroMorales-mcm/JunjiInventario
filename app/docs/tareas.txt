@@ -45,3 +45,4 @@ TODO:
 
         OK El mostrar_asociados_funcionario no funciona correctamente
         OK falta editar edicion de unidad
+        arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
