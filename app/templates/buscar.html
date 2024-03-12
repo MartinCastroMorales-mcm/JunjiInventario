@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-<h3>Buscando {{busqueda}}</h3>
+<div class="nav-search">
+    <input name="busqueda" type="text" class="search-query" placeholder="Search..." style="font-size: 30px"
+        value="{{busqueda}}" id="buscador" onkeyup="busqueda()">
+</div>
 <table id="posts">
     <thead>
         <tr>
@@ -9,20 +12,20 @@
             <td>Botones</td>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="myTBody">
         {% for item in items %}
-        <tr>
-            <td>{{item.clave}}</td>
-            <td>{{item.nombre}}</td>
+        <tr id="{{item.id}}">
+            <td id="clave">{{item.clave}}</td>
+            <td id="nombre">{{item.nombre}}</td>
             <td>
                 {% if item.tipo == "equipo" %}
-                 <a href="/equipo/buscar_equipo" class="nav-button2">Buscar</a>
+                <a href="/equipo/buscar_equipo/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
                 {% if item.tipo == "funcionario" %}
-                    <a href="/funcionario/buscar_funcionario" class="nav-button2">Buscar</a>
+                <a href="/funcionario/buscar_funcionario/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
                 {% if item.tipo == "unidad" %}
-                    <a href="/unidad/buscar_funcionario" class="nav-button2">Buscar</a>
+                <a href="/unidad/buscar_unidad/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
             </td>
         </tr>
@@ -30,4 +33,8 @@
 
     </tbody>
 </table>
+<script>
+    //buscar al iniciar la pagina
+    busqueda()
+</script>
 {% endblock %}

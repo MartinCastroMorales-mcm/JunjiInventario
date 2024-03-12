@@ -542,11 +542,11 @@ def crear_excel():
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
-    INNER JOIN comuna com ON com.idComuna = u.idComuna
-    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    LEFT JOIN comuna com ON com.idComuna = u.idComuna
+    LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
 
     WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
     UNION 
@@ -565,15 +565,15 @@ def crear_excel():
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
-    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-    INNER JOIN comuna com ON com.idComuna = u.idComuna
-    INNER JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    LEFT JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    LEFT JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    LEFT JOIN comuna com ON com.idComuna = u.idComuna
+    LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
     WHERE ee.nombreEstado_equipo LIKE "EN USO"
     ) as subquery
     
@@ -621,3 +621,74 @@ def crear_excel():
 @equipo.route("/equipo/importar_excel")
 def importar_excel(url):
     pass
+
+@equipo.route("/equipo/buscar_equipo/<id>")
+def buscar_equipo(id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+            SELECT *
+                FROM
+                (
+                SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+                    e.Num_serieEquipo, e.ObservacionEquipo,
+                    e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+                    e.numerotelefonicoEquipo,
+                    te.idTipo_equipo, 
+                    te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+                    u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+                moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
+                FROM equipo e
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+                WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+                UNION 
+                SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+                        e.Num_serieEquipo, e.ObservacionEquipo, 
+                        e.codigoproveedor_equipo, e.macEquipo, 
+                        e.imeiEquipo, e.numerotelefonicoEquipo,
+                        te.idTipo_equipo, te.nombreidTipoequipo,
+                        ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+                        u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+                        moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+                FROM equipo e
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+                INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+                WHERE ee.nombreEstado_equipo LIKE "EN USO"
+                ) as subquery
+                WHERE idEquipo = %s
+
+    """, (id,))
+    Equipos = cur.fetchall()
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipoe_data = cur.fetchall()
+    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    estadoe_data = cur.fetchall()
+    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    ubi_data = cur.fetchall()
+    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    ordenc_data = cur.fetchall()
+    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    modeloe_data = cur.fetchall()
+
+    return render_template(
+        "equipo.html",
+        equipo=Equipos,
+        tipo_equipo=tipoe_data,
+        estado_equipo=estadoe_data,
+        orden_compra=ordenc_data,
+        Unidad=ubi_data,
+        modelo_equipo=modeloe_data,
+        page=1,
+        lastpage=True,
+    )

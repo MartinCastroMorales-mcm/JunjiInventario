@@ -116,3 +116,20 @@ function sortTable(n) {
     }
   }
 }
+function busqueda() {
+  var input, a, filter, tbody;
+  input = document.getElementById("buscador")
+  filter = input.value.toLowerCase();
+  tbody = document.getElementById("myTBody")
+  tr = tbody.getElementsByTagName("tr")
+  for (let i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")
+    textoClave = td[0].textContent.toLowerCase()
+    textoNombre = td[1].textContent.toLowerCase()
+    if (textoClave.indexOf(filter) > -1 || textoNombre.indexOf(filter) > -1) {
+      tr[i].style.display = ""
+    } else {
+      tr[i].style.display = "none"
+    }
+  }
+}
