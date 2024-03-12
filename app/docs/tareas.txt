@@ -51,3 +51,6 @@ TODO:
         cambiar cod_inventario varchar()
         buscar(unidades, funcionarios, equipos, asignacions, 
         devoluciones, incidencias, traslados)
+        
+
+        -Favor de actualizar archivo de texto baseactualizada.txt cada vez que se modifique la bdd
