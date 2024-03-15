@@ -91,70 +91,138 @@
             </form>
         </div>
     </div>
-    <h2>Equipo</h2>
-    <a href="equipo/crear_excel" class="info-button">Exportar a Excel</a>
+</div>
+<h2>Equipo</h2>
+<button class="nav-button" onclick="showDiv('formularioExcel')">Exportar a Excel</button>
+<div class="card card-body" id="formularioExcel" style="display: none;">
+    <h2>Seleccione que hojas quiere</h2>
+    <form action="/test_excel_form" method="POST" class="mi-formulario">
+        <div style="display:grid;">
+            <div style="padding: 30px;">
+                <input name="todo_check" type="radio" id="todo_check" onclick="todoCheck()" />
+                <label for="todo_check">Todo en una pagina</label>
+            </div>
+            <div id="checkbox_container">
+                <div>
+                    <input onclick="check_all()"
+                        type="checkbox" id="checkall"/>
+                    <label for="checkall">Tickear todo</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()"
+                     type="checkbox" id="AIO_check" 
+                     name="AIO_check"/>
+                    <label for="AIO_check">AOI</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" 
+                    type="checkbox" id="impresoras_check" name="impresoras_check"/>
+                    <label for="impresoras_check">Impresoras</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="bam_check" name="bam_check"/>
+                    <label for="bam_check">Bam</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" 
+                        id="proyectores_check" name="proyectores_check"/>
+                    <label for="proyectores_check">Proyectores</label>
+                </div>
+                <div>
 
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <td onclick="sortTable(0)">Cod. inventario</td>
-                    <td onclick="sortTable(1)">Num. serie</td>
-                    <td onclick="sortTable(2)">Observacion</td>
-                    <td onclick="sortTable(3)">Funcionario</td>
-                    <td onclick="sortTable(4)">Codigo Proveedor</td>
-                    <td onclick="sortTable(5)">Mac</td>
-                    <td onclick="sortTable(6)">Imei</td>
-                    <td onclick="sortTable(7)">Numero de Telefono</td>
-                    <td onclick="sortTable(8)">Tipo equipo</td>
-                    <td onclick="sortTable(9)">Estado equipo</td>
-                    <td onclick="sortTable(10)">Unidad</td>
-                    <td onclick="sortTable(11)">Nombre orden compra</td>
-                    <td onclick="sortTable(12)">Modelo</td>
-                    <td>Operations</td>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-                {% for equi in equipo %}
-                <tr>
-                    <td>{{equi.Cod_inventarioEquipo}}</td>
-                    <td>{{equi.Num_serieEquipo}}</td>
-                    <td>{{equi.ObservacionEquipo}}</td>
-                    <td>{{equi.nombreFuncionario}}</td>
-                    <td>{{equi.codigoproveedor_equipo}}</td>
-                    <td>{{equi.macEquipo}}</td>
-                    <td>{{equi.imeiEquipo}}</td>
-                    <td>{{equi.numerotelefonicoEquipo}}</td>
-                    {% if tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
-                    <td>{{equi.nombreidTipoequipo}}</td>
-                    {% endif %}
-                    {% if estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
-                    <td>{{equi.nombreEstado_equipo}}</td>
-                    {% endif %}
-                    <td>{{equi.nombreUnidad}}</td>
-                    {% if orden_compra.idOrden_compra == equipo.idOrden_compra %}
-                    <td>{{equi.nombreOrden_compra}}</td>
-                    {% endif %}
-                    {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
-                    <td>{{equi.nombreModeloequipo}}</td>
-                    {% endif %}
+                    <input onclick="sheetCheck()" type="checkbox" id="telefonos_check" 
+                        name="telefonos_check"/>
+                    <label for="telefonos_check">Telefonos</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="HDD_check" 
+                        name="HDD_check"/>
 
-                    <td>
-                        {#clase para tener un boton que despliega los otros botones #}
-                        <div class="dropdown">
-                            <button class="options-button">Opciones</button>
-                            <div class="dropdown-options">
-                                <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button" style="width: 90%;">Editar</a>
-                                <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button" style="width: 90%;">Eliminar</a>
-                                <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button" style="width: 90%;">Detalles</a>
-                                <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button" style="width: 90%;">Incidencia</a>
-                            </div>
+                    <label for="HDD_check">Discos Duros Externos</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="tablets_check" 
+                        name="tablets_check"/>
+                    <label for="tablets_check">Tablets</label>
+                </div>
+                <div>
+
+                    <input onclick="sheetCheck()" type="checkbox" id="otros_check" 
+                        name="otros_check"/>
+                    <label for="otros_check">Otros</label>
+                </div>
+            </div>
+            <button class="agregar-button">Exportar</button>
+        </div>
+    </form>
+</div>
+
+
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Cod. inventario</td>
+                <td onclick="sortTable(1)">Num. serie</td>
+                <td onclick="sortTable(2)">Observacion</td>
+                <td onclick="sortTable(3)">Funcionario</td>
+                <td onclick="sortTable(4)">Codigo Proveedor</td>
+                <td onclick="sortTable(5)">Mac</td>
+                <td onclick="sortTable(6)">Imei</td>
+                <td onclick="sortTable(7)">Numero de Telefono</td>
+                <td onclick="sortTable(8)">Tipo equipo</td>
+                <td onclick="sortTable(9)">Estado equipo</td>
+                <td onclick="sortTable(10)">Unidad</td>
+                <td onclick="sortTable(11)">Nombre orden compra</td>
+                <td onclick="sortTable(12)">Modelo</td>
+                <td>Operations</td>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            {% for equi in equipo %}
+            <tr>
+                <td>{{equi.Cod_inventarioEquipo}}</td>
+                <td>{{equi.Num_serieEquipo}}</td>
+                <td>{{equi.ObservacionEquipo}}</td>
+                <td>{{equi.nombreFuncionario}}</td>
+                <td>{{equi.codigoproveedor_equipo}}</td>
+                <td>{{equi.macEquipo}}</td>
+                <td>{{equi.imeiEquipo}}</td>
+                <td>{{equi.numerotelefonicoEquipo}}</td>
+                {% if tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
+                <td>{{equi.nombreidTipoequipo}}</td>
+                {% endif %}
+                {% if estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
+                <td>{{equi.nombreEstado_equipo}}</td>
+                {% endif %}
+                <td>{{equi.nombreUnidad}}</td>
+                {% if orden_compra.idOrden_compra == equipo.idOrden_compra %}
+                <td>{{equi.nombreOrden_compra}}</td>
+                {% endif %}
+                {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
+                <td>{{equi.nombreModeloequipo}}</td>
+                {% endif %}
+
+                <td>
+                    {#clase para tener un boton que despliega los otros botones #}
+                    <div class="dropdown">
+                        <button class="options-button">Opciones</button>
+                        <div class="dropdown-options">
+                            <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button"
+                                style="width: 90%;">Editar</a>
+                            <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button"
+                                style="width: 90%;">Eliminar</a>
+                            <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button"
+                                style="width: 90%;">Detalles</a>
+                            <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button"
+                                style="width: 90%;">Incidencia</a>
                         </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {{ paginacion("equipo", page, lastpage) }}
-        {% endblock %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ paginacion("equipo", page, lastpage) }}
+    {% endblock %}
