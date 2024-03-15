@@ -47,10 +47,14 @@ TODO:
         OK falta editar edicion de unidad
         OK arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
 
-        OK excel por tipo_equipo <---
-        cambiar cabeceras 
+        OK excel por tipo_equipo 
+        OK cambiar cabeceras 
         cambiar cod_inventario varchar()
-        buscar(unidades, funcionarios, equipos, asignacions, 
+        OK buscar(unidades, funcionarios, equipos, asignacions, 
         devoluciones, incidencias, traslados)
-        filtrar equipos de baja
+        OK filtrar equipos de baja
         
+        Algunas consultas de equipos le podria faltar 
+                AND a.ActivoAsignacion = 1
+        para que no se repitan equipos de asignaciones devueltas
+              

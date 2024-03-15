@@ -58,6 +58,8 @@ def Equipo(page=1):
     INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
     INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
     WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    AND
+    a.ActivoAsignacion = 1
     ) as subquery
     LIMIT {} OFFSET {}
 
@@ -925,7 +927,7 @@ def buscar_equipo(id):
                 INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
                 INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
                 INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-                WHERE ee.nombreEstado_equipo LIKE "EN USO"
+                WHERE ee.nombreEstado_equipo LIKE "EN USO" 
                 ) as subquery
                 WHERE idEquipo = %s
 

@@ -8,18 +8,36 @@ def Buscar():
 
     cur = mysql.connection.cursor()
     cur.execute("""
-    SELECT e.Cod_inventarioEquipo as clave,
-            e.Num_serieEquipo as nombre,
-            e.idEquipo as id, "equipo" as tipo
+    SELECT e.Cod_inventarioEquipo as clave, 
+                e.Num_serieEquipo as nombre, 
+                e.codigoproveedor_equipo as codigo,
+                e.idEquipo as id, 
+                "equipo" as tipo
     FROM equipo e
     UNION
-    SELECT f.rutFuncionario, f.nombreFuncionario, f.rutFuncionario,
-                "funcionario"
+    SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario,
+                f.rutFuncionario, "funcionario"
     FROM funcionario f
     UNION
-    SELECT u.direccionUnidad, u.nombreUnidad, u.idUnidad, "unidad"
+    SELECT u.direccionUnidad, u.nombreUnidad, mo.nombreModalidad,
+                 u.idUnidad, "unidad"
     FROM unidad u
-                """)
+        INNER JOIN modalidad mo ON mo.idModalidad = u.idModalidad
+        UNION
+        SELECT a.fecha_inicioAsignacion as clave, 
+                a.ActivoAsignacion as nombre,
+                a.observacionAsignacion as codigo,
+                a.idAsignacion as id,
+                "asignacion" as tipo
+        FROM asignacion a
+        UNION
+        SELECT i.fechaIncidencia,
+                i.nombreIncidencia,
+                i.observacionIncidencia,
+                i.idIncidencia,
+                "incidencia"
+        FROM incidencia i
+        """)
     items_data = cur.fetchall()
 
     return render_template("buscar.html", busqueda=busqueda_data, 

@@ -426,7 +426,6 @@ def mostrar_pdf(id):
 
 @asignacion.route("/asignacion/devolver/<id>")
 def devolver(id):
-    print("####################devolver")
     today = date.today()
     cur = mysql.connection.cursor()
     cur.execute("""
