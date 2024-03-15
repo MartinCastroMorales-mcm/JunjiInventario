@@ -58,3 +58,4 @@ TODO:
                 AND a.ActivoAsignacion = 1
         para que no se repitan equipos de asignaciones devueltas
               
+        -Favor de actualizar archivo de texto baseactualizada.txt cada vez que se modifique la bdd
