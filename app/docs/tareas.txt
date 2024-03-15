@@ -47,7 +47,7 @@ TODO:
         OK falta editar edicion de unidad
         OK arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
 
-        excel por tipo_equipo
+        OK excel por tipo_equipo <---
         cambiar cabeceras 
         cambiar cod_inventario varchar()
         buscar(unidades, funcionarios, equipos, asignacions, 
