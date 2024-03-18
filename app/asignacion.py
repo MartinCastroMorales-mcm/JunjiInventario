@@ -88,6 +88,7 @@ def edit_asignacion(id):
                 a.fecha_inicioAsignacion,
                 a.observacionAsignacion,
                 a.rutaactaAsignacion,
+                a.rutFuncionario,
                 f.nombreFuncionario,
                 d.fechaDevolucion
                 FROM asignacion a
@@ -96,11 +97,13 @@ def edit_asignacion(id):
             WHERE idAsignacion = %s""",
             (id,),
         )
-        data = cur.fetchall()
+        data = cur.fetchone()
         cur.execute("SELECT * FROM funcionario")
         f_data = cur.fetchall()
         cur.execute("SELECT * FROM equipo")
         eq_data = cur.fetchall()
+        print(data)
+        print(data['observacionAsignacion'])
         return render_template(
             "editAsignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
         )

@@ -20,7 +20,8 @@ def Incidencia(page = 1):
         """
                 SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
                     i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, me.nombreModeloEquipo
+                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, me.nombreModeloEquipo,
+                    i.numDocumentos
                 FROM incidencia i 
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
                 INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
@@ -168,6 +169,14 @@ def listar_pdf(id):
     dir = PDFS_INCIDENCIAS
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     if(not os.path.exists(carpeta_incidencias)):
+        #insertar numero de documentos
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE incidencia
+            SET numDocumentos = %s
+            WHERE idIncidencia = %s
+                    """, (0 , id))
+        mysql.connection.commit()
         return render_template("mostrar_pdf_incidencia.html", idIncidencia=id,
                 documentos=(), equipo=data_equipo)
 
@@ -185,8 +194,18 @@ def listar_pdf(id):
             pdfTupla = pdfTupla + (fileName,)
     #print(pdfTupla)
 
-
-    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, documentos=pdfTupla, equipo=data_equipo)
+    #TODO:
+    #insertar numero de documentos
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE incidencia
+        SET numDocumentos = %s
+        WHERE idIncidencia = %s
+                """, (len(pdfTupla), id))
+    mysql.connection.commit()
+    
+    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, 
+                           documentos=pdfTupla, equipo=data_equipo)
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
 def mostrar_pdf(id, nombrePdf):

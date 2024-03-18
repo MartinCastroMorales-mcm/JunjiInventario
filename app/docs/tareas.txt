@@ -29,9 +29,9 @@ TODO:
         detalle de traslado(no esta claro como se deberia acceder)
         ventana emergente para observacion
         comentar codigos
-        buscador
-        mostrar numero de incidencias en la pestaña detalles. Esto 
-        probablemente requeriria modificar la BBDD
+        OK buscador
+        OK mostrar numero de incidencias en la pestaña detalles. Esto 
+                probablemente requeriria modificar la BBDD
         OK agregar boton para ver equipos de un funcionario
         
         **
@@ -49,13 +49,15 @@ TODO:
 
         OK excel por tipo_equipo 
         OK cambiar cabeceras 
-        cambiar cod_inventario varchar()
+        OK cambiar cod_inventario varchar()
         OK buscar(unidades, funcionarios, equipos, asignacions, 
-        devoluciones, incidencias, traslados)
+                devoluciones, incidencias, traslados)
         OK filtrar equipos de baja
         
-        Algunas consultas de equipos le podria faltar 
+                Algunas consultas de equipos le podria faltar 
                 AND a.ActivoAsignacion = 1
-        para que no se repitan equipos de asignaciones devueltas
+                para que no se repitan equipos de asignaciones devueltas
               
         -Favor de actualizar archivo de texto baseactualizada.txt cada vez que se modifique la bdd
+        
+        Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
