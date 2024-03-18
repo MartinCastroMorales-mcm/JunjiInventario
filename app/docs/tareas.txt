@@ -60,4 +60,41 @@ TODO:
               
         -Favor de actualizar archivo de texto baseactualizada.txt cada vez que se modifique la bdd
         
-        Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
+
+        18/03/2024
+        -Login con microsoft o propio  * 1dia
+        -seleccionar pagina paginacion * 1h
+        -acceso directo asignacion desde historial * 1h
+        -acceso de asignar desde pestaña equipo * 1h
+        -acceso de devolucion desde pestaña equipo * 1h
+        -pistola debe funcionar en todos las tablas con equipos *1dia
+        -añadir notebooks a las hojas del excel * 1h
+        -añadir codigo de unidad en el excel y columna de tabla equipos *1h
+        -añadir al excel nombre de provedor *1h
+        -codigo proveedor de sonda *1h
+        -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
+        -añadir buscador solo para equipos --
+        -añadir elegir marca y por cada marca mostrar los modelos de esa marca *1h
+        -cambiar orden marca, tipo_equipo, modelo
+        -error funcionario equipos sin asignar
+        OK -boton agregar funcionario se llama "agregar funcionario"
+        OK -cambiar fechaEstado Equipo (sacar)
+        OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
+        -adjuntar pdf firmados para (traslado, asignacion, devolucion)
+        -añadir buscador para traslado
+        -añadir traslados a busqueda
+        -quitar acta de el formulario para crear traslados
+        OK -añadir detalles a de equipo a incidencias
+        OK -desde la pestaña de incidencias tener un boton para ir a equipos
+        OK -error incidencia se añade solo a un equipo
+
+        //cuando este en el servidor
+        -codigo QR para equipos
+        -probar desde el celular
+        -guardar la tabla del excel en pdf
+        -opcion importar excel
+        -al eliminar considerar volver al original
+        -que hacer con comunas y provincias ¿pestaña de reportes?
+        -------------------------
+
+        Agregar lista de opciones para incidencias cosa que los botones se vean mas parejos
