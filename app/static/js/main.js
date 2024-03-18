@@ -126,7 +126,12 @@ function busqueda() {
     td = tr[i].getElementsByTagName("td")
     textoClave = td[0].textContent.toLowerCase()
     textoNombre = td[1].textContent.toLowerCase()
-    if (textoClave.indexOf(filter) > -1 || textoNombre.indexOf(filter) > -1) {
+    textoCodigo = td[2].textContent.toLowerCase()
+    if (textoClave.indexOf(filter) > -1 
+    || 
+    textoNombre.indexOf(filter) > -1
+    ||
+    textoCodigo.indexOf(filter) > -1) {
       tr[i].style.display = ""
     } else {
       tr[i].style.display = "none"
@@ -145,6 +150,7 @@ function sheetCheck() {
   todo_check.checked = false
 }
 function check_all() {
+  sheetCheck()
   console.log("checkall")
   checkboxContainer = document.getElementById("checkbox_container")
   checkboxes = checkboxContainer.getElementsByTagName("input")

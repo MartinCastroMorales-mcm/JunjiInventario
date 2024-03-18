@@ -7,8 +7,9 @@
 <table id="posts">
     <thead>
         <tr>
-            <td>Clave</td>
-            <td>Nombre</td>
+            <td></td>
+            <td></td>
+            <td></td>
             <td>Botones</td>
         </tr>
     </thead>
@@ -17,6 +18,7 @@
         <tr id="{{item.id}}">
             <td id="clave">{{item.clave}}</td>
             <td id="nombre">{{item.nombre}}</td>
+            <td>{{item.codigo}}</td>
             <td>
                 {% if item.tipo == "equipo" %}
                 <a href="/equipo/buscar_equipo/{{item.id}}" class="nav-button2">Buscar</a>
@@ -26,6 +28,12 @@
                 {% endif %}
                 {% if item.tipo == "unidad" %}
                 <a href="/unidad/buscar_unidad/{{item.id}}" class="nav-button2">Buscar</a>
+                {% endif %}
+                {% if item.tipo == "incidencia" %}
+                <a href="/TODO" class="nav-button2">Buscar</a>
+                {% endif %}
+                {% if item.tipo == "asignacion" %}
+                <a href="/TODO" class="nav-button2">Buscar</a>
                 {% endif %}
             </td>
         </tr>

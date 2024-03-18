@@ -57,6 +57,8 @@
                     <td onclick="sortTable(4)">N° Serie</td>
                     <td onclick="sortTable(5)">Nombre Equipo</td>
                     <td onclick="sortTable(6)">Modelo</td>
+                    <td onclick="sortTable(7)">N° Documentos</td>
+                    
                     <td>Operations</td>
                 </tr>
             </thead>
@@ -75,6 +77,7 @@
                     <td>{{incidencia.Num_serieEquipo}}</td>
                     <td>{{incidencia.nombreidTipoequipo}}</td>
                     <td>{{incidencia.nombreModeloEquipo}}</td>
+                    <td>{{incidencia.numDocumentos}}</td>
                     <td>
                         <a href="/incidencia/edit_incidencia/{{incidencia.idIncidencia}}" class="success-button">Editar</a>
                         <a href="/incidencia/delete_incidencia/{{incidencia.idIncidencia}}"

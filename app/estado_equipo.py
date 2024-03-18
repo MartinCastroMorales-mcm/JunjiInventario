@@ -80,3 +80,76 @@ def delete_estado_equipo(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('estado_equipo.estadoEquipo'))
+
+@estado_equipo.route("/mostrar_equipos_segun_tipo/<tipo>")
+def mostrar_equipos_segun_tipo(tipo):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+
+            SELECT *
+                FROM
+                (
+                SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+                    e.Num_serieEquipo, e.ObservacionEquipo,
+                    e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+                    e.numerotelefonicoEquipo,
+                    te.idTipo_equipo, 
+                    te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+                    u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+                moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
+                FROM equipo e
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+                WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+                UNION 
+                SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+                        e.Num_serieEquipo, e.ObservacionEquipo, 
+                        e.codigoproveedor_equipo, e.macEquipo, 
+                        e.imeiEquipo, e.numerotelefonicoEquipo,
+                        te.idTipo_equipo, te.nombreidTipoequipo,
+                        ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+                        u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+                        moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+                FROM equipo e
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+
+                INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+                WHERE ee.nombreEstado_equipo LIKE "EN USO"
+                AND a.ActivoAsignacion = 1
+                ) as subquery
+                WHERE nombreEstado_equipo = %s
+
+    """, (tipo,))
+    Equipos = cur.fetchall()
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipoe_data = cur.fetchall()
+    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    estadoe_data = cur.fetchall()
+    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    ubi_data = cur.fetchall()
+    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    ordenc_data = cur.fetchall()
+    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    modeloe_data = cur.fetchall()
+
+    return render_template(
+        "equipo.html",
+        equipo=Equipos,
+        tipo_equipo=tipoe_data,
+        estado_equipo=estadoe_data,
+        orden_compra=ordenc_data,
+        Unidad=ubi_data,
+        modelo_equipo=modeloe_data,
+        page=1,
+        lastpage=True,
+    )
