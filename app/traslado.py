@@ -409,3 +409,33 @@ def mostrar_pdf(id):
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('traslado.Traslado'))
+
+@traslado.route("/traslado/buscar/<idTraslado>")
+def buscar(idTraslado):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+                SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
+                    origen.nombreUnidad as nombreOrigen, 
+                    destino.nombreUnidad as nombreDestino,
+                    t.estaFirmadoTraslado
+                FROM traslado t
+                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
+                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
+                WHERE t.idTraslado = %s
+                ORDER BY idTraslado DESC
+        """, (idTraslado,)
+    )
+    data = cur.fetchall()
+
+    cur.execute(
+        """
+        SELECT * 
+        FROM unidad u
+        ORDER BY u.nombreUnidad
+                 """
+    )
+    unidades = cur.fetchall()
+    
+    return render_template("traslado.html", traslado=data, unidades=unidades,
+                           page=1, lastpage= True)

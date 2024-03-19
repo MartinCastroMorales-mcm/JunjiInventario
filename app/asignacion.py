@@ -667,3 +667,39 @@ def mostrar_pdf_devolucion(id):
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
+
+@asignacion.route("/asignacion/buscar/<idAsignacion>")
+def buscar(idAsignacion):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """ 
+    SELECT  
+        a.idAsignacion,
+        a.fecha_inicioAsignacion,
+        a.observacionAsignacion,
+        a.rutaactaAsignacion,
+        f.nombreFuncionario,
+        a.fechaDevolucion,
+        a.ActivoAsignacion
+    FROM asignacion a
+    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    WHERE a.idAsignacion = %s
+        """, (idAsignacion,)
+    )
+    #solo tiene un elemento pero se extraen todas para reusar el html
+    Asignaciones = cur.fetchall()
+
+    cur.execute(
+        """ SELECT 
+            f.rutFuncionario,
+            f.nombreFuncionario 
+        FROM funcionario f
+        ORDER BY f.nombreFuncionario
+        """
+    )
+    funcionarios = cur.fetchall()
+
+    return render_template("asignacion.html",  
+        funcionarios=funcionarios, asignacion=Asignaciones,
+        page=1, lastpage=True
+    )

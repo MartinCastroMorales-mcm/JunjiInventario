@@ -43,13 +43,15 @@
 
 </div>
 <h2>Traslado</h2>
+<div style="width: 0px; margin:auto">
+    <input name="busqueda" type="text" class="search-box" placeholder="Search..." style="font-size: 30px" id="buscador"
+        onkeyup="busqueda('myTableBody')">
+</div>
 <div style="position: relative;">
     <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
     <div style="overflow-x:auto;">
 
 
-    <input name="busqueda" type="text" class="search-query" placeholder="Search..." style="font-size: 30px"
-        id="buscador" onkeyup="busqueda('myTableBody')">
 
         <table id="posts">
             <thead id="myTableHead">
@@ -84,15 +86,16 @@
                             <button class="options-button desplegable-button">Opciones</button>
                             <div class="dropdown-options" style="border: 0px; border-color:#5500ff; border-style:solid">
                                 <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                                <a href="/traslado/edit_traslado/{{tras.idTraslado}}" 
-                                class="success-button desplegable-button">Editar</a>
+                                <a href="/traslado/edit_traslado/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">Editar</a>
                                 <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
                                 <a href="/traslado/delete_traslado/{{tras.idTraslado}}"
                                     class="delete-button desplegable-button">Eliminar</a>
                                 <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}"
                                     class="info-button desplegable-button">Equipos</a>
                                 {% if tras.estaFirmadoTraslado != 1%}
-                                <a href="/traslado/adjuntar_firmado/{{tras.idTraslado}}" class="success-button desplegable-button">
+                                <a href="/traslado/adjuntar_firmado/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">
                                     Firmar</a>
                                 {% endif %}
                             </div>
