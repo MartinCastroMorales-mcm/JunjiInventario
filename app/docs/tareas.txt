@@ -65,8 +65,9 @@ TODO:
         -Login con microsoft o propio  * 1dia
         -seleccionar pagina paginacion * 1h
         -acceso directo asignacion desde historial * 1h
-        -acceso de asignar desde pestaña equipo * 1h
-        -acceso de devolucion desde pestaña equipo * 1h
+        OK -acceso de asignar desde pestaña equipo * 1h
+        -acceso de devolucion desde pestaña equipo * 1h 
+                (que pasa si se la asignacion es de multiples equipos y solo se quiere devolver 1 )
         -pistola debe funcionar en todos las tablas con equipos *1dia
         -añadir notebooks a las hojas del excel * 1h
         -añadir codigo de unidad en el excel y columna de tabla equipos *1h
@@ -75,15 +76,15 @@ TODO:
         -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
         -añadir buscador solo para equipos --
         -añadir elegir marca y por cada marca mostrar los modelos de esa marca *1h
-        -cambiar orden marca, tipo_equipo, modelo
-        -error funcionario equipos sin asignar
+        -cambiar orden marca, tipo_equipo, modelo *1h
+        -error funcionario equipos sin asignar *1h
         OK -boton agregar funcionario se llama "agregar funcionario"
         OK -cambiar fechaEstado Equipo (sacar)
         OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
-        -adjuntar pdf firmados para (traslado, asignacion, devolucion)
-        -añadir buscador para traslado
-        -añadir traslados a busqueda
-        -quitar acta de el formulario para crear traslados
+        -adjuntar pdf firmados para (traslado, asignacion, devolucion) *4h
+        -añadir buscador para traslado *4h
+        -añadir traslados a busqueda *2h
+        OK-quitar acta de el formulario para crear traslados
         OK -añadir detalles a de equipo a incidencias
         OK -desde la pestaña de incidencias tener un boton para ir a equipos
         OK -error incidencia se añade solo a un equipo

@@ -126,32 +126,32 @@ function sortTable(n) {
   }
 }
 
-function busqueda() {
+function busqueda(tableBodyId="myTBody") {
   var input, a, filter, tbody;
   //busca el bloque de texto
   input = document.getElementById("buscador")
   //el texto del bloque es nuestro filtro
   filter = input.value.toLowerCase();
   //obtenemos el cuerpo de la tabla
-  tbody = document.getElementById("myTBody")
+  tbody = document.getElementById(tableBodyId)
   //tr es una lista de todos las filas
   tr = tbody.getElementsByTagName("tr")
   for (let i = 0; i < tr.length; i++) {
     //obtiene todas las columnas de la fila actual
-    td = tr[i].getElementsByTagName("td")
-    textoClave = td[0].textContent.toLowerCase()
-    textoNombre = td[1].textContent.toLowerCase()
-    textoCodigo = td[2].textContent.toLowerCase()
-    //si el filtro se parece a cualquiera de las columas se mantiene en
-    //la tabla de contrario se esconde
-    if (textoClave.indexOf(filter) > -1 
-    || 
-    textoNombre.indexOf(filter) > -1
-    ||
-    textoCodigo.indexOf(filter) > -1) {
-      tr[i].style.display = ""
-    } else {
-      tr[i].style.display = "none"
+    //console.log("row")
+    td = tr[i].querySelectorAll(".toCheck")
+    //console.log("td " + td.length)
+    //console.log(td)
+    for(let j = 0; j < td.length; j++) {
+      console.log("col")
+      texto = td[j].textContent.toLowerCase()
+      //console.log(texto)
+      if(texto.indexOf(filter) > -1) {
+        tr[i].style.display = ""
+        break;
+      }else {
+        tr[i].style.display = "none"
+      }
     }
   }
 }

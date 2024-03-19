@@ -53,7 +53,8 @@ def Asignacion(page=1):
 
 
 @asignacion.route("/add_asignacion", methods=["GET"])
-def add_asignacion():
+@asignacion.route("/add_asignacion/<idEquipo>")
+def add_asignacion(idEquipo = "None"):
     cur = mysql.connection.cursor()
     #los funcionarios son para el select en el formulario de agregar
     cur.execute("""
@@ -76,7 +77,7 @@ def add_asignacion():
                 """, ("SIN ASIGNAR",))
     equipos_data = cur.fetchall()
     return render_template("add_asignacion.html",equipos=equipos_data,
-                            funcionarios=funcionarios_data )
+        funcionarios=funcionarios_data, equipoSeleccionado = int(idEquipo))
 
 
 

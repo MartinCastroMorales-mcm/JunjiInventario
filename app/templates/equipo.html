@@ -217,6 +217,15 @@
                                 style="width: 90%;">Detalles</a>
                             <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button"
                                 style="width: 90%;">Incidencia</a>
+                            {% if equi.nombreEstado_equipo == "SIN ASIGNAR" %}
+                            <a href="/add_asignacion/{{equi.idEquipo}}" class="agregar-button"
+                                style="width: 90%;">Asignar</a>
+                            {% else %}
+                            <a href="/TODO:" class="agregar-button"
+                                style="width: 90%;">Devolver¿?</a>
+                            {% endif %}
+
+
                         </div>
                     </div>
                 </td>

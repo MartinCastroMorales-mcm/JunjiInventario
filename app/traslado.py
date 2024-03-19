@@ -17,7 +17,9 @@ def Traslado(page = 1):
     cur.execute(
         """
                 SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
-                    origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
+                    origen.nombreUnidad as nombreOrigen, 
+                    destino.nombreUnidad as nombreDestino,
+                    t.estaFirmadoTraslado
                 FROM traslado t
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
@@ -28,6 +30,7 @@ def Traslado(page = 1):
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM traslado')
     total = cur.fetchone()
+    #estraer el numero del mensaje
     total = int(str(total).split(':')[1].split('}')[0])
     cur.execute(
         """

@@ -61,7 +61,13 @@
                     <td>{{eq.nombreUnidad}}</td>
                     <td>
                         Asignar:
-                        <input type="checkbox" value="{{eq.idEquipo}}" name="asignaciones[]" />
+                        {% if equipoSeleccionado == eq.idEquipo %}
+                        <input type="checkbox" value="{{eq.idEquipo}}" 
+                        name="asignaciones[]" checked="true"/>
+                        {% else %}
+                        <input type="checkbox" value="{{eq.idEquipo}}" 
+                        name="asignaciones[]"/>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

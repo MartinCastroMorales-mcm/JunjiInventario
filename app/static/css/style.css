@@ -687,3 +687,8 @@ a.mainbar-link {
     border-radius: 5px; /* Bordes redondeados */
     transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
 }
+
+.desplegable-button {
+    width: 100%; 
+    border-radius:0px;
+}
