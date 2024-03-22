@@ -1,0 +1,24 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<div class="card card-body" id="formulario" >
+    <form action="/registrar" method="POST" class="mi-formulario">
+        <div class="form-group">
+            <label for="nombreUsuario">Nombre de Usuario</label>
+            <input type="text" class="form-control" 
+                name="nombreUsuario" placeholder="Nombre_Usuario">
+            <br>
+            <label for="correo">Correo</label>
+            <input type="text" class="form-control" 
+                name="correo" placeholder="Correo Electronico">
+            <br>
+            <label for="password">Contraseña: </label>
+            <input type="text" class="form-control" 
+                name="password" placeholder="password">
+            <br>
+            <button class="agregar-button"> Ingresar</button>
+    </form>
+</div>
+
+{% endblock %}

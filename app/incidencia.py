@@ -261,3 +261,28 @@ def mostrar_pdf(id, nombrePdf):
 #def mostrar_pdf(id):
     #pass
     
+
+@incidencia.route("/incidencia/buscar/<idIncidencia>")
+def buscar(idIncidencia):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+                SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
+                    i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
+                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, 
+                    me.nombreModeloEquipo,
+                    i.numDocumentos, e.idEquipo
+                FROM incidencia i 
+                INNER JOIN equipo e on i.idEquipo = e.idEquipo
+                INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
+                INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
+                WHERE i.idIncidencia = %s
+        """, (idIncidencia)
+    )
+    data = cur.fetchall()
+    cur.execute('SELECT COUNT(*) FROM incidencia')
+    total = cur.fetchone()
+    total = int(str(total).split(':')[1].split('}')[0])
+    unidades = cur.fetchall()
+    return render_template("incidencia.html", Incidencia=data,
+                           page=1, lastpage= True)

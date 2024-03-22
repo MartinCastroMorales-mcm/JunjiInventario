@@ -59,8 +59,6 @@ def add_traslado():
                 INNER JOIN unidad u on u.idUnidad = e.idUnidad
                 INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
                 WHERE e.idUnidad = %s
-            
-                        
                         """, (Origen,))
                     
             equipos_data = cur.fetchall()
