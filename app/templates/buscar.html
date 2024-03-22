@@ -1,8 +1,12 @@
 {% extends "layout.html" %}
 {% block body %}
-<div class="nav-search">
-    <input name="busqueda" type="text" class="search-query" placeholder="Search..." style="font-size: 30px"
+<br/>
+    <div style="margin: auto; width: 0px;">
+    <input name="busqueda" type="text" class="search-box" placeholder="Search..."
+     style="font-size: 30px"
         value="{{busqueda}}" id="buscador" onkeyup="busqueda()">
+    </div>
+<div class="nav-search">
 </div>
 <table id="posts">
     <thead>
@@ -16,9 +20,9 @@
     <tbody id="myTBody">
         {% for item in items %}
         <tr id="{{item.id}}">
-            <td id="clave">{{item.clave}}</td>
-            <td id="nombre">{{item.nombre}}</td>
-            <td>{{item.codigo}}</td>
+            <td class="toCheck" id="clave">{{item.clave}}</td>
+            <td class="toCheck" id="nombre">{{item.nombre}}</td>
+            <td class="toCheck">{{item.codigo}}</td>
             <td>
                 {% if item.tipo == "equipo" %}
                 <a href="/equipo/buscar_equipo/{{item.id}}" class="nav-button2">Buscar</a>

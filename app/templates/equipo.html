@@ -22,6 +22,7 @@
         <!-- Se termina la seccion de errores -->
 
         <!-- ----- -->
+
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_equipo" method="POST" class="mi-formulario">
@@ -104,51 +105,42 @@
             </div>
             <div id="checkbox_container">
                 <div>
-                    <input onclick="check_all()"
-                        type="checkbox" id="checkall"/>
+                    <input onclick="check_all()" type="checkbox" id="checkall" />
                     <label for="checkall">Tickear todo</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()"
-                     type="checkbox" id="AIO_check" 
-                     name="AIO_check"/>
-                    <label for="AIO_check">AOI</label>
+                    <input onclick="sheetCheck()" type="checkbox" id="AIO_check" name="AIO_check" />
+                    <label for="AIO_check">AIO</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()" 
-                    type="checkbox" id="impresoras_check" name="impresoras_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="impresoras_check" name="impresoras_check" />
                     <label for="impresoras_check">Impresoras</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()" type="checkbox" id="bam_check" name="bam_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="bam_check" name="bam_check" />
                     <label for="bam_check">Bam</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()" type="checkbox" 
-                        id="proyectores_check" name="proyectores_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="proyectores_check" name="proyectores_check" />
                     <label for="proyectores_check">Proyectores</label>
                 </div>
                 <div>
 
-                    <input onclick="sheetCheck()" type="checkbox" id="telefonos_check" 
-                        name="telefonos_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="telefonos_check" name="telefonos_check" />
                     <label for="telefonos_check">Telefonos</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()" type="checkbox" id="HDD_check" 
-                        name="HDD_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="HDD_check" name="HDD_check" />
 
                     <label for="HDD_check">Discos Duros Externos</label>
                 </div>
                 <div>
-                    <input onclick="sheetCheck()" type="checkbox" id="tablets_check" 
-                        name="tablets_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="tablets_check" name="tablets_check" />
                     <label for="tablets_check">Tablets</label>
                 </div>
                 <div>
 
-                    <input onclick="sheetCheck()" type="checkbox" id="otros_check" 
-                        name="otros_check"/>
+                    <input onclick="sheetCheck()" type="checkbox" id="otros_check" name="otros_check" />
                     <label for="otros_check">Otros</label>
                 </div>
             </div>
@@ -157,7 +149,13 @@
     </form>
 </div>
 
-
+<br />
+<div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+        <input name="busqueda" type="text" 
+        class="search-box" placeholder="Search..." 
+        id="buscador"
+            onkeyup="busqueda('myTableBody')">
+</div>
 <div style="overflow-x:auto;">
     <table id="posts">
         <thead>
@@ -217,6 +215,15 @@
                                 style="width: 90%;">Detalles</a>
                             <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button"
                                 style="width: 90%;">Incidencia</a>
+                            {% if equi.nombreEstado_equipo == "SIN ASIGNAR" %}
+                            <a href="/add_asignacion/{{equi.idEquipo}}" class="agregar-button"
+                                style="width: 90%;">Asignar</a>
+                            {% else %}
+                            <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button" 
+                                style="width: 90%;">Devolver</a>
+                            {% endif %}
+
+
                         </div>
                     </div>
                 </td>

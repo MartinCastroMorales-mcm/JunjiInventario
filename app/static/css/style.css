@@ -460,13 +460,18 @@ a.sidebar-link:hover {
         width: 1%;
         height: calc(1.5em + .9rem + 2px);
         padding: 0 20px;
+        margin: auto;
         border: none;
         color: #3e4455;
         font-family: 'Poppins', sans-serif;
     }
 
     .nav-search .search-query:focus-visible {
+        margin: auto;
         outline: none;
+    }
+    .search-query {
+        margin: auto;
     }
 
     .nav-search .btn {
@@ -649,8 +654,6 @@ a.sidebar-link:hover {
     grid-template-columns: repeat(3, 1fr);
     
 }
-.main-li {
-}
 a.mainbar-link {
     padding: 1.625rem 3.625rem;
     color: #FFF;
@@ -686,4 +689,15 @@ a.mainbar-link {
     background-color: #5500ff; /* Color de fondo del éxito en Bootstrap */
     border-radius: 5px; /* Bordes redondeados */
     transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+.desplegable-button {
+    width: 100%; 
+    border-radius:0px;
+}
+.search-box {
+    font-size: 30px;
+    text-align:center;
+    margin-right:30px;
+    margin-left: -190px;
 }

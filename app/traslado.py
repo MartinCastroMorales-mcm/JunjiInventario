@@ -17,7 +17,9 @@ def Traslado(page = 1):
     cur.execute(
         """
                 SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
-                    origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
+                    origen.nombreUnidad as nombreOrigen, 
+                    destino.nombreUnidad as nombreDestino,
+                    t.estaFirmadoTraslado
                 FROM traslado t
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
@@ -28,6 +30,7 @@ def Traslado(page = 1):
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM traslado')
     total = cur.fetchone()
+    #estraer el numero del mensaje
     total = int(str(total).split(':')[1].split('}')[0])
     cur.execute(
         """
@@ -56,8 +59,6 @@ def add_traslado():
                 INNER JOIN unidad u on u.idUnidad = e.idUnidad
                 INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
                 WHERE e.idUnidad = %s
-            
-                        
                         """, (Origen,))
                     
             equipos_data = cur.fetchall()
@@ -406,3 +407,33 @@ def mostrar_pdf(id):
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('traslado.Traslado'))
+
+@traslado.route("/traslado/buscar/<idTraslado>")
+def buscar(idTraslado):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+                SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
+                    origen.nombreUnidad as nombreOrigen, 
+                    destino.nombreUnidad as nombreDestino,
+                    t.estaFirmadoTraslado
+                FROM traslado t
+                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
+                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
+                WHERE t.idTraslado = %s
+                ORDER BY idTraslado DESC
+        """, (idTraslado,)
+    )
+    data = cur.fetchall()
+
+    cur.execute(
+        """
+        SELECT * 
+        FROM unidad u
+        ORDER BY u.nombreUnidad
+                 """
+    )
+    unidades = cur.fetchall()
+    
+    return render_template("traslado.html", traslado=data, unidades=unidades,
+                           page=1, lastpage= True)

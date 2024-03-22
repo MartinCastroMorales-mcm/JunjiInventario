@@ -3,6 +3,9 @@
     {% if page != 1 %}
     <a class="nav-button" href="/{{location}}/{{page - 1}}">Pagina Anterior</a>
     {% endif %}
+    {# reviar que hacer con la paginacion para que se pueda buscar en todas las paginas antes de seguir#}
+    <form action="/{{location}}/{{page}}">
+    </form>
     {% if lastpage %}
     <a class="nav-button" href="/{{location}}/{{page + 1}}">Pagina Siguiente</a>
     {% endif %}

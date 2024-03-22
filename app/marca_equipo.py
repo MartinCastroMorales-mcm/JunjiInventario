@@ -4,10 +4,6 @@ from flask_paginate import Pagination, get_page_args
 from funciones import getPerPage
 
 marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templates')
-@marca_equipo.route('/')
-@marca_equipo.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
 
 
 @marca_equipo.route('/marca_equipo')

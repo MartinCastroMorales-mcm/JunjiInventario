@@ -44,7 +44,6 @@
     <thead>
         <tr>
             <td onclick="sortTable(0)">Nombre estado</td>
-            <td onclick="sortTable(1)">Fecha modificación</td>
             <td>Operations</td>
         </tr>
     </thead>
@@ -54,7 +53,6 @@
         <tr>
             <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
             <td>{{ee.nombreEstado_equipo}}</td>
-            <td>{{ee.FechaEstado_equipo}}</td>
             <td>
                 <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
                 <a href="/edit_estado_equipo/{{ee.idEstado_equipo}}" class="success-button">Editar</a>

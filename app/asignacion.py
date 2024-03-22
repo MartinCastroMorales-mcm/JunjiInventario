@@ -12,7 +12,7 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
 def Asignacion(page=1):
-    
+    #La url viene como string por lo que se convierte a int
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
@@ -53,14 +53,21 @@ def Asignacion(page=1):
 
 
 @asignacion.route("/add_asignacion", methods=["GET"])
-def add_asignacion():
+@asignacion.route("/add_asignacion/<idEquipo>")
+def add_asignacion(idEquipo = "None"):
+    if(idEquipo != "None"):
+        idEquipo = int(idEquipo)
     cur = mysql.connection.cursor()
+    #los funcionarios son para el select en el formulario de agregar
     cur.execute("""
                 SELECT *
                 FROM funcionario f
                 """)
     funcionarios_data = cur.fetchall()
 
+    #estos son los equipos que van en la tabla para adjuntar a la asignacion
+    #tienen que ser los sin asignar por que los otros ya estan asignados a otros 
+    #funcionarios
     cur.execute("""
                 SELECT * 
                 FROM equipo e
@@ -72,7 +79,7 @@ def add_asignacion():
                 """, ("SIN ASIGNAR",))
     equipos_data = cur.fetchall()
     return render_template("add_asignacion.html",equipos=equipos_data,
-                            funcionarios=funcionarios_data )
+        funcionarios=funcionarios_data, equipoSeleccionado = idEquipo)
 
 
 
@@ -81,6 +88,7 @@ def add_asignacion():
 def edit_asignacion(id):
     try:
         cur = mysql.connection.cursor()
+        #se obtiene la asignacion actual
         cur.execute(
             """ 
            SELECT  
@@ -97,9 +105,11 @@ def edit_asignacion(id):
             WHERE idAsignacion = %s""",
             (id,),
         )
+        #esto para los select
         data = cur.fetchone()
         cur.execute("SELECT * FROM funcionario")
         f_data = cur.fetchall()
+        #creo que el equipo se deberia porder borrar
         cur.execute("SELECT * FROM equipo")
         eq_data = cur.fetchall()
         print(data)
@@ -116,6 +126,7 @@ def edit_asignacion(id):
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
 def update_asignacion(id):
     if request.method == "POST":
+        #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
         observacionasignacion = request.form["observacionasignacion"]
         rutaactaasignacion = request.form["rutaactaasignacion"]
@@ -161,19 +172,23 @@ def delete_asignacion(id):
                     WHERE idAsignacion = %s
                     """, (id,))
         asignacionAborrar = cur.fetchone()
+        #encontrar todas las tablas equipo_asignacion que contengan la id de la asignacion
         cur.execute("""SELECT *
                         FROM equipo_asignacion
                         WHERE idAsignacion= %s
         """, (id,))
         asignaciones = cur.fetchall()
+        #revisar cada equipo_asignacion individualmente
         for asignacion in asignaciones:
             idEquipo = asignacion['idEquipo']
+            #encontrar la id del estado sin asignar
             cur.execute("""
                         SELECT *
                         FROM estado_equipo
                         WHERE nombreEstado_equipo = %s
                         """, ("SIN ASIGNAR",))
             estado_equipo_data = cur.fetchone()
+            #cambiar el estado de cada equipo en la asignacion eliminada a sin asignar
             cur.execute("""
                         UPDATE equipo
                         SET idEstado_equipo = %s
@@ -189,7 +204,8 @@ def delete_asignacion(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
-    
+
+#Este metodo extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 def create_asignacion():
     if request.method == "POST":
@@ -200,94 +216,99 @@ def create_asignacion():
         #activo_asignacion = request.form['activo_asignacion']
         rut=request.form['rut']
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            INSERT INTO ASIGNACION (
-                fecha_inicioAsignacion,
-                ObservacionAsignacion,
-                rutaactaAsignacion, 
-                rutFuncionario,
-                ActivoAsignacion
-            )
-            VALUES (%s, %s, %s, %s, 1)
-            """, (fechaasignacion, observacion, 'ruta', rut,))
-        mysql.connection.commit()
-
-        # Recuperar el ID de la asignación recién insertada
-        asignacion_id = cur.lastrowid
-
         # Obtener la lista de equipos asignados desde el formulario
         equipos = request.form.getlist('asignaciones[]')
+        return creacionAsignacion(fechaasignacion, observacion, rut, equipos)
 
-        TuplaEquipos = ()
-        # Iterar sobre los equipos y realizar las operaciones necesarias
-        for equipo_id in equipos:
-            # Insertar en la tabla Equipo_asignacion
-            cur.execute("""
-                INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
-                VALUES (%s, %s)
-                """, (str(asignacion_id),equipo_id))
-            mysql.connection.commit()
-            cur.execute("""
-                        SELECT *
-                        FROM estado_equipo
-                        WHERE nombreEstado_equipo = %s
-                        """, ("EN USO",))
-            estado_equipo_data = cur.fetchone() 
+
+#Este metodo es el que crea la asignacion
+def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
+
+    cur = mysql.connection.cursor()
+    #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
+    cur.execute("""
+        INSERT INTO ASIGNACION (
+            fecha_inicioAsignacion,
+            ObservacionAsignacion,
+            rutaactaAsignacion, 
+            rutFuncionario,
+            ActivoAsignacion
+        )
+        VALUES (%s, %s, %s, %s, 1)
+        """, (fecha_asignacion, observacion, 'ruta', rut,))
+    mysql.connection.commit()
+
+    # Recuperar el ID de la asignación recién insertada
+    asignacion_id = cur.lastrowid
+
+
+    TuplaEquipos = ()
+    # Iterar sobre los equipos y realizar las operaciones necesarias
+    for equipo_id in equipos:
+        # Insertar en la tabla Equipo_asignacion
+        cur.execute("""
+            INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
+            VALUES (%s, %s)
+            """, (str(asignacion_id),equipo_id))
+        mysql.connection.commit()
+        #encontrar la id del estado EN USO
+        cur.execute("""
+                    SELECT *
+                    FROM estado_equipo
+                    WHERE nombreEstado_equipo = %s
+                    """, ("EN USO",))
+        estado_equipo_data = cur.fetchone() 
             
-            cur.execute("""
-                        UPDATE equipo
-                        SET idEstado_equipo = %s
-                        WHERE idEquipo = %s
-                        """, (estado_equipo_data['idEstado_equipo'], equipo_id))
-            mysql.connection.commit()
+        #cambiar el estado de los equipos a en uso
+        cur.execute("""
+                    UPDATE equipo
+                    SET idEstado_equipo = %s
+                    WHERE idEquipo = %s
+                    """, (estado_equipo_data['idEstado_equipo'], equipo_id))
+        mysql.connection.commit()
             
-            cur.execute("""
-                        SELECT *
-                        FROM equipo
-                        INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
-                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
-                        INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
-                        INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
-                        WHERE equipo.idEquipo = %s
-                        """, (equipo_id,))
-            equipoTupla = cur.fetchone()
-            TuplaEquipos = TuplaEquipos + (equipoTupla,)
-
-        flash("Asignación creada correctamente")
-        #agregar argumentos
+        #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
         cur.execute("""
                     SELECT *
-                    FROM funcionario f
-                    WHERE f.rutFuncionario = %s
-                    """, (rut,))
-        Funcionario = cur.fetchone()
-        cur.execute("""
-                    SELECT *
-                    FROM Unidad u
-                    WHERE u.idUnidad = %s
-                    """, (Funcionario['idUnidad'],))
-        Unidad = cur.fetchone()
-        cur.execute("""
-                    SELECT *
-                    FROM asignacion a
-                    WHERE a.idAsignacion = %s
-                    """, (asignacion_id,))
-        Asignacion = cur.fetchone()
+                    FROM equipo
+                    INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
+                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                    INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
+                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
+                    WHERE equipo.idEquipo = %s
+                    """, (equipo_id,))
+        equipoTupla = cur.fetchone()
+        TuplaEquipos = TuplaEquipos + (equipoTupla,)
+
+    flash("Asignación creada correctamente")
+    #agregar argumentos para el excel
+    cur.execute("""
+                SELECT *
+                FROM funcionario f
+                WHERE f.rutFuncionario = %s
+                """, (rut,))
+    Funcionario = cur.fetchone()
+    cur.execute("""
+                SELECT *
+                FROM Unidad u
+                WHERE u.idUnidad = %s
+                """, (Funcionario['idUnidad'],))
+    Unidad = cur.fetchone()
+    cur.execute("""
+                SELECT *
+                FROM asignacion a
+                WHERE a.idAsignacion = %s
+                """, (asignacion_id,))
+    Asignacion = cur.fetchone()
 
 
-        crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
-        return redirect(url_for('asignacion.Asignacion'))
+    crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
     return redirect(url_for('asignacion.Asignacion'))
-
-
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     class PDF(FPDF):
         def header(self):
-            # logo
-            # imageUrl = url_for('static', filename='img/logo_junji.png')
-            # print(imageUrl)
+            #imagen del encabezado
             self.image("logo_junji.png", 10, 8, 25)
             # font
             self.set_font("times", "B", 12)
@@ -311,6 +332,10 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             )  # problema con el caracter ’
             self.cell(0, 12, "www.junji.cl", ln=1)
 
+    #P Portrait -> Vertical
+    #mm milimetros
+    #A4 formato de tamaño
+
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA De Asignacion de Equipo Informatico N°" + str(Asignacion['idAsignacion'])
@@ -328,6 +353,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     fechaAsignacion = str(Asignacion["fecha_inicioAsignacion"])
 
     pdf.ln(10)
+    #se hace en columnas para que quede ordenado
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(presentacion1)
         cols.ln()
@@ -339,6 +365,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         cols.write(presentacion3)
         cols.ln()
         cols.new_column()
+        #lo que se escribe despues de new_column va en la siguiente columna
         cols.write(nombreFuncionario)
         cols.ln()
         cols.write(nombreUnidad)
@@ -346,6 +373,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         cols.write(fechaAsignacion)
 
     pdf.ln(20)
+    #Encabezado de la tabla
     TABLE_DATA = (
         ("N°", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
     )
@@ -645,3 +673,91 @@ def mostrar_pdf_devolucion(id):
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
+
+@asignacion.route("/asignacion/buscar/<idAsignacion>")
+def buscar(idAsignacion):
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """ 
+    SELECT  
+        a.idAsignacion,
+        a.fecha_inicioAsignacion,
+        a.observacionAsignacion,
+        a.rutaactaAsignacion,
+        f.nombreFuncionario,
+        a.fechaDevolucion,
+        a.ActivoAsignacion
+    FROM asignacion a
+    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    WHERE a.idAsignacion = %s
+        """, (idAsignacion,)
+    )
+    #solo tiene un elemento pero se extraen todas para reusar el html
+    Asignaciones = cur.fetchall()
+
+    cur.execute(
+        """ SELECT 
+            f.rutFuncionario,
+            f.nombreFuncionario 
+        FROM funcionario f
+        ORDER BY f.nombreFuncionario
+        """
+    )
+    funcionarios = cur.fetchall()
+
+    return render_template("asignacion.html",  
+        funcionarios=funcionarios, asignacion=Asignaciones,
+        page=1, lastpage=True
+    )
+
+@asignacion.route("/asignacion/devolver_uno/<id_equipo>")
+def devolver_uno(id_equipo):
+    cur = mysql.connection.cursor()
+    #encontrar la id de la asignacion del equipo
+    cur.execute("""
+    SELECT * 
+    FROM equipo_asignacion ea
+    WHERE ea.idEquipo = %s
+                """, (id_equipo,))
+    id_asignacion = cur.fetchone()
+    #encontrar el numero de equipos en la asignacion
+    cur.execute("""
+    SELECT COUNT(*) as count
+    FROM equipo_asignacion ea
+    WHERE ea.idAsignacion = %s
+                """, (id_asignacion['idAsignacion'],))
+    cantidad_equipos = cur.fetchone()['count']
+    #si tiene mas de uno seguir de lo contrario redirigir a devolucion
+    if cantidad_equipos == 1:
+        return devolver(id_asignacion['idAsignacion'])
+    #TODO: generar otra acta? 
+
+    fecha = date.today()#buscar la funcion para la fecha
+    print(id_asignacion)
+    cur.execute("""
+    SELECT *
+    FROM asignacion a
+    WHERE a.idAsignacion = %s
+        """, (str(id_asignacion['idAsignacion']),))
+    Asignacion = cur.fetchone()
+
+    
+    #encontar todos los equipos excepto el que se devuelve
+    cur.execute("""
+    SELECT *
+    FROM equipo e
+    WHERE NOT e.idEquipo = %s
+                """, (id_equipo,))
+    equipos_data = cur.fetchall()
+    equipos = ()
+    for equipo in equipos_data:
+        equipos = equipos + ((equipo['idEquipo']),)
+        
+    print(Asignacion)
+    devolver(id_asignacion['idAsignacion'])
+    creacionAsignacion(fecha, Asignacion['ObservacionAsignacion'], 
+                Asignacion['rutFuncionario'], equipos)
+
+
+    #cambiar redirect
+    return redirect("/equipo")

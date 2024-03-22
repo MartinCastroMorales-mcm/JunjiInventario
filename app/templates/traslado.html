@@ -25,7 +25,7 @@
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/traslado/add_traslado" method="POST" class="mi-formulario">
-                    <label>Origen</label>
+                <label>Origen</label>
                 <select name="Origen" id="">
                     <option value="">Seleccione el Origen</option>
                     {% for unidadOrigen in unidades %}
@@ -43,9 +43,14 @@
 
 </div>
 <h2>Traslado</h2>
+<div style="width: 0px; margin:auto">
+    <input name="busqueda" type="text" class="search-box" placeholder="Search..." style="font-size: 30px" id="buscador"
+        onkeyup="busqueda('myTableBody')">
+</div>
 <div style="position: relative;">
     <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
     <div style="overflow-x:auto;">
+
 
 
         <table id="posts">
@@ -65,24 +70,36 @@
                 {% for tras in traslado %}
                 <tr>
                     <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                    <td>{{tras.fechatraslado}}</td>
+                    <td class="toCheck">{{tras.fechatraslado}}</td>
                     <td>
                         {# añadir el path para los pdfs#}
                         <a href="/traslado/mostrar_pdf/{{tras.idTraslado}}" class="info-button">Acta</a>
-                        {#
-                            tener los pdfs guardados como traslado_{{id}}
-                            
-                            #}
+                        {% if tras.estaFirmadoTraslado == 1%}
+                        <a href="/traslado/mostrar_pdf_firmado/{{tras.idTraslado}}" class="info-button">Acta Firmada</a>
+                        {% endif %}
                     </td>
-                    <td>{{tras.nombreOrigen}}</td>
-                    <td>{{tras.nombreDestino}}</td>
-                    <td>{{tras.idTraslado}}</td>
+                    <td class="toCheck">{{tras.nombreOrigen}}</td>
+                    <td class="toCheck">{{tras.nombreDestino}}</td>
+                    <td class="toCheck">{{tras.idTraslado}}</td>
                     <td>
-                        <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                        <a href="/traslado/edit_traslado/{{tras.idTraslado}}" class="success-button">Editar</a>
-                        <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                        <a href="/traslado/delete_traslado/{{tras.idTraslado}}" class="delete-button">Eliminar</a>
-                        <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}" class="info-button">Equipos</a>
+                        <div class="dropdown">
+                            <button class="options-button desplegable-button">Opciones</button>
+                            <div class="dropdown-options" style="border: 0px; border-color:#5500ff; border-style:solid">
+                                <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
+                                <a href="/traslado/edit_traslado/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">Editar</a>
+                                <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
+                                <a href="/traslado/delete_traslado/{{tras.idTraslado}}"
+                                    class="delete-button desplegable-button">Eliminar</a>
+                                <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}"
+                                    class="info-button desplegable-button">Equipos</a>
+                                {% if tras.estaFirmadoTraslado != 1%}
+                                <a href="/traslado/adjuntar_firmado/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">
+                                    Firmar</a>
+                                {% endif %}
+                            </div>
+                        </div>
                     </td>
                 </tr>
                 {% endfor %}

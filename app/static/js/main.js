@@ -15,16 +15,20 @@ $(document).ready(function() {
 });
 */
 function fechaPorDefecto() {
+  //Crea un objeto date para obtener la fecha actual
   date = new Date();
   year = date.getFullYear();
   month = date.getMonth() + 1;
   day = date.getDate();
+  //El formato tiene que ser con dos digitos con un 0 a la izquierda
+  //de ser nesesario
   if (month < 10) {
     month = "0" + month
   }
   if (day < 10) {
     day = "0" + day
   }
+  //Se crea una string con la fecha en el formato que nesesita html
   formatedDate = year + "-" + month + "-" + day
   document.getElementById("inputFecha")
     .setAttribute("value", formatedDate);
@@ -33,7 +37,9 @@ function fechaPorDefecto() {
 console.log("jsLink")
 
 function showDiv(id = "formulario") {
+  //encontrar el div del formulario
   let div = document.getElementById(id)
+  //Si esta escondido mostrarlo de lo contrario esconder
   if (div.style.display === "none") {
     div.style.display = "block";
     return
@@ -41,6 +47,8 @@ function showDiv(id = "formulario") {
   div.style.display = "none"
   return
 }
+//Esta funcion no se usa pero es para tener multiples botones que muestran y
+//esconden tablas
 function showDivHideOthers(id = "formulario") {
   let divs = {
     "tabla-asignaciones": document.getElementById("tabla-asignaciones"),
@@ -58,6 +66,7 @@ function showDivHideOthers(id = "formulario") {
   }
 }
 
+//esta funcion no se usa
 function openWindow(url) {
   window.open(url)
 }
@@ -116,28 +125,37 @@ function sortTable(n) {
     }
   }
 }
-function busqueda() {
+
+function busqueda(tableBodyId="myTBody") {
   var input, a, filter, tbody;
+  //busca el bloque de texto
   input = document.getElementById("buscador")
+  //el texto del bloque es nuestro filtro
   filter = input.value.toLowerCase();
-  tbody = document.getElementById("myTBody")
+  //obtenemos el cuerpo de la tabla
+  tbody = document.getElementById(tableBodyId)
+  //tr es una lista de todos las filas
   tr = tbody.getElementsByTagName("tr")
   for (let i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")
-    textoClave = td[0].textContent.toLowerCase()
-    textoNombre = td[1].textContent.toLowerCase()
-    textoCodigo = td[2].textContent.toLowerCase()
-    if (textoClave.indexOf(filter) > -1 
-    || 
-    textoNombre.indexOf(filter) > -1
-    ||
-    textoCodigo.indexOf(filter) > -1) {
-      tr[i].style.display = ""
-    } else {
-      tr[i].style.display = "none"
+    //obtiene todas las columnas de la fila actual
+    //console.log("row")
+    td = tr[i].querySelectorAll(".toCheck")
+    //console.log("td " + td.length)
+    //console.log(td)
+    for(let j = 0; j < td.length; j++) {
+      console.log("col")
+      texto = td[j].textContent.toLowerCase()
+      //console.log(texto)
+      if(texto.indexOf(filter) > -1) {
+        tr[i].style.display = ""
+        break;
+      }else {
+        tr[i].style.display = "none"
+      }
     }
   }
 }
+//al tocar el boton radio todo se destickea todo lo demas
 function todoCheck() {
   checkboxContainer = document.getElementById("checkbox_container")
   checkboxes = checkboxContainer.getElementsByTagName("input")
@@ -145,10 +163,13 @@ function todoCheck() {
     checkboxes[i].checked = false
   }
 }
+//al tickear una opcion automaticamente el boton radio se 
+//destickea
 function sheetCheck() {
   todo_check = document.getElementById("todo_check")
   todo_check.checked = false
 }
+//al tickear tickear todo se tickean todas las opciones inferiores
 function check_all() {
   sheetCheck()
   console.log("checkall")
