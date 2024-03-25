@@ -16,3 +16,47 @@
 {% macro tablaTraslado(traslado)%}
 
 {% endmacro %}
+
+{% macro subirArchivo(location, id) %}
+
+<button class="nav-button" onclick="showDiv()">Agregar PDF</button>
+<div class="card card-body" id="formulario" style="display: none;">
+    <form action="/{{location}}/adjuntar_pdf/{{id}}" method="POST" class="mi-formulario"
+        enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir pdf</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
+
+{% endmacro %}
+
+{% macro tablaDocumentos(id, documentos, location) %}
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Nombre pdf</td>
+                <td>Operations</td>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            {% for documento in documentos %}
+            {% if documento != "None" %}
+            <tr>
+                <td>{{documento}}</td>
+                <td>
+                    <a href="/{{location}}/mostrar_pdf/{{id}}/{{documento}}" 
+                    class="info-button">Abrir</a>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}

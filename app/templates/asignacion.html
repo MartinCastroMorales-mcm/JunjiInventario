@@ -51,11 +51,31 @@
                         <td>{{asig.fecha_inicioAsignacion}}</td>
                         <td>{{asig.observacionAsignacion}}</td>
                         <td>
-                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}" class="info-button">Asignacion</a>
+                            <div class="dropdown">
+                                <button class="options-button">Asignaciones</button>
+                                <div class="dropdown-options">
+                                    <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
+                                        class="info-button desplegable-button">Asignacion</a>
+                                    <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}" 
+                                    class="success-button desplegable-button">
+                                        Firmar</a>
+
+                                </div>
+                            </div>
                             {% if asig.ActivoAsignacion != 1 %}
-                                <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}" class="info-button">Devolucion</a>
+                            <div class="dropdown">
+                                <button class="options-button">Devoluciones</button>
+                                <div class="dropdown-options">
+                                    <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
+                                        class="info-button desplegable-button">Devolucion</a>
+                                    <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver" 
+                                        class="success-button desplegable-button">
+                                        Firmar</a>
+                                </div>
+                            </div>
                             {% else %}
-                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}" class="success-button">Devolver</a>
+                            <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
+                                class="success-button">Devolver</a>
                             {% endif %}
                         </td>
                         <td>{{asig.nombreFuncionario}}</td>
@@ -68,11 +88,11 @@
                         </td>
                         <td>
                             <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}" class="success-button">Editar</a>
+                            <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}"
+                                class="success-button">Editar</a>
 
                             <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                            <a href="/delete_asignacion/{{asig.idAsignacion}}"
-                                class="delete-button">Eliminar</a>
+                            <a href="/delete_asignacion/{{asig.idAsignacion}}" class="delete-button">Eliminar</a>
                         </td>
                     </tr>
                     {% endfor %}

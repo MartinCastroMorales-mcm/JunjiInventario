@@ -219,7 +219,7 @@ def mostrar_pdf(id, nombrePdf):
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro pdf")
-        return redirect(url_for("insicencia.Incidencia"))
+        return redirect(url_for("incicencia.Incidencia"))
 #def create_pdf(Incidencia):
     
     #class PDF(FPDF):

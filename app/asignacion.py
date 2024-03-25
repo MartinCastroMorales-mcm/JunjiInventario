@@ -4,10 +4,12 @@ from fpdf import FPDF
 from funciones import getPerPage
 import os
 import shutil
+from werkzeug.utils import secure_filename
 from datetime import date
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
+PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
 
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
@@ -47,10 +49,7 @@ def Asignacion(page=1):
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     return render_template("asignacion.html",  funcionarios=funcionarios, asignacion=data,
-        page=page, lastpage= page < (total/perpage)+1
-    )
-
-
+                       page=page, lastpage= page < (total / perpage) + 1)
 
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
@@ -659,7 +658,7 @@ def crear_pdf_devolucion(
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
-    nombrePdf = "Devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
+    nombrePdf = "devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, "app/pdf")
 
@@ -761,3 +760,93 @@ def devolver_uno(id_equipo):
 
     #cambiar redirect
     return redirect("/equipo")
+
+@asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
+@asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
+def listar_pdf(idAsignacion, devolver="None"):
+    dir = PDFS_DIR   
+    if devolver == "None":
+        nombreFirmado = "asignacion_" + str(idAsignacion) + "_" + "firmado.pdf"
+        location = "asignacion"
+    else:
+        nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
+        print(nombreFirmado)
+        location = "devolucion"
+    #revisa si el archivo esta firmado
+    if not os.path.exists(os.path.join(dir, nombreFirmado)):
+        #mostrar
+        print("#####NombreFirmado = None #######")
+        nombreFirmado = "None"
+    print("exists")
+    return render_template("firma.html", 
+        nombreFirmado=nombreFirmado, id=idAsignacion, location=location)
+
+
+
+
+
+@asignacion.route("/devolucion/mostrar_pdf/<id>/<nombreArchivo>")
+def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
+    try:
+        nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
+        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        file = os.path.join(dir, nombrePdf)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("no se encontro el pdf")
+        return redirect(url_for('asignacion.Asignacion'))
+
+@asignacion.route("/asignacion/mostrar_pdf/<id>/<nombreArchivo>")
+def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
+    try:
+        nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
+        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        file = os.path.join(dir, nombrePdf)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("no se encontro el pdf")
+        return redirect(url_for('asignacion.Asignacion'))
+
+@asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
+def adjuntar_pdf_asignacion(idAsignacion):
+    #TODO: revisar que sea pdf
+    file = request.files["file"]
+    #subir archivo
+    dir = PDFS_DIR
+    filenameToDelete = "asignacion_" + str(idAsignacion) + "_firmado.pdf"
+    filenameToDelete = secure_filename(filenameToDelete)
+    if os.path.exists(os.path.join(dir, filenameToDelete)):
+        os.remove(os.path.join(dir, filenameToDelete))
+    #renombrar archivo
+    filename = file.filename
+    sfilename = secure_filename(filename)
+    file.save(os.path.join(
+        dir, secure_filename(sfilename)
+    ))
+
+    os.rename(os.path.join(dir, sfilename), 
+              os.path.join(dir, "asignacion_" + str(idAsignacion) + "_firmado.pdf"))
+    return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
+
+@asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
+def adjuntar_pdf_devolucion(idAsignacion):
+    #TODO: revisar que sea pdf
+    #si existe eliminar
+    dir = PDFS_DIR
+    filenameToDelete = "devolucion_" + str(idAsignacion) + "_firmado.pdf"
+    if os.path.exists(os.path.join(dir, filenameToDelete)):
+        os.remove(os.path.join(dir, filenameToDelete))
+    file = request.files["file"]
+    #subir archivo
+    #renombrar archivo
+    filename = file.filename
+    sfilename = secure_filename(filename)
+    file.save(os.path.join(
+        dir, secure_filename(sfilename)
+    ))
+    os.rename(os.path.join(dir, sfilename), 
+              os.path.join(dir, "devolucion_" + str(idAsignacion) + 
+                           "_firmado.pdf"))
+    return redirect("/asignacion/listar_pdf/" + str(idAsignacion) + 
+                    "/devolver")
+#/asignacion/listar_pdf/<idAsignacion>/<devolver>

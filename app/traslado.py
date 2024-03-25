@@ -4,8 +4,10 @@ from fpdf import FPDF
 from funciones import getPerPage
 import os
 import shutil 
+from werkzeug.utils import secure_filename
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
+PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
 
 @traslado.route("/traslado")
 @traslado.route("/traslado/<page>")
@@ -398,15 +400,21 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/mostrar_pdf/<id>")
-def mostrar_pdf(id):
+@traslado.route("/traslado/mostrar_pdf/<id>/<firmado>")
+def mostrar_pdf(id, firmado="0"):
+    print(firmado)
     try:
-        nombrePdf = "traslado_" + str(id) + ".pdf"
+        if firmado == "0":
+            nombrePdf = "traslado_" + str(id) + ".pdf"
+        else:
+            nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
+            print("se encontro el firmado" + nombrePdf)
         dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")
-        return redirect(url_for('traslado.Traslado'))
+        #return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 def buscar(idTraslado):
@@ -437,3 +445,32 @@ def buscar(idTraslado):
     
     return render_template("traslado.html", traslado=data, unidades=unidades,
                            page=1, lastpage= True)
+
+@traslado.route("/traslado/listar_pdf/<idTraslado>")
+def listar_pdf(idTraslado):
+    dir = PDFS_DIR   
+    nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
+    #revisa si el archivo esta firmado
+    if not os.path.exists(os.path.join(dir, nombreFirmado)):
+        #mostrar
+        print("#####NombreFirmado = None #######")
+        nombreFirmado = "None"
+    print("exists")
+    return render_template("firma.html", 
+        nombreFirmado=nombreFirmado, id=idTraslado, location="traslado")
+
+@traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
+def adjuntar_firmado(idTraslado):
+    #TODO: revisar que sea pdf
+    file = request.files["file"]
+    #subir archivo
+    dir = PDFS_DIR
+    #renombrar archivo
+    filename = file.filename
+    sfilename = secure_filename(filename)
+    file.save(os.path.join(
+        dir, secure_filename(sfilename)
+    ))
+    os.rename(os.path.join(dir, sfilename), 
+              os.path.join(dir, "traslado_" + str(idTraslado) + "_firmado.pdf"))
+    return redirect("/traslado/listar_pdf/" + str(idTraslado))

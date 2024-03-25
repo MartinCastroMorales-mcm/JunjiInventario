@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
+{% from 'funciones_macro.html' import paginacion, subirArchivo, tablaDocumentos %}
 
 <div class="row">
 
@@ -24,18 +24,7 @@
 
         <a class="nav-button" href="/incidencia">Volver</a>
         <!-- ----- -->
-        <button class="nav-button" onclick="showDiv()">Agregar PDF</button>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/incidencia/adjuntar_pdf/{{idIncidencia}}" method="POST" class="mi-formulario"
-                enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="file">Añadir pdf</label>
-                    <input type="file" name="file" />
-                    {# se nesesita una forma eficiente de añadir el equipo#}
-                    <button class="agregar-button"> Agregar</button>
-                </div>
-            </form>
-        </div>
+        {{ subirArchivo("incidencia", idIncidencia) }}
     </div>
     <br />
     <table id="posts">
@@ -77,25 +66,5 @@
     </table>
     <div>
         <h2>Documentos de Incidencia</h2>
-        <div style="overflow-x:auto;">
-            <table id="posts">
-                <thead>
-                    <tr>
-                        <td onclick="sortTable(0)">Nombre pdf</td>
-                        <td>Operations</td>
-                    </tr>
-                </thead>
-                <tbody id="myTableBody">
-                    <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-                    {% for documento in documentos %}
-                    <tr>
-                        <td>{{documento}}</td>
-                        <td>
-                            <a href="/incidencia/mostrar_pdf/{{idIncidencia}}/{{documento}}"
-                                class="info-button">Abrir</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% endblock %}
+        {{tablaDocumentos(idIncidencia, documentos, location)}}
+        {% endblock %}

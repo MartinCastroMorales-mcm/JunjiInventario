@@ -69,6 +69,7 @@ TODO:
                 ¿Que acciones se deberian bloquear al no estar 
                         dentro de la red?                
 
+        se deberia poder acceder con cualquier junji
         }
 
 
@@ -77,7 +78,7 @@ TODO:
         -seleccionar pagina paginacion * 1h
         -acceso directo asignacion desde historial * 1h
 OK -acceso de asignar desde pestaña equipo * 1h
-        -acceso de devolucion desde pestaña equipo * 1h 
+OK -acceso de devolucion desde pestaña equipo * 1h 
                 (que pasa si se la asignacion es de multiples equipos y solo se quiere devolver 1 )
         -pistola debe funcionar en todos las tablas con equipos *1dia
         -añadir notebooks a las hojas del excel * 1h
@@ -92,7 +93,10 @@ OK-añadir buscador solo para equipos --
 OK -boton agregar funcionario se llama "agregar funcionario"
 OK -cambiar fechaEstado Equipo (sacar)
 OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
-        -adjuntar pdf firmados para (traslado, asignacion, devolucion) *4h
+        -adjuntar pdf firmados para (
+                OK traslado, 
+                asignacion, 
+                devolucion) *4h
 OK-añadir buscador para traslado *4h
         -añadir traslados a busqueda *2h
 OK-quitar acta de el formulario para crear traslados
