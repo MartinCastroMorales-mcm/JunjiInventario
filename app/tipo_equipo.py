@@ -17,18 +17,25 @@ def tipoEquipo(page = 1):
     total = int(str(total).split(':')[1].split('}')[0])
     cur.execute('SELECT * FROM tipo_equipo LIMIT {} OFFSET {}'.format(perpage, offset))
     data = cur.fetchall()
+    cur.execute('SELECT * FROM marca_equipo')
+    marcas = cur.fetchall()
     page = int(page)
-    return render_template('tipo_equipo.html', tipo_equipo = data, 
+    return render_template('tipo_equipo.html', tipo_equipo = data, marcas=marcas,
                             page=page, lastpage = page < (total/perpage)+1)
 
 #agrega un tipo de equipo
 @tipo_equipo.route('/add_tipo_equipo', methods = ['POST'])
 def add_tipo_equipo():
     if request.method == 'POST':
-        nombreidTipoequipo = request.form['nombreidTipoequipo']
+        nombreidTipoequipo = request.form['nombreTipo_equipo']
+        id = request.form['nombre_marca_equipo']
+
         try:
+
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO tipo_equipo (nombreidTipoequipo) VALUES (%s)', (nombreidTipoequipo,))
+            cur.execute("""
+                        INSERT INTO tipo_equipo (nombreTipo_equipo, idMarca_Equipo) 
+                        VALUES (%s, %s)""", (nombreidTipoequipo, id,))
             mysql.connection.commit()
             flash('Tipo de equipo agregado correctamente')
             return redirect(url_for('tipo_equipo.tipoEquipo'))
@@ -43,7 +50,10 @@ def edit_tipo_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM tipo_equipo WHERE idTipo_equipo = %s', (id,))
         data = cur.fetchall()
-        return render_template('editTipo_equipo.html', tipo_equipo = data[0])
+        cur.execute('SELECT * FROM marca_equipo')
+        marca_data = cur.fetchall()
+        return render_template('editTipo_equipo.html', tipo_equipo = data[0], 
+                marca_equipo=marca_data)
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('tipo_equipo.tipoEquipo'))
@@ -53,13 +63,15 @@ def edit_tipo_equipo(id):
 def update_tipo_equipo(id):
     if request.method == 'POST':
         nombre_tipo_equipo = request.form['nombre_tipo_equipo']
+        id_marca = request.form['nombre_marca_equipo']
         try:             
             cur = mysql.connection.cursor()
             cur.execute(""" 
             UPDATE tipo_equipo
-            SET nombreidTipoequipo = %s
+            SET nombreTipo_equipo = %s,
+            idMarca_Equipo = %s
             WHERE idTipo_equipo = %s
-            """, (nombre_tipo_equipo, id))
+            """, (nombre_tipo_equipo, id_marca, id))
             mysql.connection.commit()
             flash('Tipo de equipo actualizado correctamente')
             return redirect(url_for('tipo_equipo.tipoEquipo'))

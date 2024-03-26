@@ -37,6 +37,15 @@ def Buscar():
                 i.idIncidencia,
                 "incidencia"
         FROM incidencia i
+        UNION
+        SELECT t.fechaTraslado,
+                origen.nombreUnidad,
+                destino.nombreUnidad,
+                t.idTraslado,
+                "traslado"
+        FROM traslado t 
+        INNER JOIN unidad origen ON origen.idUnidad = t.idUnidadOrigen
+        INNER JOIN unidad destino ON destino.idUnidad = t.idUnidadDestino
         """)
     items_data = cur.fetchall()
 

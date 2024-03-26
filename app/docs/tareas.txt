@@ -2,9 +2,9 @@ La asignacion, la unidad de la asignacion es
 la unidad del funcionario no la unidad donde se encuentre
 
 TODO:
-        50% Boton detalles para equipo
+        OK 50% Boton detalles para equipo
                 (informacion, observacion, asignacion, devolucion, traslado, Incidencias),
-        La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
+        OK La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
         
 
         OK Pestaña de Incidencias (
@@ -26,7 +26,7 @@ TODO:
         OK pdf de asignacion y devolucion
         OK detalles asignacion y devolucion(asignacion ya esta)
         OK usar el estado de equipo en caso de sin asignar
-        detalle de traslado(no esta claro como se deberia acceder)
+        OK detalle de traslado(no esta claro como se deberia acceder)
         ventana emergente para observacion
         comentar codigos
         OK buscador
@@ -76,35 +76,37 @@ TODO:
 
 
         -seleccionar pagina paginacion * 1h
-        -acceso directo asignacion desde historial * 1h
+OK -acceso directo asignacion desde historial * 1h
 OK -acceso de asignar desde pestaña equipo * 1h
 OK -acceso de devolucion desde pestaña equipo * 1h 
-                (que pasa si se la asignacion es de multiples equipos y solo se quiere devolver 1 )
-        -pistola debe funcionar en todos las tablas con equipos *1dia
-        -añadir notebooks a las hojas del excel * 1h
-        -añadir codigo de unidad en el excel y columna de tabla equipos *1h
-        -añadir al excel nombre de provedor *1h
-        -codigo proveedor de sonda *1h
+OK (que pasa si se la asignacion es de multiples equipos y solo se quiere devolver 1 )
+OK -pistola debe funcionar en todos las tablas con equipos *1dia
+OK -añadir notebooks a las hojas del excel * 1h
+OK-añadir codigo de unidad en el excel y columna de tabla equipos *1h
+OK -añadir al excel nombre de provedor *1h
+OK -codigo proveedor de sonda *1h
         -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
 OK-añadir buscador solo para equipos --
+OK-cambiar modelo de marca y tipos de equipo
         -añadir elegir marca y por cada marca mostrar los modelos de esa marca *4h
         -cambiar orden marca, tipo_equipo, modelo *2h
         -error funcionario equipos sin asignar *1h
 OK -boton agregar funcionario se llama "agregar funcionario"
 OK -cambiar fechaEstado Equipo (sacar)
 OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
-        -adjuntar pdf firmados para (
-                OK traslado, 
-                asignacion, 
-                devolucion) *4h
+OK -adjuntar pdf firmados para (
+OK traslado, 
+OK asignacion, 
+OK devolucion) *4h
 OK-añadir buscador para traslado *4h
-        -añadir traslados a busqueda *2h
+OK -añadir traslados a busqueda *2h
+OK-añadir los botones de busqueda
+OK-agregar una columna que muestre el tipo
 OK-quitar acta de el formulario para crear traslados
 OK -añadir detalles a de equipo a incidencias
 OK -desde la pestaña de incidencias tener un boton para ir a equipos
 OK -error incidencia se añade solo a un equipo
-        -Proteger de inyeccion sql
-
+OK -Proteger de inyeccion sql
         //cuando este en el servidor
         -codigo QR para equipos
         -probar desde el celular

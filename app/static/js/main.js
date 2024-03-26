@@ -127,6 +127,7 @@ function sortTable(n) {
 }
 
 function busqueda(tableBodyId="myTBody") {
+  console.log("busqueda")
   var input, a, filter, tbody;
   //busca el bloque de texto
   input = document.getElementById("buscador")

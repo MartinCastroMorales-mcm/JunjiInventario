@@ -36,4 +36,4 @@ def validarRut(rut):
 
 #define el numero de filas en las tablas para la paginacion
 def getPerPage():
-    return 10
+    return 100

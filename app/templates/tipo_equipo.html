@@ -27,9 +27,16 @@
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_tipo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
-                    <label for="nombreidTipoequipo">Nombre Tipo Equipo:</label>
-                    <input type="text" id="nombreidTipoequipo" name="nombreidTipoequipo" required>
+                    <label for="nombreTipo_equipo">Nombre Tipo Equipo:</label>
+                    <input type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required>
                 </div>
+                <label for="nombre_marca_equipo"> Marca Equipo: </label>
+                <select name="nombre_marca_equipo" id="">
+                    <option value="">Elija la Marca del Equipo</option>
+                    {% for marcae in marcas %}
+                    <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+                    {% endfor %}
+                </select>
                 <button type="submit" class="agregar-button">
                     Agregar
                 </button>
@@ -49,7 +56,7 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for tipoe in tipo_equipo %}
                 <tr>
-                    <td>{{tipoe.nombreidTipoequipo}}</td>
+                    <td>{{tipoe.nombreTipo_equipo}}</td>
                     <td>
                         <a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>
                         <a href="/delete_tipo_equipo/{{tipoe.idTipo_equipo}}" class="delete-button">Eliminar</a>
@@ -59,7 +66,7 @@
             </tbody>
         </table>
 
-    {{ paginacion("tipo_equipo", page, lastpage) }}
+        {{ paginacion("tipo_equipo", page, lastpage) }}
     </div>
 </div>
 {% endblock %}
