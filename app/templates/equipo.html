@@ -52,7 +52,7 @@
                     <input type="text" name="numero">
                     <br>
                     <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
-                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo">
+                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for tipoe in tipo_equipo %}
                         <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreTipo_equipo}}</option>
@@ -83,10 +83,10 @@
                         {% endfor %}
                     </select>
                     <br>
-                    <div id="select modelo">
-                    {% for tipo in tipo_equipo%}
+                    <div id="select_div">
+                        {% for tipo in tipo_equipo%}
                         {{select(modelo_equipo[tipo['idTipo_equipo']], tipo['idTipo_equipo'])}}
-                    {% endfor %}
+                        {% endfor %}
                     </div>
                     <br>
                     <button class="agregar-button"> Agregar</button>

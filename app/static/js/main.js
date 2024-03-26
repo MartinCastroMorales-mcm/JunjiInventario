@@ -187,13 +187,22 @@ function check_all() {
 //por cada tipo un select
 
 function mostrarSelectModelo() {
-  tipo = document.getElementById("nombre_tipo_equipo")
-  div = document.getElementById("select_modelo")   
-  selects = div.querySelectorAll(".querySelectorAll")
-
-
-  //get all divs with class x give class x to relevant divs
+  console.log("mostrar")
   //obtener la id del tipo
-  //esconder todos los divs menos los 
+  tipo = document.getElementById("nombre_tipo_equipo").value
+  //get all divs with class x give class x to relevant divs
+  div = document.getElementById("select_div")   
+  selects = div.querySelectorAll(".select_modelo")
+  //esconder todos los divs menos los relevantes
+  for(let i = 0; i < selects.length; i++) {
+    if(selects[i].id == tipo) {
+      selects[i].style.display = ""
+      console.log(selects[i])
+    }else {
+      selects[i].style.display = "none"
+
+    }
+  }
+
 
 }
