@@ -181,3 +181,19 @@ function check_all() {
     checkboxes[i].checked = checkall.checked
   }
 }
+//Para filtrar los modelos de equipo en base a los tipos de equipo seria nesesario
+//tener los grupos ya filtrados. y guardados de alguna manera.
+//podria tenerlos separados en selects invisibles.
+//por cada tipo un select
+
+function mostrarSelectModelo() {
+  tipo = document.getElementById("nombre_tipo_equipo")
+  div = document.getElementById("select_modelo")   
+  selects = div.querySelectorAll(".querySelectorAll")
+
+
+  //get all divs with class x give class x to relevant divs
+  //obtener la id del tipo
+  //esconder todos los divs menos los 
+
+}

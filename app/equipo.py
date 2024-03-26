@@ -27,7 +27,8 @@ def Equipo(page=1):
             perpage, offset
         )
     )
-    data = cur.fetchall()
+    equipos = cur.fetchall()
+    modelos_por_tipo = cur.fetchall()
     cur.execute("SELECT * FROM tipo_equipo")
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
@@ -36,17 +37,38 @@ def Equipo(page=1):
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
-    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-    modeloe_data = cur.fetchall()
 
+    modelos_por_tipo = {
+
+    }
+    for tipo in tipoe_data:
+        print("########################")
+        print(tipo)
+        query = """
+        SELECT *
+        FROM modelo_equipo me
+        WHERE me.idTipo_Equipo = {}
+""".format(str(tipo['idTipo_equipo']))
+        print(query)
+        cur.execute("""
+        SELECT *
+        FROM modelo_equipo me
+        WHERE me.idTipo_Equipo = %s
+            """, (tipo['idTipo_equipo'],))
+        modelo_tipo = cur.fetchall()
+        modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
+
+
+    print("tipos de equipo ############")
+    print(tipoe_data)
     return render_template(
         "equipo.html",
-        equipo=data,
+        equipo=equipos,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
         orden_compra=ordenc_data,
         Unidad=ubi_data,
-        modelo_equipo=modeloe_data,
+        modelo_equipo=modelos_por_tipo,
         page=page,
         lastpage=page < (total / perpage) + 1,
     )

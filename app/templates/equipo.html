@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
+{% from 'funciones_macro.html' import paginacion, select%}
 
 <div class="row">
 
@@ -52,10 +52,10 @@
                     <input type="text" name="numero">
                     <br>
                     <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
-                    <select name="nombre_tipo_equipo" id="">
+                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for tipoe in tipo_equipo %}
-                        <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreidTipoequipo}}</option>
+                        <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreTipo_equipo}}</option>
                         {% endfor %}
                     </select>
                     <br>
@@ -83,13 +83,11 @@
                         {% endfor %}
                     </select>
                     <br>
-                    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
-                    <select name="nombre_modelo_equipo">
-                        <option value="">Seleccione el Modelo del Equipo</option>
-                        {% for modeloe in modelo_equipo %}
-                        <option value="{{ modeloe.idModelo_Equipo }}">{{modeloe.nombreModeloequipo}}</option>
-                        {% endfor %}
-                    </select>
+                    <div id="select modelo">
+                    {% for tipo in tipo_equipo%}
+                        {{select(modelo_equipo[tipo['idTipo_equipo']], tipo['idTipo_equipo'])}}
+                    {% endfor %}
+                    </div>
                     <br>
                     <button class="agregar-button"> Agregar</button>
             </form>
@@ -199,20 +197,11 @@
                 <td class="toCheck">{{equi.macEquipo}}</td>
                 <td class="toCheck">{{equi.imeiEquipo}}</td>
                 <td class="toCheck">{{equi.numerotelefonicoEquipo}}</td>
-                {% if tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
                 <td class="toCheck">{{equi.nombreidTipoequipo}}</td>
-                {% endif %}
-                {% if estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
                 <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
-                {% endif %}
                 <td class="toCheck">{{equi.nombreUnidad}}</td>
-                {% if orden_compra.idOrden_compra == equipo.idOrden_compra %}
                 <td class="toCheck">{{equi.nombreOrden_compra}}</td>
-                {% endif %}
-                {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
                 <td class="toCheck">{{equi.nombreModeloequipo}}</td>
-                {% endif %}
-
                 <td>
                     {#clase para tener un boton que despliega los otros botones #}
                     <div class="dropdown">

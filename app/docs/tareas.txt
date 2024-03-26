@@ -88,7 +88,7 @@ OK -codigo proveedor de sonda *1h
         -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
 OK-añadir buscador solo para equipos --
 OK-cambiar modelo de marca y tipos de equipo
-        -añadir elegir marca y por cada marca mostrar los modelos de esa marca *4h
+        -añadir elegir marca y por cada marca mostrar los modelos de esa marca 
         -cambiar orden marca, tipo_equipo, modelo *2h
         -error funcionario equipos sin asignar *1h
 OK -boton agregar funcionario se llama "agregar funcionario"

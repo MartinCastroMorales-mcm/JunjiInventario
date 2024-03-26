@@ -21,8 +21,7 @@
 
 <button class="nav-button" onclick="showDiv()">Agregar PDF</button>
 <div class="card card-body" id="formulario" style="display: none;">
-    <form action="/{{location}}/adjuntar_pdf/{{id}}" method="POST" class="mi-formulario"
-        enctype="multipart/form-data">
+    <form action="/{{location}}/adjuntar_pdf/{{id}}" method="POST" class="mi-formulario" enctype="multipart/form-data">
         <div class="form-group">
             <label for="file">Añadir pdf</label>
             <input type="file" name="file" />
@@ -50,8 +49,7 @@
             <tr>
                 <td>{{documento}}</td>
                 <td>
-                    <a href="/{{location}}/mostrar_pdf/{{id}}/{{documento}}" 
-                    class="info-button">Abrir</a>
+                    <a href="/{{location}}/mostrar_pdf/{{id}}/{{documento}}" class="info-button">Abrir</a>
                 </td>
             </tr>
             {% endif %}
@@ -59,4 +57,24 @@
         </tbody>
     </table>
 </div>
+{% endmacro %}
+
+
+{#
+   Seria nesesario tener un diccionario con llaves que indiquen la id del tipo
+   por cada llave se tiene una lista de tuplas de los modelos asociados 
+    #}
+{% macro select(modelos_del_tipo, id_tipo) %}
+<div id="div_{{id_tipo}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
+    <select name="nombre_modelo_equipo">
+        <option value="">Seleccione el Modelo del Equipo</option>
+        {% for modelo in modelos_del_tipo %}
+        <option value="{{ modelo.idModelo_Equipo }}">
+            {{modelo.nombreModeloequipo}}</option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+
 {% endmacro %}
