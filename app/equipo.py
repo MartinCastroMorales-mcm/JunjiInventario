@@ -76,6 +76,7 @@ def Equipo(page=1):
         modelo_equipo=modelos_por_tipo,
         page=page,
         lastpage=page < (total / perpage) + 1,
+        session=session
     )
 
 
