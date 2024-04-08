@@ -1,7 +1,7 @@
-from flask import Blueprint, request, flash, render_template, redirect, url_for, g
+from flask import Blueprint, request, flash, render_template, redirect, url_for, g, session
 from db import mysql
-from flask_paginate import Pagination, get_page_args
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templates')
 
@@ -9,6 +9,7 @@ marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templat
 @marca_equipo.route('/marca_equipo')
 #@marca_equipo.route('/marca_equipo/<order>')
 @marca_equipo.route('/marca_equipo/<page>/')
+@loguear_requerido
 def marcaEquipo(page=1):
     page = int(page)
     perpage = getPerPage()
@@ -32,17 +33,14 @@ def marcaEquipo(page=1):
     return render_template('marca_equipo.html', marca_equipo = data, page=page,
                         lastpage = page < (total/perpage) + 1)
 
-#abrir formulario agregar
-@marca_equipo.route('/try_add_marca_equipo')
-def try_add_marca_equipo():
-    cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM marca_equipo')
-    data = cur.fetchall()
-    return render_template('marca_equipo.html', marca_equipo = data, agregar= True)
 
 #agregar
 @marca_equipo.route('/add_marca_equipo', methods = ['POST'])
+@administrador_requierido
 def add_marca_equipo():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_marca_equipo = request.form['nombre_marca_equipo']
         try:
@@ -57,7 +55,11 @@ def add_marca_equipo():
         
 #enviar datos a vista editar
 @marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_marca_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM marca_equipo WHERE idMarca_Equipo = %s', (id,))
@@ -69,7 +71,11 @@ def edit_marca_equipo(id):
 
 #actualizar
 @marca_equipo.route('/update_marca_equipo/<id>', methods = ['POST'])
+@administrador_requierido
 def update_marca_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_marca_equipo = request.form['nombre_marca_equipo']
         try:
@@ -88,7 +94,11 @@ def update_marca_equipo(id):
 
 #eliminar    
 @marca_equipo.route('/marca_equipo/delete_marca_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_marca_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM marca_equipo WHERE idMarca_equipo = %s', (id,))

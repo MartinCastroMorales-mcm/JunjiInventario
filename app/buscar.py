@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session, flash, redirect
 from db import mysql
+from cuentas import loguear_requerido, administrador_requierido
 buscar = Blueprint("buscar", __name__, template_folder="app/templates")
 
 @buscar.route("/buscar", methods=["GET", "POST"])
+@loguear_requerido
 def Buscar():
     busqueda_data = request.args.get('busqueda') 
 

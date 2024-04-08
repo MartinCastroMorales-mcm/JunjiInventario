@@ -1,13 +1,18 @@
-from flask import Blueprint, flash, redirect, render_template, url_for, request
+from flask import Blueprint, flash, redirect, render_template, url_for, request, session
 from db import mysql
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
 
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<page>")
+@loguear_requerido
 def modeloEquipo(page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
@@ -44,7 +49,11 @@ def modeloEquipo(page=1):
 
 # agregar un regisro para modelo de equipo
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
+@administrador_requierido
 def add_modelo_equipo():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
         nombre_marca_equipo = request.form["nombre_marca_equipo"]
@@ -66,7 +75,11 @@ def add_modelo_equipo():
 
 # Envias datos a formulario editar
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -106,7 +119,11 @@ def edit_modelo_equipo(id):
 
 # actualizar
 @modelo_equipo.route("/update_modelo_equipo/<id>", methods=["POST"])
+@administrador_requierido
 def update_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
         nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
@@ -131,7 +148,11 @@ def update_modelo_equipo(id):
 
 # eliminar
 @modelo_equipo.route("/delete_modelo_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def delete_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute("DELETE FROM modelo_equipo WHERE idModelo_Equipo = %s", (id,))

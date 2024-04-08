@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file
+from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
@@ -6,6 +6,7 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
+from cuentas import loguear_requerido, administrador_requierido
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -13,6 +14,7 @@ PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-ma
 
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
+@loguear_requerido
 def Asignacion(page=1):
     #La url viene como string por lo que se convierte a int
     page = int(page)
@@ -53,7 +55,11 @@ def Asignacion(page=1):
 
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
+@administrador_requierido
 def add_asignacion(idEquipo = "None"):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if(idEquipo != "None"):
         idEquipo = int(idEquipo)
     cur = mysql.connection.cursor()
@@ -84,7 +90,11 @@ def add_asignacion(idEquipo = "None"):
 
 # enviar datos a vista editar
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_asignacion(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         #se obtiene la asignacion actual
@@ -111,8 +121,8 @@ def edit_asignacion(id):
         #creo que el equipo se deberia porder borrar
         cur.execute("SELECT * FROM equipo")
         eq_data = cur.fetchall()
-        print(data)
-        print(data['observacionAsignacion'])
+        #print(data)
+        #print(data['observacionAsignacion'])
         return render_template(
             "editAsignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
         )
@@ -123,7 +133,11 @@ def edit_asignacion(id):
 
 # actualizar
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
+@administrador_requierido
 def update_asignacion(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
@@ -162,6 +176,7 @@ def update_asignacion(id):
 
 # eliminar
 @asignacion.route("/delete_asignacion/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def delete_asignacion(id):
     try:
         cur = mysql.connection.cursor()
@@ -206,7 +221,11 @@ def delete_asignacion(id):
 
 #Este metodo extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
+@administrador_requierido
 def create_asignacion():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         # Extraer datos del formulario
         fechaasignacion = request.form['fechaasignacion']
@@ -221,7 +240,11 @@ def create_asignacion():
 
 
 #Este metodo es el que crea la asignacion
+@administrador_requierido
 def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
 
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
@@ -305,6 +328,9 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     class PDF(FPDF):
         def header(self):
             #imagen del encabezado
@@ -444,6 +470,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     return redirect(url_for("asignacion.Asignacion"))
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
+@loguear_requerido
 def mostrar_pdf(id):
     try:
         nombrePdf = "asignacion_" + str(id) + ".pdf"
@@ -455,6 +482,7 @@ def mostrar_pdf(id):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver/<id>")
+@administrador_requierido
 def devolver(id):
     today = date.today()
     cur = mysql.connection.cursor()
@@ -663,6 +691,7 @@ def crear_pdf_devolucion(
     shutil.move(nombrePdf, "app/pdf")
 
 @asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
+@loguear_requerido
 def mostrar_pdf_devolucion(id):
     try:
         nombrePdf = "devolucion_" + str(id) + ".pdf"
@@ -674,6 +703,7 @@ def mostrar_pdf_devolucion(id):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/buscar/<idAsignacion>")
+@loguear_requerido
 def buscar(idAsignacion):
     cur = mysql.connection.cursor()
     cur.execute(
@@ -710,7 +740,11 @@ def buscar(idAsignacion):
     )
 
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
+@administrador_requierido
 def devolver_uno(id_equipo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     #encontrar la id de la asignacion del equipo
     cur.execute("""
@@ -732,7 +766,7 @@ def devolver_uno(id_equipo):
     #TODO: generar otra acta? 
 
     fecha = date.today()#buscar la funcion para la fecha
-    print(id_asignacion)
+    #print(id_asignacion)
     cur.execute("""
     SELECT *
     FROM asignacion a
@@ -752,7 +786,7 @@ def devolver_uno(id_equipo):
     for equipo in equipos_data:
         equipos = equipos + ((equipo['idEquipo']),)
         
-    print(Asignacion)
+    #print(Asignacion)
     devolver(id_asignacion['idAsignacion'])
     creacionAsignacion(fecha, Asignacion['ObservacionAsignacion'], 
                 Asignacion['rutFuncionario'], equipos)
@@ -763,21 +797,25 @@ def devolver_uno(id_equipo):
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
+@loguear_requerido
 def listar_pdf(idAsignacion, devolver="None"):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     dir = PDFS_DIR   
     if devolver == "None":
         nombreFirmado = "asignacion_" + str(idAsignacion) + "_" + "firmado.pdf"
         location = "asignacion"
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
-        print(nombreFirmado)
+        #print(nombreFirmado)
         location = "devolucion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join(dir, nombreFirmado)):
         #mostrar
-        print("#####NombreFirmado = None #######")
+        #print("#####NombreFirmado = None #######")
         nombreFirmado = "None"
-    print("exists")
+    #print("exists")
     return render_template("firma.html", 
         nombreFirmado=nombreFirmado, id=idAsignacion, location=location)
 
@@ -786,7 +824,11 @@ def listar_pdf(idAsignacion, devolver="None"):
 
 
 @asignacion.route("/devolucion/mostrar_pdf/<id>/<nombreArchivo>")
+@loguear_requerido
 def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
         dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
@@ -797,7 +839,11 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>/<nombreArchivo>")
+@loguear_requerido
 def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
         dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
@@ -808,7 +854,11 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
+@administrador_requierido
 def adjuntar_pdf_asignacion(idAsignacion):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     #TODO: revisar que sea pdf
     file = request.files["file"]
     #subir archivo
@@ -829,6 +879,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
+@administrador_requierido
 def adjuntar_pdf_devolucion(idAsignacion):
     #TODO: revisar que sea pdf
     #si existe eliminar

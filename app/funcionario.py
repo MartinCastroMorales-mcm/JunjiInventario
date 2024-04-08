@@ -1,12 +1,17 @@
-from flask import Blueprint, request, render_template, flash, url_for, redirect
+from flask import Blueprint, request, render_template, flash, url_for, redirect, session
 from db import mysql
 from funciones import validarRut, getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
 #envias los datos a la vista pricipal de funcionario
 @funcionario.route('/funcionario')
 @funcionario.route('/funcionario/<page>')
+@loguear_requerido
 def Funcionario(page = 1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page -1) * perpage 
@@ -29,7 +34,11 @@ def Funcionario(page = 1):
 
 #agregar funcionario
 @funcionario.route('/add_funcionario', methods = ['POST'])
+@administrador_requierido
 def add_funcionario():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         rut_funcionario = request.form['rut_funcionario']
         nombre_funcionario = request.form['nombre_funcionario']
@@ -54,7 +63,11 @@ def add_funcionario():
     
 #enviar datos a vista editar
 @funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_funcionario(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(""" 
@@ -73,7 +86,11 @@ def edit_funcionario(id):
 
 #actualizar funcionario por id
 @funcionario.route('/update_funcionario/<id>', methods = ['POST'])
+@administrador_requierido
 def update_funcionario(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         rut_funcionario = request.form['rut_funcionario']
         nombre_funcionario = request.form['nombre_funcionario']
@@ -98,7 +115,11 @@ def update_funcionario(id):
 
 #eliminar registro segun id
 @funcionario.route('/delete_funcionario/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_funcionario(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM funcionario WHERE rutFuncionario = %s', (id,))
@@ -110,6 +131,7 @@ def delete_funcionario(id):
         return redirect(url_for('funcionario.Funcionario'))
 
 @funcionario.route("/funcionario/buscar_funcionario/<id>")
+@loguear_requerido
 def buscar_funcionario(id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -127,4 +149,3 @@ def buscar_funcionario(id):
     unidades = cur.fetchall()
     return render_template('funcionario.html', funcionario = funcionarios, 
                            Unidad = unidades, page=1, lastpage=True)
-    pass

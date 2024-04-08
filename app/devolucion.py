@@ -1,12 +1,14 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
-from fpdf import FPDF
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 devolucion = Blueprint('devolucion', __name__, template_folder='app/templates')
 
 @devolucion.route('/devolucion')
 @devolucion.route('/devolucion/<page>')
+
+@loguear_requerido
 def Devolucion(page = 1):
     page = int(page)
     perpage = getPerPage()
@@ -28,6 +30,7 @@ def Devolucion(page = 1):
                            page=page, lastpage= page < (total/perpage)+1)
 
 @devolucion.route('/add_devolucion', methods = ['POST'])
+@loguear_requerido
 def add_estado_equipo():
     if request.method == 'POST':
        # idDevolucion = request.form['idDevolucion']
@@ -49,6 +52,7 @@ def add_estado_equipo():
     
 #enviar datos a vista editar
 @devolucion.route('/edit_devolucion/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_devolucion(id):
     try:
         cur = mysql.connection.cursor()
@@ -67,8 +71,8 @@ def edit_devolucion(id):
 
 #actualizar
 @devolucion.route('/update_devolucion/<id>', methods = ['POST'])
+@administrador_requierido
 def update_devolucion(id):
-    
     if request.method == 'POST':
         fechaDevolucion = request.form['fechaDevolucion']
         observacionDevolucion= request.form['observacionDevolucion']
@@ -99,7 +103,11 @@ def update_devolucion(id):
 
 #eliminar    
 @devolucion.route('/delete_devolucion/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_devolucion(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM devolucion WHERE iddevolucion = %s', (id,))
@@ -111,5 +119,6 @@ def delete_devolucion(id):
         return redirect(url_for('devolucion.Devolucion'))
 
 @devolucion.route("/test1")
+@administrador_requierido
 def crear_pdf():
-        return redirect(url_for("asignacion.Asignacion"))
+    return redirect(url_for("asignacion.Asignacion"))

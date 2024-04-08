@@ -1,7 +1,8 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file
+from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 import os
 import shutil 
 from werkzeug.utils import secure_filename
@@ -11,6 +12,7 @@ PDFS_INCIDENCIAS = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inven
 #pestaña principal de incidencias
 @incidencia.route("/incidencia")
 @incidencia.route("/incidencia/<page>")
+@loguear_requerido
 def Incidencia(page = 1):
     page = int(page)
     perpage = getPerPage()
@@ -20,14 +22,13 @@ def Incidencia(page = 1):
         """
                 SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
                     i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, 
+                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreTipo_Equipo, 
                     me.nombreModeloEquipo,
                     i.numDocumentos, e.idEquipo
                 FROM incidencia i 
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
-                INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
                 INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
-                
+                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.nombreTipo_Equipo
                 LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -41,6 +42,7 @@ def Incidencia(page = 1):
 
 #form que se accede desde equipo para crear incidencia
 @incidencia.route("/incidencia/form/<idEquipo>")
+@administrador_requierido
 def incidencia_form(idEquipo):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -53,7 +55,11 @@ def incidencia_form(idEquipo):
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
+@administrador_requierido
 def add_incidencia():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
          nombreIncidencia = request.form['nombreIncidencia']
          observacionIncidencia = request.form['observacionIncidencia']
@@ -83,7 +89,11 @@ def add_incidencia():
     return redirect("/incidencia/listar_pdf/" + idEquipo)
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
+@administrador_requierido
 def delete_incidencia(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute("DELETE FROM incidencia WHERE idIncidencia = %s", (id,))
     mysql.connection.commit()
@@ -91,7 +101,11 @@ def delete_incidencia(id):
     return redirect(url_for("incidencia.Incidencia"))
 
 @incidencia.route("/incidencia/edit_incidencia/<id>", methods=["GET", "POST"])
+@administrador_requierido
 def edit_incidencia(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute("""
             SELECT *
@@ -103,7 +117,11 @@ def edit_incidencia(id):
 
      
 @incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
+@administrador_requierido
 def update_incidencia(id):
+   if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
    nombreIncidencia = request.form['nombreIncidencia'] 
    ObservacionIncidencia = request.form['observacionIncidencia']
    fechaIncidencia = request.form['fechaIncidencia']
@@ -128,7 +146,11 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @incidencia.route("/incidencia/adjuntar_pdf/<id>", methods=["POST"])
+@administrador_requierido
 def adjuntar_pdf(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     #guardar pdf
     file = request.files["file"]
     dir = PDFS_INCIDENCIAS
@@ -157,13 +179,17 @@ def adjuntar_pdf(id):
     return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
 @incidencia.route("/incidencia/listar_pdf/<id>")
+@loguear_requerido
 def listar_pdf(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     #verificar la existencia de la carpeta incidencia
     #try:
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
-                FROM superEquipo e
+                FROM super_equipo e
                 WHERE e.idEquipo = %s
                 """, (id,))
     data_equipo = cur.fetchone()
@@ -209,7 +235,11 @@ def listar_pdf(id):
                            documentos=pdfTupla, equipo=data_equipo)
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
+@loguear_requerido
 def mostrar_pdf(id, nombrePdf):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         nombrePdf = nombrePdf
         dir = PDFS_INCIDENCIAS
@@ -263,7 +293,11 @@ def mostrar_pdf(id, nombrePdf):
     
 
 @incidencia.route("/incidencia/buscar/<idIncidencia>")
+@loguear_requerido
 def buscar(idIncidencia):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute(
         """

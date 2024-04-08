@@ -1,16 +1,21 @@
 #se importa flask
-from flask import Blueprint, render_template, request, url_for, redirect,flash
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 #se importa db.py para utilizar la conexion a mysql
 from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 orden_compra = Blueprint('orden_compra', __name__, template_folder='app/templates')
 
 #vista principal orden_compra
 @orden_compra.route('/orden_compra')
 @orden_compra.route('/orden_compra/<page>')
+@loguear_requerido
 def ordenCompra(page = 1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page-1) * perpage
@@ -40,6 +45,7 @@ def ordenCompra(page = 1):
 
 #agrega un registro para orden de compra
 @orden_compra.route('/add_ordenc', methods = ['POST'])
+@administrador_requierido
 def add_ordenc():
     if request.method == 'POST':
         id_ordenc = request.form['id_ordenc']
@@ -61,7 +67,11 @@ def add_ordenc():
             return redirect(url_for('orden_compra.ordenCompra'))
 #Envias datos a formulario editar
 @orden_compra.route('/edit_ordenc/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_ordenc(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra, oc.fechafin_ORDEN_COMPRA, oc.rutadocumentoOrden_compra, p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombreTipo_adquisicion
@@ -84,7 +94,11 @@ def edit_ordenc(id):
     
 #actualizar
 @orden_compra.route('/update_ordenc/<id>', methods = ['POST'])
+@administrador_requierido
 def update_ordenc(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_ordenc = request.form['nombre_ordenc']
         fecha_compra_ordenc = request.form['fecha_compra_ordenc']
@@ -114,7 +128,11 @@ def update_ordenc(id):
         
 #eliminar    
 @orden_compra.route('/delete_ordenc/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_ordenc(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM orden_compra WHERE idOrden_compra = %s', (id,))

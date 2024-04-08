@@ -1,8 +1,9 @@
-from flask import request, flash, render_template, url_for, redirect, Blueprint
+from flask import request, flash, render_template, url_for, redirect, Blueprint, session
 from db import mysql
 from funciones import getPerPage
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
+from cuentas import loguear_requerido, administrador_requierido
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -10,11 +11,15 @@ equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 # envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR
 @equipo.route("/equipo")
 @equipo.route("/equipo/<page>")
+@loguear_requerido
 def Equipo(page=1):
     page = int(page)
     perpage = getPerPage()
     offset = (int(page) - 1) * perpage
-    cur = mysql.connection.cursor()
+    #solo funciona con connect no con connect
+    #si funciona con connection. parece que era algo de la maquina virtual
+    #elimine la maquina virtual y ahora funciona
+    cur = mysql.connection.cursor() #ahora connect funciona pero no connection ¿?
     cur.execute("SELECT COUNT(*) FROM EQUIPO")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
@@ -42,14 +47,14 @@ def Equipo(page=1):
 
     }
     for tipo in tipoe_data:
-        print("########################")
-        print(tipo)
+        #print("########################")
+        #print(tipo)
         query = """
         SELECT *
         FROM modelo_equipo me
         WHERE me.idTipo_Equipo = {}
 """.format(str(tipo['idTipo_equipo']))
-        print(query)
+        #print(query)
         cur.execute("""
         SELECT *
         FROM modelo_equipo me
@@ -59,8 +64,8 @@ def Equipo(page=1):
         modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
 
 
-    print("tipos de equipo ############")
-    print(tipoe_data)
+    #print("tipos de equipo ############")
+    #print(tipoe_data)
     return render_template(
         "equipo.html",
         equipo=equipos,
@@ -76,6 +81,7 @@ def Equipo(page=1):
 
 # agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
+@administrador_requierido
 def add_equipo():
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
@@ -93,9 +99,30 @@ def add_equipo():
         try:
             cur = mysql.connection.cursor()
             cur.execute(
-                """ INSERT INTO equipo (Cod_inventarioEquipo, Num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,
-                        imeiEquipo , numerotelefonicoEquipo , idTipo_Equipo, idEstado_Equipo, idUnidad, idOrden_compra, idModelo_equipo) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """ INSERT INTO equipo (
+                    Cod_inventarioEquipo, 
+                    Num_serieEquipo, 
+                    ObservacionEquipo,
+                    codigoproveedor_equipo,
+                    macEquipo,
+                    imeiEquipo, 
+                    numerotelefonicoEquipo, 
+                    idEstado_Equipo, 
+                    idUnidad, 
+                    idOrden_compra, 
+                    idModelo_equipo) 
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s)
             """,
                 (
                     codigo_inventario,
@@ -105,7 +132,6 @@ def add_equipo():
                     mac,
                     imei,
                     numero,
-                    nombre_tipo_equipo,
                     nombre_estado_equipo,
                     codigo_Unidad,
                     nombre_orden_compra,
@@ -116,13 +142,18 @@ def add_equipo():
             flash("Equipo agregado correctamente")
             return redirect(url_for("equipo.Equipo"))
         except Exception as e:
+            print("exception agregar equipo")
             flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
 
 
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -166,7 +197,11 @@ def edit_equipo(id):
 
 # actualiza registro a traves de id correspondiente
 @equipo.route("/update_equipo/<id>", methods=["POST"])
+@administrador_requierido
 def update_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
         numero_serie = request.form["numero_serie"]
@@ -225,7 +260,11 @@ def update_equipo(id):
 
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def delete_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
@@ -238,6 +277,7 @@ def delete_equipo(id):
 
 
 @equipo.route("/mostrar_asociados_traslado/<idTraslado>")
+@loguear_requerido
 def mostrar_asociados_traslado(idTraslado):
     page = 1
     perpage = 200
@@ -289,7 +329,11 @@ def mostrar_asociados_traslado(idTraslado):
 
 @equipo.route("/mostrar_asociados_unidad/<idUnidad>")
 @equipo.route("/mostrar_asociados_unidad/<idUnidad>/<page>")
+@loguear_requerido
 def mostrar_asociados_unidad(idUnidad, page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     page = 1
     perpage = 200  # getPerPage()
@@ -343,7 +387,11 @@ def mostrar_asociados_unidad(idUnidad, page=1):
 
 @equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>")
 @equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>/<page>")
+@loguear_requerido
 def mostrar_asociados_funcionario(rutFuncionario, page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM tipo_equipo")
     tipoe_data = cur.fetchall()
@@ -426,7 +474,11 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
 
 
 @equipo.route("/equipo_detalles/<idEquipo>")
+@loguear_requerido
 def equipo_detalles(idEquipo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     #Como funcionaria con la asignacion cambiada ¿?
     #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
@@ -498,8 +550,8 @@ def equipo_detalles(idEquipo):
             #)
                 #""")
 @equipo.route("/test_excel_form", methods=["POST"])
+@loguear_requerido
 def test_excel_form():
- 
     #para el uso de la pagina de otros
     tipos = ("aio", "notebook", "impresoras", "bam", "proyectores", "telefonos", "disco_duro",
              "tablets")
@@ -564,6 +616,9 @@ def test_excel_form():
     return redirect(url_for("equipo.Equipo"))
 
 def añadir_hoja_de_otros(tipos, ws):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     query = """
 
@@ -676,6 +731,9 @@ def añadir_hoja_de_otros(tipos, ws):
 
 
 def añadir_hoja_de_tipo(tipo, ws):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT *
@@ -778,7 +836,11 @@ def añadir_hoja_de_tipo(tipo, ws):
     return
 #exportar a pdf
 @equipo.route("/equipo/crear_excel")
+@loguear_requerido
 def crear_excel():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     #buscar columnas
     wb = Workbook()
     ws = wb.active
@@ -891,11 +953,13 @@ def crear_pagina_todojunto(wb):
     return wb
 
 @equipo.route("/equipo/importar_excel")
+@administrador_requierido
 def importar_excel(url):
     pass
 
 #buscar un equipo singular por id
 @equipo.route("/equipo/buscar_equipo/<id>")
+@loguear_requerido
 def buscar_equipo(id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -969,8 +1033,8 @@ def buscar_equipo(id):
 #buscar todos los equipos en base a una palabra de busqueda
 @equipo.route("/consulta_equipo", methods =["POST"])
 @equipo.route("/consulta_equipo/<page>", methods =["POST"])
+@loguear_requerido
 def consulta_equipo(page = 1):
-    
     palabra = request.form["palabra"]
     if palabra == "":
         print("error_redirect")

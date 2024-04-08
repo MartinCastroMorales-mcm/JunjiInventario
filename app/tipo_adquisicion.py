@@ -1,12 +1,17 @@
-from flask import Blueprint, render_template, request, url_for, redirect,flash
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 from db import mysql
 from funciones import validarChar, getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 tipo_adquisicion = Blueprint('tipo_adquisicion', __name__, template_folder='app/templates')
 
 @tipo_adquisicion.route('/tipo_adquisicion')
 @tipo_adquisicion.route('/tipo_adquisicion/<page>')
+@loguear_requerido
 def tipoAdquisicion(page = 1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page-1) * perpage
@@ -21,7 +26,11 @@ def tipoAdquisicion(page = 1):
 
 #agrega un registro para tipo de adquisicion
 @tipo_adquisicion.route('/add_tipoa', methods = ['POST'])    
+@administrador_requierido
 def add_tipoa():       
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_tipoa = request.form['nombre_tipoa']   
         try:    
@@ -36,7 +45,11 @@ def add_tipoa():
 
 #enviar datos a formulario editar segun el id
 @tipo_adquisicion.route('/edit_tipoa/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_tipoa(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))
@@ -48,7 +61,11 @@ def edit_tipoa(id):
 
 #actualiza el registro segun su id
 @tipo_adquisicion.route('/update_tipoa/<id>', methods = ['POST'])
+@administrador_requierido
 def actualizar_tipoa(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_tipoa = request.form['nombre_tipoa'] 
         try: 
@@ -67,7 +84,11 @@ def actualizar_tipoa(id):
         
 #elimina un registro segun su id
 @tipo_adquisicion.route('/delete_tipoa/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_tipoa(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))

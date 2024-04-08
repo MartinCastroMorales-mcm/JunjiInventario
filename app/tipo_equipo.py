@@ -1,13 +1,18 @@
-from flask import Blueprint, render_template, request, url_for, redirect,flash
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 from db import mysql
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 tipo_equipo = Blueprint('tipo_equipo', __name__, template_folder='app/templates')
 
 #ruta para enviar los datos y visualizar la pagina principal para tipo de equipo
 @tipo_equipo.route('/tipo_equipo')
 @tipo_equipo.route('/tipo_equipo/<page>')
+@loguear_requerido
 def tipoEquipo(page = 1):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     perpage = getPerPage()
     offset = (int(page)-1) * perpage
     cur = mysql.connection.cursor()
@@ -25,7 +30,11 @@ def tipoEquipo(page = 1):
 
 #agrega un tipo de equipo
 @tipo_equipo.route('/add_tipo_equipo', methods = ['POST'])
+@administrador_requierido
 def add_tipo_equipo():
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombreidTipoequipo = request.form['nombreTipo_equipo']
         id = request.form['nombre_marca_equipo']
@@ -45,7 +54,11 @@ def add_tipo_equipo():
 
 #enviar datos a formulario editar para tipo de equipo segun el ide correspondiente
 @tipo_equipo.route('/edit_tipo_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_tipo_equipo(id):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM tipo_equipo WHERE idTipo_equipo = %s', (id,))
@@ -60,7 +73,11 @@ def edit_tipo_equipo(id):
 
 #actualiza un elemento de tipo de equipo segun el id correspondiente
 @tipo_equipo.route('/update_tipo_equipo/<id>', methods = ['POST'])
+@administrador_requierido
 def update_tipo_equipo(id):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_tipo_equipo = request.form['nombre_tipo_equipo']
         id_marca = request.form['nombre_marca_equipo']
@@ -81,7 +98,11 @@ def update_tipo_equipo(id):
 
 #elimina el registro segun el id
 @tipo_equipo.route('/delete_tipo_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_tipo_equipo(id):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM tipo_equipo WHERE idTipo_equipo = %s', (id,))

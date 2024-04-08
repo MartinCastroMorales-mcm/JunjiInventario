@@ -117,3 +117,10 @@ OK -Proteger de inyeccion sql
         -------------------------
 
         Agregar lista de opciones para incidencias cosa que los botones se vean mas parejos
+
+
+
+OK boton crear cuenta
+        cuenta de usuario solo puede ver
+        OK agregar usuario a pdfs
+        ver pdfs en tabla
