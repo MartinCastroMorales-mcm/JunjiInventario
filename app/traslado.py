@@ -1,15 +1,22 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file
+from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
 import os
 import shutil 
+from cuentas import loguear_requerido, administrador_requierido
+from werkzeug.utils import secure_filename
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
+PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
 
 @traslado.route("/traslado")
 @traslado.route("/traslado/<page>")
+@loguear_requerido
 def Traslado(page = 1):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page -1) * perpage
@@ -46,7 +53,11 @@ def Traslado(page = 1):
 
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])
+@administrador_requierido
 def add_traslado():
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     if request.method == 'POST':
 
         Origen = int(request.form['Origen'])
@@ -57,7 +68,8 @@ def add_traslado():
                 SELECT *
                 FROM equipo e
                 INNER JOIN unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
+                INNER JOIN modelo_equipo me on me.idModelo_equipo = e.idModelo_equipo 
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
                 WHERE e.idUnidad = %s
                         """, (Origen,))
                     
@@ -83,7 +95,11 @@ def add_traslado():
             return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/edit_traslado/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_traslado(id):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -122,7 +138,11 @@ def edit_traslado(id):
         return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/delete_traslado/<id>", methods = ["POST", "GET"])
+@administrador_requierido
 def delete_traslado(id):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -158,7 +178,11 @@ def delete_traslado(id):
         return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/create_traslado/<origen>", methods=["POST"])
+@administrador_requierido
 def create_traslado(origen):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     if request.method == "POST":
         fechatraslado = request.form['fechatraslado']
         #rutadocumento = request.form['']
@@ -202,11 +226,11 @@ def create_traslado(origen):
 
             cur.execute("""
                         SELECT *
-                        FROM equipo
-                        INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
-                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
-                        INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
-                        WHERE equipo.idEquipo = %s
+                        FROM equipo e
+                        INNER JOIN modelo_equipo me ON me.idModelo_equipo = e.idModelo_equipo
+                        INNER JOIN tipo_equipo te on me.idTipo_equipo = me.idTipo_equipo
+                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_equipo
+                        WHERE e.idEquipo = %s
                         """, (idEquipo))
             equipoTupla = cur.fetchone()
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
@@ -241,6 +265,9 @@ def create_traslado(origen):
 
 
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
 
     #se añade el encabezado y footer creando una clase PDF que hereda de FPDF y sobreescribe los
     #metodos
@@ -249,7 +276,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             #logo
             #imageUrl = url_for('static', filename='img/logo_junji.png')
             #print(imageUrl)
-            self.image('logo_junji.png', 10, 8, 25)
+            self.image('logo_junji.jpg', 10, 8, 25)
             #font
             self.set_font('times', 'B', 12)
             self.set_text_color(170,170,170)
@@ -294,7 +321,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     i = 0
     for equipo in equipos:
         i += 1
-        TABLE_DATA = TABLE_DATA + ((str((i)), equipo['nombreidTipoequipo'],
+        TABLE_DATA = TABLE_DATA + ((str((i)), equipo['nombreTipo_equipo'],
                         equipo['nombreModeloequipo'],
                         str(equipo['Num_serieEquipo']),
                         str(equipo['Cod_inventarioEquipo']),
@@ -312,8 +339,8 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     #("4", "EpsonI5190", "X5NS117668", "8042815", "MAL"),
     pdf.set_font('times', '', 20)
     pdf.cell(0, 10, titulo, ln=True, align='C')            
-            
     pdf.set_font('times', '', 12)
+            
     pdf.multi_cell(0, 10, parrafo_1)
     #crea una tabla en base a los datos anteriores
     with pdf.table() as table:
@@ -332,7 +359,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     nombreMinistro = "Nombre Ministro de Fe:"
     rutMinistro = "Numero de RUT:"
     firma = "Firma"
-    nombreEncargadoUnidadTI = "Nombre Encargado TI"
+    nombreEncargadoUnidadTI = "Nombre Encargado TI " + session["user"]
     rutMinistro = "Numero de RUT:"
     firma = "Firma"
     #crea dos columnas una para el espacio de firma y otra para los nombres
@@ -388,6 +415,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             cols.ln()
             cols.ln()
     #crear pdf con la id para diferenciar pdfs
+
     nombrePdf = "traslado" + "_" + str(traslado['idTraslado']) + ".pdf"
     pdf.output(nombrePdf)
     #print("test")
@@ -398,18 +426,32 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/mostrar_pdf/<id>")
-def mostrar_pdf(id):
+@traslado.route("/traslado/mostrar_pdf/<id>/<firmado>")
+@loguear_requerido
+def mostrar_pdf(id, firmado="0"):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
+    print(firmado)
     try:
-        nombrePdf = "traslado_" + str(id) + ".pdf"
+        if firmado == "0":
+            nombrePdf = "traslado_" + str(id) + ".pdf"
+        else:
+            nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
+            print("se encontro el firmado" + nombrePdf)
         dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")
-        return redirect(url_for('traslado.Traslado'))
+        #return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/buscar/<idTraslado>")
+@loguear_requerido
 def buscar(idTraslado):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute(
         """
@@ -437,3 +479,40 @@ def buscar(idTraslado):
     
     return render_template("traslado.html", traslado=data, unidades=unidades,
                            page=1, lastpage= True)
+
+@traslado.route("/traslado/listar_pdf/<idTraslado>")
+@loguear_requerido
+def listar_pdf(idTraslado):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
+    dir = PDFS_DIR   
+    nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
+    #revisa si el archivo esta firmado
+    if not os.path.exists(os.path.join(dir, nombreFirmado)):
+        #mostrar
+        print("#####NombreFirmado = None #######")
+        nombreFirmado = "None"
+    print("exists")
+    return render_template("firma.html", 
+        nombreFirmado=nombreFirmado, id=idTraslado, location="traslado")
+
+@traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
+@administrador_requierido
+def adjuntar_firmado(idTraslado):
+    if "user" not in session:
+        flash("Se nesesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
+    #TODO: revisar que sea pdf
+    file = request.files["file"]
+    #subir archivo
+    dir = PDFS_DIR
+    #renombrar archivo
+    filename = file.filename
+    sfilename = secure_filename(filename)
+    file.save(os.path.join(
+        dir, secure_filename(sfilename)
+    ))
+    os.rename(os.path.join(dir, sfilename), 
+              os.path.join(dir, "traslado_" + str(idTraslado) + "_firmado.pdf"))
+    return redirect("/traslado/listar_pdf/" + str(idTraslado))

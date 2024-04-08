@@ -1,8 +1,10 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template, request, session, flash, redirect
 from db import mysql
+from cuentas import loguear_requerido, administrador_requierido
 buscar = Blueprint("buscar", __name__, template_folder="app/templates")
 
 @buscar.route("/buscar", methods=["GET", "POST"])
+@loguear_requerido
 def Buscar():
     busqueda_data = request.args.get('busqueda') 
 
@@ -37,6 +39,15 @@ def Buscar():
                 i.idIncidencia,
                 "incidencia"
         FROM incidencia i
+        UNION
+        SELECT t.fechaTraslado,
+                origen.nombreUnidad,
+                destino.nombreUnidad,
+                t.idTraslado,
+                "traslado"
+        FROM traslado t 
+        INNER JOIN unidad origen ON origen.idUnidad = t.idUnidadOrigen
+        INNER JOIN unidad destino ON destino.idUnidad = t.idUnidadDestino
         """)
     items_data = cur.fetchall()
 

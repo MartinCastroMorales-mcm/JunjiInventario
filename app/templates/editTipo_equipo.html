@@ -1,19 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="row">
-    <div class="col-md-4 offset-md-4">
-      <div class="card card-body">
-        <form action="/update_tipo_equipo/{{tipo_equipo.idTipo_equipo}}" method="POST"class="mi-formulario">
-            <div class="form-group">
-                <input type="text" name="nombre_tipo_equipo" placeholder="Nombre tipo de equipo" value="{{tipo_equipo.nombreidTipoequipo}}">
-            </div>
-            <div class="form-group">
-                <button type="submit" class="agregar-button"> Guardar</button>  
-
-            </div>
-          </form> 
+  <div class="col-md-4 offset-md-4">
+    <div class="card card-body">
+      <form action="/update_tipo_equipo/{{tipo_equipo.idTipo_equipo}}" method="POST" class="mi-formulario">
+        <label for="nombre_marca_equipo"> Marca Equipo: </label>
+        <select name="nombre_marca_equipo" id="marca_equipo">
+          <option value="">Elija la Marca del Equipo</option>
+          {% for marcae in marca_equipo %}
+          <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+          {% endfor %}
+        </select>
+        <br />
+        <div class="form-group">
+          <input type="text" name="nombre_tipo_equipo" placeholder="Nombre tipo de equipo"
+            value="{{tipo_equipo.nombreTipo_equipo}}">
         </div>
+        <div class="form-group">
+          <button type="submit" class="agregar-button"> Guardar</button>
+
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
 {% endblock %}

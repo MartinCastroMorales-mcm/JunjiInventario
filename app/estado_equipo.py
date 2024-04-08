@@ -1,11 +1,13 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 estado_equipo = Blueprint('estado_equipo', __name__, template_folder='app/templates')
 
 @estado_equipo.route('/estado_equipo')
 @estado_equipo.route('/estado_equipo/<page>')
+@loguear_requerido
 def estadoEquipo(page = 1):
     page = int(page)
     perpage = getPerPage()
@@ -21,7 +23,11 @@ def estadoEquipo(page = 1):
                            page=page, lastpage= page < (total/perpage)+1)
 
 @estado_equipo.route('/add_estado_equipo', methods = ['POST'])
+@administrador_requierido
 def add_estado_equipo():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_estado_equipo = request.form['nombre_estado_equipo']
         fecha_modificacion = request.form['fecha_modificacion']
@@ -37,7 +43,11 @@ def add_estado_equipo():
     
 #enviar datos a vista editar
 @estado_equipo.route('/edit_estado_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_estado_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM estado_equipo WHERE idEstado_equipo = %s', (id,))
@@ -49,7 +59,11 @@ def edit_estado_equipo(id):
 
 #actualizar
 @estado_equipo.route('/update_estado_equipo/<id>', methods = ['POST'])
+@administrador_requierido
 def update_estado_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_estado_equipo = request.form['nombre_estado_equipo']
         fecha_modificacion = request.form['fecha_modificacion']
@@ -70,7 +84,11 @@ def update_estado_equipo(id):
 
 #eliminar    
 @estado_equipo.route('/delete_estado_equipo/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_estado_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM estado_equipo WHERE idEstado_equipo = %s', (id,))
@@ -82,7 +100,11 @@ def delete_estado_equipo(id):
         return redirect(url_for('estado_equipo.estadoEquipo'))
 
 @estado_equipo.route("/mostrar_equipos_segun_tipo/<tipo>")
+@administrador_requierido
 def mostrar_equipos_segun_tipo(tipo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute("""
 

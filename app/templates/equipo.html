@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
+{% from 'funciones_macro.html' import paginacion, select%}
 
 <div class="row">
 
@@ -49,10 +49,10 @@
                     <input type="text" name="numero">
                     <br>
                     <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
-                    <select name="nombre_tipo_equipo" id="">
+                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for tipoe in tipo_equipo %}
-                        <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreidTipoequipo}}</option>
+                        <option value="{{ tipoe.idTipo_equipo }}">{{tipoe.nombreTipo_equipo}}</option>
                         {% endfor %}
                     </select>
                     <br>
@@ -80,13 +80,11 @@
                         {% endfor %}
                     </select>
                     <br>
-                    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
-                    <select name="nombre_modelo_equipo">
-                        <option value="">Seleccione el Modelo del Equipo</option>
-                        {% for modeloe in modelo_equipo %}
-                        <option value="{{ modeloe.idModelo_Equipo }}">{{modeloe.nombreModeloequipo}}</option>
+                    <div id="select_div">
+                        {% for tipo in tipo_equipo%}
+                        {{select(modelo_equipo[tipo['idTipo_equipo']], tipo['idTipo_equipo'])}}
                         {% endfor %}
-                    </select>
+                    </div>
                     <br>
                     <button class="agregar-button"> Agregar</button>
             </form>
@@ -111,6 +109,10 @@
                 <div>
                     <input onclick="sheetCheck()" type="checkbox" id="AIO_check" name="AIO_check" />
                     <label for="AIO_check">AIO</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="Notebooks" name="Notebooks" />
+                    <label for="Notebooks">Notebooks</label>
                 </div>
                 <div>
                     <input onclick="sheetCheck()" type="checkbox" id="impresoras_check" name="impresoras_check" />
@@ -151,10 +153,14 @@
 
 <br />
 <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
-        <input name="busqueda" type="text" 
-        class="search-box" placeholder="Search..." 
-        id="buscador"
-            onkeyup="busqueda('myTableBody')">
+    <div style="display:flex;">
+        <form action="/consulta_equipo" method="POST">
+            <input name="palabra" type="text" class="search-box" placeholder="Search..." id="buscador"
+                onkeyup="busqueda('myTableBody')" />
+            {#<button class="nav-button" type="submit">Buscar</button>#}
+        </form>
+    </div>
+
 </div>
 <div style="overflow-x:auto;">
     <table id="posts">
@@ -180,28 +186,19 @@
             <!-- Se inicia iteracion for para mostrar todos los proveedores -->
             {% for equi in equipo %}
             <tr>
-                <td>{{equi.Cod_inventarioEquipo}}</td>
-                <td>{{equi.Num_serieEquipo}}</td>
-                <td>{{equi.ObservacionEquipo}}</td>
-                <td>{{equi.nombreFuncionario}}</td>
-                <td>{{equi.codigoproveedor_equipo}}</td>
-                <td>{{equi.macEquipo}}</td>
-                <td>{{equi.imeiEquipo}}</td>
-                <td>{{equi.numerotelefonicoEquipo}}</td>
-                {% if tipo_equipo.idTipo_equipo == equipo.idTipo_Equipo %}
-                <td>{{equi.nombreidTipoequipo}}</td>
-                {% endif %}
-                {% if estado_equipo.idEstado_equipo == equipo.idEstado_equipo %}
-                <td>{{equi.nombreEstado_equipo}}</td>
-                {% endif %}
-                <td>{{equi.nombreUnidad}}</td>
-                {% if orden_compra.idOrden_compra == equipo.idOrden_compra %}
-                <td>{{equi.nombreOrden_compra}}</td>
-                {% endif %}
-                {% if modelo_equipo.idModelo_Equipo == equipo.idModelo_equipo %}
-                <td>{{equi.nombreModeloequipo}}</td>
-                {% endif %}
-
+                <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
+                <td class="toCheck">{{equi.Num_serieEquipo}}</td>
+                <td class="toCheck">{{equi.ObservacionEquipo}}</td>
+                <td class="toCheck">{{equi.nombreFuncionario}}</td>
+                <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
+                <td class="toCheck">{{equi.macEquipo}}</td>
+                <td class="toCheck">{{equi.imeiEquipo}}</td>
+                <td class="toCheck">{{equi.numerotelefonicoEquipo}}</td>
+                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
+                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
+                <td class="toCheck">{{equi.nombreUnidad}}</td>
+                <td class="toCheck">{{equi.nombreOrden_compra}}</td>
+                <td class="toCheck">{{equi.nombreModeloequipo}}</td>
                 <td>
                     {#clase para tener un boton que despliega los otros botones #}
                     <div class="dropdown">
@@ -219,7 +216,7 @@
                             <a href="/add_asignacion/{{equi.idEquipo}}" class="agregar-button"
                                 style="width: 90%;">Asignar</a>
                             {% else %}
-                            <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button" 
+                            <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button"
                                 style="width: 90%;">Devolver</a>
                             {% endif %}
 

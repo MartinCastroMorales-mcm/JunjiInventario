@@ -1,13 +1,18 @@
-from flask import Blueprint, flash, redirect, render_template, url_for, request
+from flask import Blueprint, flash, redirect, render_template, url_for, request, session
 from db import mysql
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
 
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<page>")
+@loguear_requerido
 def modeloEquipo(page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
@@ -15,9 +20,10 @@ def modeloEquipo(page=1):
     cur = mysql.connection.cursor()
     cur.execute(
         """ 
-    SELECT moe.idModelo_Equipo, moe.nombreModeloequipo, moe.idMarca_equipo, mae.idMarca_Equipo, mae.nombreMarcaEquipo
+    SELECT *
     FROM modelo_equipo moe
-    INNER JOIN marca_equipo mae on moe.idMarca_equipo = mae.idMarca_Equipo
+    LEFT OUTER JOIN tipo_equipo te on moe.idTipo_equipo = te.idTipo_equipo
+    LEFT OUTER JOIN marca_equipo mae on te.idMarca_equipo = mae.idMarca_equipo
     LIMIT {} OFFSET {} 
     """.format(
             perpage, offset
@@ -26,12 +32,15 @@ def modeloEquipo(page=1):
     data = cur.fetchall()
     cur.execute("SELECT * FROM marca_equipo")
     mae_data = cur.fetchall()
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipo_data = cur.fetchall()
     cur.execute("SELECT COUNT(*) FROM modelo_equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     return render_template(
         "modelo_equipo.html",
         modelo_equipo=data,
+        tipo_equipo=tipo_data,
         marca_equipo=mae_data,
         page=page,
         lastpage=page < (total / perpage) + 1,
@@ -40,17 +49,18 @@ def modeloEquipo(page=1):
 
 # agregar un regisro para modelo de equipo
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
+@administrador_requierido
 def add_modelo_equipo():
     if request.method == "POST":
-        nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
-        nombre_marca_equipo = request.form["nombre_marca_equipo"]
+        nombre_modelo_equipo = request.form['nombre_modelo_equipo']
+        id_tipo_equipo = request.form['nombre_tipo_equipo']
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
-            INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES (%s,%s)
+            INSERT INTO modelo_equipo (nombreModeloequipo, idTipo_equipo) VALUES (%s,%s)
             """,
-                (nombre_modelo_equipo, nombre_marca_equipo),
+                (nombre_modelo_equipo, id_tipo_equipo),
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")
@@ -62,27 +72,43 @@ def add_modelo_equipo():
 
 # Envias datos a formulario editar
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
             """ 
-        SELECT moe.idModelo_Equipo, moe.nombreModeloequipo, moe.idMarca_equipo, mae.idMarca_Equipo, mae.nombreMarcaEquipo
+        SELECT moe.idModelo_Equipo, moe.nombreModeloequipo, mae.idMarca_Equipo,
+        mae.nombreMarcaEquipo, te.idTipo_equipo, te.nombreTipo_equipo
         FROM modelo_equipo moe
-        INNER JOIN marca_equipo mae on moe.idMarca_equipo = mae.idMarca_Equipo
+        LEFT OUTER JOIN tipo_equipo te ON te.idTipo_Equipo = moe.idTipo_Equipo
+        LEFT OUTER JOIN marca_equipo mae on te.idMarca_equipo = mae.idMarca_Equipo
         WHERE idModelo_Equipo = %s
         """,
             (id,),
         )
         data = cur.fetchall()
+        #print("#####################")
+        print(data)
+        #print("$$$$$$$$$$$$$$$$$")
         cur.close()
         curs = mysql.connection.cursor()
         curs.execute("SELECT * FROM marca_equipo")
         mae_data = curs.fetchall()
+        #print(mae_data)
+        #print("&&&&&&&&&&&&&&&&&&&&&&&")
+        cur.close()
+        curs.execute("SELECT * FROM tipo_equipo")
+        tipo_data = curs.fetchall()
+        #print(tipo_data)
+        #print("00000000000000000000000")
         curs.close()
         return render_template(
-            "editModelo_equipo.html", modelo_equipo=data[0], marca_equipo=mae_data
-        )
+            "editModelo_equipo.html", modelo_equipo=data[0], 
+            marca_equipo=mae_data, tipo_equipo=tipo_data)
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for("modelo_equipo.modeloEquipo"))
@@ -90,20 +116,24 @@ def edit_modelo_equipo(id):
 
 # actualizar
 @modelo_equipo.route("/update_modelo_equipo/<id>", methods=["POST"])
+@administrador_requierido
 def update_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
-        nombre_marca_equipo = request.form["nombre_marca_equipo"]
+        nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
             UPDATE modelo_equipo 
             SET nombreModeloequipo = %s,
-                idMarca_equipo = %s
+                idTipo_Equipo = %s
             WHERE idModelo_Equipo = %s
             """,
-                (nombre_modelo_equipo, nombre_marca_equipo, id),
+                (nombre_modelo_equipo, nombre_tipo_equipo, id),
             )
             mysql.connection.commit()
             flash("Modelo actualizado correctamente")
@@ -115,7 +145,11 @@ def update_modelo_equipo(id):
 
 # eliminar
 @modelo_equipo.route("/delete_modelo_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def delete_modelo_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute("DELETE FROM modelo_equipo WHERE idModelo_Equipo = %s", (id,))

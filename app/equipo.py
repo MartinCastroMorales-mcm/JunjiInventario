@@ -1,8 +1,9 @@
-from flask import request, flash, render_template, url_for, redirect, Blueprint
+from flask import request, flash, render_template, url_for, redirect, Blueprint, session
 from db import mysql
 from funciones import getPerPage
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
+from cuentas import loguear_requerido, administrador_requierido
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -10,63 +11,29 @@ equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 # envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR
 @equipo.route("/equipo")
 @equipo.route("/equipo/<page>")
+@loguear_requerido
 def Equipo(page=1):
     page = int(page)
     perpage = getPerPage()
     offset = (int(page) - 1) * perpage
-    cur = mysql.connection.cursor()
+    #solo funciona con connect no con connect
+    #si funciona con connection. parece que era algo de la maquina virtual
+    #elimine la maquina virtual y ahora funciona
+    cur = mysql.connection.cursor() #ahora connect funciona pero no connection ¿?
     cur.execute("SELECT COUNT(*) FROM EQUIPO")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     cur.execute(""" 
     SELECT *
-    FROM
-    (
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
-           e.Num_serieEquipo, e.ObservacionEquipo,
-           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
-           e.numerotelefonicoEquipo,
-           te.idTipo_equipo, 
-           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
-           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
-    FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-
-    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
-    UNION 
-    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
-            e.Num_serieEquipo, e.ObservacionEquipo, 
-            e.codigoproveedor_equipo, e.macEquipo, 
-            e.imeiEquipo, e.numerotelefonicoEquipo,
-            te.idTipo_equipo, te.nombreidTipoequipo,
-            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
-            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
-    FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-
-    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
-    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-    WHERE ee.nombreEstado_equipo LIKE "EN USO"
-    AND a.ActivoAsignacion = 1
-    ) as subquery
+    FROM super_equipo
     LIMIT {} OFFSET {}
 
     """.format(
             perpage, offset
         )
     )
-    data = cur.fetchall()
+    equipos = cur.fetchall()
+    modelos_por_tipo = cur.fetchall()
     cur.execute("SELECT * FROM tipo_equipo")
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
@@ -75,24 +42,47 @@ def Equipo(page=1):
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
-    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-    modeloe_data = cur.fetchall()
 
+    modelos_por_tipo = {
+
+    }
+    for tipo in tipoe_data:
+        #print("########################")
+        #print(tipo)
+        query = """
+        SELECT *
+        FROM modelo_equipo me
+        WHERE me.idTipo_Equipo = {}
+""".format(str(tipo['idTipo_equipo']))
+        #print(query)
+        cur.execute("""
+        SELECT *
+        FROM modelo_equipo me
+        WHERE me.idTipo_Equipo = %s
+            """, (tipo['idTipo_equipo'],))
+        modelo_tipo = cur.fetchall()
+        modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
+
+
+    #print("tipos de equipo ############")
+    #print(tipoe_data)
     return render_template(
         "equipo.html",
-        equipo=data,
+        equipo=equipos,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
         orden_compra=ordenc_data,
         Unidad=ubi_data,
-        modelo_equipo=modeloe_data,
+        modelo_equipo=modelos_por_tipo,
         page=page,
         lastpage=page < (total / perpage) + 1,
+        session=session
     )
 
 
 # agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
+@administrador_requierido
 def add_equipo():
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
@@ -110,9 +100,30 @@ def add_equipo():
         try:
             cur = mysql.connection.cursor()
             cur.execute(
-                """ INSERT INTO equipo (Cod_inventarioEquipo, Num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,
-                        imeiEquipo , numerotelefonicoEquipo , idTipo_Equipo, idEstado_Equipo, idUnidad, idOrden_compra, idModelo_equipo) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                """ INSERT INTO equipo (
+                    Cod_inventarioEquipo, 
+                    Num_serieEquipo, 
+                    ObservacionEquipo,
+                    codigoproveedor_equipo,
+                    macEquipo,
+                    imeiEquipo, 
+                    numerotelefonicoEquipo, 
+                    idEstado_Equipo, 
+                    idUnidad, 
+                    idOrden_compra, 
+                    idModelo_equipo) 
+            VALUES (
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s,
+                %s)
             """,
                 (
                     codigo_inventario,
@@ -122,7 +133,6 @@ def add_equipo():
                     mac,
                     imei,
                     numero,
-                    nombre_tipo_equipo,
                     nombre_estado_equipo,
                     codigo_Unidad,
                     nombre_orden_compra,
@@ -133,13 +143,18 @@ def add_equipo():
             flash("Equipo agregado correctamente")
             return redirect(url_for("equipo.Equipo"))
         except Exception as e:
+            print("exception agregar equipo")
             flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
 
 
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def edit_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -147,11 +162,11 @@ def edit_equipo(id):
            SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
         moe.idModelo_equipo, moe.nombreModeloequipo
         FROM equipo e
-        INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+        INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+        INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
         INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
         INNER JOIN Unidad u on u.idUnidad = e.idUnidad
         INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-        INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
         WHERE idEquipo = %s
         """,
             (id,),
@@ -183,7 +198,11 @@ def edit_equipo(id):
 
 # actualiza registro a traves de id correspondiente
 @equipo.route("/update_equipo/<id>", methods=["POST"])
+@administrador_requierido
 def update_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
         numero_serie = request.form["numero_serie"]
@@ -242,7 +261,11 @@ def update_equipo(id):
 
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
+@administrador_requierido
 def delete_equipo(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
@@ -255,6 +278,7 @@ def delete_equipo(id):
 
 
 @equipo.route("/mostrar_asociados_traslado/<idTraslado>")
+@loguear_requerido
 def mostrar_asociados_traslado(idTraslado):
     page = 1
     perpage = 200
@@ -306,7 +330,11 @@ def mostrar_asociados_traslado(idTraslado):
 
 @equipo.route("/mostrar_asociados_unidad/<idUnidad>")
 @equipo.route("/mostrar_asociados_unidad/<idUnidad>/<page>")
+@loguear_requerido
 def mostrar_asociados_unidad(idUnidad, page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     page = 1
     perpage = 200  # getPerPage()
@@ -360,7 +388,11 @@ def mostrar_asociados_unidad(idUnidad, page=1):
 
 @equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>")
 @equipo.route("/mostrar_asociados_funcionario/<rutFuncionario>/<page>")
+@loguear_requerido
 def mostrar_asociados_funcionario(rutFuncionario, page=1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM tipo_equipo")
     tipoe_data = cur.fetchall()
@@ -443,7 +475,11 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
 
 
 @equipo.route("/equipo_detalles/<idEquipo>")
+@loguear_requerido
 def equipo_detalles(idEquipo):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     #Como funcionaria con la asignacion cambiada ¿?
     #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
@@ -515,10 +551,10 @@ def equipo_detalles(idEquipo):
             #)
                 #""")
 @equipo.route("/test_excel_form", methods=["POST"])
+@loguear_requerido
 def test_excel_form():
- 
     #para el uso de la pagina de otros
-    tipos = ("aio", "impresoras", "bam", "proyectores", "telefonos", "disco_duro",
+    tipos = ("aio", "notebook", "impresoras", "bam", "proyectores", "telefonos", "disco_duro",
              "tablets")
     todo_check = request.form.get('todo_check')
     #si se imprime todo en una hoja usar la funcion ya creada
@@ -527,6 +563,7 @@ def test_excel_form():
         return crear_excel()
     #de lo contrario imprimir cada hoja individualmente
     computadora_check = request.form.get('AIO_check')
+    notebooks_check = request.form.get('Notebooks')
     impresoras_check = request.form.get('impresoras_check')
     bam_check = request.form.get('bam_check')
     proyectores_check = request.form.get('proyectores_check')
@@ -539,6 +576,10 @@ def test_excel_form():
     if computadora_check == "on":
         ws.title = "AIO"
         añadir_hoja_de_tipo("AIO", ws)
+        ws = wb.create_sheet("sheet")
+    if notebooks_check == "on":
+        ws.title = "Notebooks"
+        añadir_hoja_de_tipo("Notebooks", ws)
         ws = wb.create_sheet("sheet")
     if impresoras_check == "on":
         ws.title = "Impresoras"
@@ -576,6 +617,9 @@ def test_excel_form():
     return redirect(url_for("equipo.Equipo"))
 
 def añadir_hoja_de_otros(tipos, ws):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     query = """
 
@@ -591,7 +635,8 @@ def añadir_hoja_de_otros(tipos, ws):
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
-                me.nombreMarcaEquipo, mo.nombreModalidad
+                me.nombreMarcaEquipo, mo.nombreModalidad,
+            pr.nombreProveedor
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -603,6 +648,7 @@ def añadir_hoja_de_otros(tipos, ws):
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    INNER JOIN proveedor pr ON pr.idProveedor = oc.idProveedor
 
     WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
     UNION 
@@ -615,7 +661,8 @@ def añadir_hoja_de_otros(tipos, ws):
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
             com.nombreComuna, pro.nombreProvincia,
-            me.nombreMarcaEquipo, mo.nombreModalidad
+            me.nombreMarcaEquipo, mo.nombreModalidad,
+            pr.nombreProveedor
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
@@ -630,6 +677,7 @@ def añadir_hoja_de_otros(tipos, ws):
     LEFT JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    INNER JOIN proveedor pr ON pr.idProveedor = oc.idProveedor
     WHERE ee.nombreEstado_equipo LIKE "EN USO"
     ) as subquery
     WHERE
@@ -646,8 +694,11 @@ def añadir_hoja_de_otros(tipos, ws):
     equipo_data = cur.fetchall()
 
     encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", "Tipo de Bien", "Marca", "Modelo", 
-               "N° Serie", "Codigo Inventario"])
-    for i in range(0, 10):
+               "N° Serie", "Codigo Inventario", "Nombre Proveedor"])
+    print("encabezado len: " +  str(len(encabezado)))
+    print(encabezado[10])
+    for i in range(0, len(encabezado)):
+        print(i)
         char = chr(65 + i)
         ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type = "solid")
         ws.column_dimensions[char].width = 20
@@ -673,6 +724,7 @@ def añadir_hoja_de_otros(tipos, ws):
         fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
         fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
         fillCell(equipo_data[fila]['Cod_inventarioEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreProveedor'], fila + 2)
 
 
 
@@ -680,6 +732,9 @@ def añadir_hoja_de_otros(tipos, ws):
 
 
 def añadir_hoja_de_tipo(tipo, ws):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute(""" 
     SELECT *
@@ -694,7 +749,8 @@ def añadir_hoja_de_tipo(tipo, ws):
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
-                me.nombreMarcaEquipo, mo.nombreModalidad
+                me.nombreMarcaEquipo, mo.nombreModalidad,
+                pr.nombreProveedor
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -706,6 +762,7 @@ def añadir_hoja_de_tipo(tipo, ws):
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
 
     WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
     UNION 
@@ -718,7 +775,9 @@ def añadir_hoja_de_tipo(tipo, ws):
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
             com.nombreComuna, pro.nombreProvincia,
-            me.nombreMarcaEquipo, mo.nombreModalidad
+            me.nombreMarcaEquipo, mo.nombreModalidad,
+            pr.nombreProveedor
+                
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
@@ -733,15 +792,17 @@ def añadir_hoja_de_tipo(tipo, ws):
     LEFT JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
     WHERE ee.nombreEstado_equipo LIKE "EN USO"
     ) as subquery
     WHERE tipo_equipo LIKE %s
                 """, (tipo,))
     equipo_data = cur.fetchall()
 
-    encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", "Tipo de Bien", "Marca", "Modelo", 
-               "N° Serie", "Codigo Inventario"])
-    for i in range(0, 10):
+    encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", 
+                   "CodigoUnidad","Tipo de Bien", "Marca", "Modelo", 
+               "N° Serie", "Codigo Inventario", "Nombre Proveedor"])
+    for i in range(0, len(encabezado)):
         char = chr(65 + i)
         ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type = "solid")
         ws.column_dimensions[char].width = 20
@@ -762,11 +823,13 @@ def añadir_hoja_de_tipo(tipo, ws):
         fillCell(equipo_data[fila]['nombreModalidad'], fila + 2)
         fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
+        fillCell(equipo_data[fila]['idUnidad'], fila + 2)
         fillCell(equipo_data[fila]['tipo_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreMarcaEquipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
         fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
         fillCell(equipo_data[fila]['Cod_inventarioEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreProveedor'], fila + 2)
 
 
 
@@ -774,7 +837,11 @@ def añadir_hoja_de_tipo(tipo, ws):
     return
 #exportar a pdf
 @equipo.route("/equipo/crear_excel")
+@loguear_requerido
 def crear_excel():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     #buscar columnas
     wb = Workbook()
     ws = wb.active
@@ -794,13 +861,15 @@ def crear_excel():
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
-                me.nombreMarcaEquipo, mo.nombreModalidad
+                me.nombreMarcaEquipo, mo.nombreModalidad,
+                pr.nombreProveedor
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
     LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
@@ -818,7 +887,8 @@ def crear_excel():
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
             com.nombreComuna, pro.nombreProvincia,
-            me.nombreMarcaEquipo, mo.nombreModalidad
+            me.nombreMarcaEquipo, mo.nombreModalidad,
+            pr.nombreProveedor
     FROM equipo e
     INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
     INNER JOIN Unidad u on u.idUnidad = e.idUnidad
@@ -833,6 +903,7 @@ def crear_excel():
     LEFT JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
+    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
     WHERE ee.nombreEstado_equipo LIKE "EN USO"
     ) as subquery
     
@@ -843,8 +914,8 @@ def crear_excel():
     #encabezado
 
     encabezado = (["Provincia", "Comuna", "Modalidad", "Codigo Proveedor", "Nombre", "Tipo de Bien", "Marca", "Modelo", 
-               "N° Serie", "Codigo Inventario"])
-    for i in range(0, 10):
+               "N° Serie", "Codigo Inventario", "Nombre Proveedor"])
+    for i in range(0, len(encabezado)):
         char = chr(65 + i)
         ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type = "solid")
         ws.column_dimensions[char].width = 20
@@ -870,6 +941,8 @@ def crear_excel():
         fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
         fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
         fillCell(equipo_data[fila]['Cod_inventarioEquipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreProveedor'], fila + 2)
+
 
 
 
@@ -881,10 +954,13 @@ def crear_pagina_todojunto(wb):
     return wb
 
 @equipo.route("/equipo/importar_excel")
+@administrador_requierido
 def importar_excel(url):
     pass
 
+#buscar un equipo singular por id
 @equipo.route("/equipo/buscar_equipo/<id>")
+@loguear_requerido
 def buscar_equipo(id):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -953,4 +1029,63 @@ def buscar_equipo(id):
         modelo_equipo=modeloe_data,
         page=1,
         lastpage=True,
+    )
+
+#buscar todos los equipos en base a una palabra de busqueda
+@equipo.route("/consulta_equipo", methods =["POST"])
+@equipo.route("/consulta_equipo/<page>", methods =["POST"])
+@loguear_requerido
+def consulta_equipo(page = 1):
+    palabra = request.form["palabra"]
+    if palabra == "":
+        print("error_redirect")
+    page = int(page)
+    perpage = getPerPage()
+    offset = (int(page) - 1) * perpage
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    total = cur.fetchone()
+    total = int(str(total).split(":")[1].split("}")[0])
+    cur = mysql.connection.cursor()
+    query = f"""
+    set palabra = CONVERT('%{palabra}%' USING utf8)
+    SELECT *
+    FROM superequipo se
+    WHERE se.Cod_inventarioEquipo LIKE palabra OR
+    se.Num_serieEquipo LIKE '%{palabra}%' OR
+    se.codigoproveedor_equipo LIKE '%{palabra}%' OR
+    se.nombreidTipoequipo LIKE '%{palabra}%' OR
+    se.nombreEstado_equipo LIKE '%{palabra}%' OR
+    se.idUnidad LIKE '%{palabra}%' OR
+    se.nombreUnidad LIKE '%{palabra}%' OR
+    se.nombreOrden_compra LIKE '%{palabra}%' OR
+    se.nombreModeloequipo LIKE '%{palabra}%' OR
+    se.nombreFuncionario LIKE '%{palabra}%'
+    LIMIT {perpage} OFFSET {offset}
+    """
+    print(query)
+    cur.execute(query)
+    equipos = cur.fetchall()
+
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipoe_data = cur.fetchall()
+    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    estadoe_data = cur.fetchall()
+    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    ubi_data = cur.fetchall()
+    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    ordenc_data = cur.fetchall()
+    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    modeloe_data = cur.fetchall()
+
+    return render_template(
+        "equipo.html",
+        equipo=equipos,
+        tipo_equipo=tipoe_data,
+        estado_equipo=estadoe_data,
+        orden_compra=ordenc_data,
+        Unidad=ubi_data,
+        modelo_equipo=modeloe_data,
+        page=page,
+        lastpage=page < (total / perpage) + 1,
     )

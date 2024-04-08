@@ -14,12 +14,14 @@
             <td></td>
             <td></td>
             <td></td>
+            <td></td>
             <td>Botones</td>
         </tr>
     </thead>
     <tbody id="myTBody">
         {% for item in items %}
         <tr id="{{item.id}}">
+            <td class="toCheck" id="">{{item.tipo}}</td>
             <td class="toCheck" id="clave">{{item.clave}}</td>
             <td class="toCheck" id="nombre">{{item.nombre}}</td>
             <td class="toCheck">{{item.codigo}}</td>
@@ -34,10 +36,13 @@
                 <a href="/unidad/buscar_unidad/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
                 {% if item.tipo == "incidencia" %}
-                <a href="/TODO" class="nav-button2">Buscar</a>
+                <a href="/incidencia/buscar/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
                 {% if item.tipo == "asignacion" %}
-                <a href="/TODO" class="nav-button2">Buscar</a>
+                <a href="/asignacion/buscar/{{item.id}}" class="nav-button2">Buscar</a>
+                {% endif %}
+                {% if item.tipo == "traslado" %}
+                <a href="/traslado/buscar/{{item.id}}" class="nav-button2">Buscar</a>
                 {% endif %}
             </td>
         </tr>

@@ -50,7 +50,7 @@
                     <td>{{equipo.macEquipo}}</td>
                     <td>{{equipo.imeiEquipo}}</td>
                     <td>{{equipo.numerotelefonicoEquipo}}</td>
-                    <td>{{equipo.nombreidTipoequipo}}</td>
+                    <td>{{equipo.nombreTipo_equipo}}</td>
                     <td>{{equipo.nombreEstado_equipo}}</td>
                     <td>{{equipo.nombreUnidad}}</td>
                     <td>{{equipo.nombreOrden_compra}}</td>
@@ -73,13 +73,16 @@
                     <textarea id="observacionIncidencia" name="observacionIncidencia" rows="2" cols="50"></textarea>
                     <br>
                     <label for="fechaIncidencia">Fecha Incidencia: </label>
-                    <input type="date" class="form-control" name="fechaIncidencia">
+                    <input type="date" class="form-control" name="fechaIncidencia", id="inputFecha">
                     <br>
                     <input style="display: none;" value="{{equipo.idEquipo}}" name="idEquipo" />
                     {# se nesesita una forma eficiente de añadir el equipo#}
                     <button class="agregar-button"> Agregar</button>
                 </div>
             </form>
+            <script>
+                fechaPorDefecto()
+            </script>
         </div>
 
         {% endblock %}

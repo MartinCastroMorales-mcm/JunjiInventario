@@ -1,9 +1,10 @@
 #se importa flask
-from flask import Blueprint, render_template, request, url_for, redirect,flash
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 #se importa dependencias para conexion con mysql
 from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
@@ -12,7 +13,11 @@ proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 #se especifica la ruta principal para la vista de proveedor 
 @proveedor.route('/proveedor')
 @proveedor.route('/proveedor/<page>')
+@loguear_requerido
 def Proveedor(page = 1):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset  = (page -1) * perpage
@@ -31,7 +36,11 @@ def Proveedor(page = 1):
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
 @proveedor.route('/add_proveedor', methods = ['POST'])  
 #se define una funcion  
+@administrador_requierido
 def add_proveedor():       
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     if request.method == 'POST':
         #en una variable se almacena el dato en el campo de texto del formulario que tiene por name"nombre_proveedor"
         nombre_proveedor = request.form['nombre_proveedor']
@@ -67,7 +76,11 @@ def add_proveedor():
 #ruta para enviar datos a la vista de editarProveedor con el id correspondiente
 @proveedor.route('/edit_proveedor/<id>', methods = ['POST', 'GET'])
 #en esta funcion se agrega el id como parametro
+@administrador_requierido
 def edit_proveedor(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         #%s sirve como marcador de posicion para las variables que mencionaremos a prosteriori, 
@@ -82,6 +95,7 @@ def edit_proveedor(id):
 
 #ruta para poder actualizar los datos de proveedor dependiendo del id
 @proveedor.route('/update_proveedor/<id>', methods = ['POST'])
+@administrador_requierido
 def actualizar_proveedor(id):
     if request.method == 'POST':
         nombre_proveedor = request.form['nombre_proveedor']
@@ -101,7 +115,11 @@ def actualizar_proveedor(id):
     
 #ruta para poder eliminar un proveedor por id
 @proveedor.route('/delete_proveedor/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_proveedor(id):
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM proveedor WHERE idProveedor = %s', (id,))

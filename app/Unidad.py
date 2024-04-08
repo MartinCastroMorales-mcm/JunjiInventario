@@ -1,12 +1,14 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
+from cuentas import loguear_requerido, administrador_requierido
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
 #ruta para poder enviar datos a la pagina principal de Unidad
 @Unidad.route('/Unidad')
 @Unidad.route('/Unidad/<page>')
+@loguear_requerido
 def UNIDAD(page=1):
     page = int(page)
     perpage = getPerPage()
@@ -42,6 +44,7 @@ def UNIDAD(page=1):
 
 #ruta y metodo para poder agregar una Unidad
 @Unidad.route('/add_Unidad', methods = ['POST'])
+@administrador_requierido
 def add_Unidad():
     if request.method == 'POST':
         nombreUnidad = request.form['nombreUnidad']
@@ -62,6 +65,7 @@ def add_Unidad():
 
 #ruta para poder enviar los datos a la vista de edicion segun el id correspondiente
 @Unidad.route('/edit_Unidad/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def edit_Unidad(id):
     try:
         cur = mysql.connection.cursor()
@@ -93,6 +97,7 @@ def edit_Unidad(id):
 
 #actualiza los datos de Unidad segun el id correspondiente   
 @Unidad.route('/update_Unidad/<id>', methods = ['POST'])
+@administrador_requierido
 def update_Unidad(id):
     if request.method == 'POST':
         codigo_Unidad = request.form['codigo_Unidad']
@@ -124,6 +129,7 @@ def update_Unidad(id):
         
 #Elimina un registro segun el id
 @Unidad.route('/delete_Unidad/<id>', methods = ['POST', 'GET'])
+@administrador_requierido
 def delete_Unidad(id):
     try:
         cur = mysql.connection.cursor()
@@ -135,6 +141,7 @@ def delete_Unidad(id):
         flash(e.args[1])
         return redirect(url_for('Unidad.UNIDAD'))
 @Unidad.route("/unidad/buscar_unidad/<id>")
+@loguear_requerido
 def buscar_unidad(id):
     cur = mysql.connection.cursor()
     cur.execute("""

@@ -37,10 +37,18 @@
                 </div>
                 <div class="form-group">
                     <label for="nombre_marca_equipo"> Marca Equipo: </label>
-                    <select name="nombre_marca_equipo" id="">
+                    <select name="nombre_marca_equipo" id="marca_equipo">
                         <option value="">Elija la Marca del Equipo</option>
                         {% for marcae in marca_equipo %}
                         <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+                        {% endfor %}
+                    </select>
+                    <br/>
+                    <label for="nombre_tipo_equipo"> Tipo de Equipo: </label>
+                    <select name="nombre_tipo_equipo" id="">
+                        <option value="">Elija el Tipo del Equipo</option>
+                        {% for te in tipo_equipo %}
+                        <option value="{{ te.idTipo_equipo }}">{{te.nombreTipo_equipo}}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -57,6 +65,7 @@
                 <tr>
                     <th onclick="sortTable(0)">Modelo equipo</th>
                     <th onclick="sortTable(1)">Marca</th>
+                    <th onclick="sortTable(2)">Tipo Equipo</th>
                     <th>Operations</th>
                 </tr>
             </thead>
@@ -67,6 +76,7 @@
                     <td>{{modeloe.nombreModeloequipo}}</td>
                     {% if modelo_equipo.idMarca_equipo == marca_equipo.idMarca_Equipo %}
                     <td>{{modeloe.nombreMarcaEquipo}}</td>
+                    <td>{{modeloe.nombreTipo_equipo}}</td>
                     {% endif %}
                     <td>
                         <a href="/edit_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="success-button">Editar</a>
