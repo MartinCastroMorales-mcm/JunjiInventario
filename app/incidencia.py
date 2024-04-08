@@ -28,7 +28,7 @@ def Incidencia(page = 1):
                 FROM incidencia i 
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
                 INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.nombreTipo_Equipo
+                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.idTipo_Equipo
                 LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -47,7 +47,7 @@ def incidencia_form(idEquipo):
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT *
-                FROM equipo e
+                FROM super_equipo e
                 WHERE e.idEquipo = %s
                 """, (idEquipo,))
     equipo = cur.fetchone()

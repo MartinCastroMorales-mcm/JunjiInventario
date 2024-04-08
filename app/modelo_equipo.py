@@ -51,19 +51,16 @@ def modeloEquipo(page=1):
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
 @administrador_requierido
 def add_modelo_equipo():
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
-        nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
-        nombre_marca_equipo = request.form["nombre_marca_equipo"]
+        nombre_modelo_equipo = request.form['nombre_modelo_equipo']
+        id_tipo_equipo = request.form['nombre_tipo_equipo']
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
-            INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES (%s,%s)
+            INSERT INTO modelo_equipo (nombreModeloequipo, idTipo_equipo) VALUES (%s,%s)
             """,
-                (nombre_modelo_equipo, nombre_marca_equipo),
+                (nombre_modelo_equipo, id_tipo_equipo),
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")
