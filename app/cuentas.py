@@ -20,7 +20,7 @@ def loguear_requerido(f):
 
 #definir decorador para ingresar
 #no se lo que significa el * antes del atributo, (puntero ¿?)
-def administrador_requierido(f):
+def administrador_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kargs):
         print("DECORATOR 2")
@@ -81,7 +81,7 @@ def registrar():
     return render_template("register.html", usuarios=usuarios)
 
 @cuentas.route("/crear_cuenta", methods=["GET", "POST"])
-@administrador_requierido
+@administrador_requerido
 def crear_cuenta():
     nombreUsuario = request.form['nombreUsuario']
     contrasenna = request.form['contrasenna']
@@ -130,7 +130,7 @@ def crear_cuenta():
 
 @cuentas.route("/protected")
 @loguear_requerido
-@administrador_requierido
+@administrador_requerido
 def protected():
     print("logueado")
     return "good"
@@ -148,7 +148,7 @@ def desloguear():
     return redirect("/ingresar")
 
 @cuentas.route("/edit_usuario/<nombreUsuario>")
-@administrador_requierido
+@administrador_requerido
 def edit_usuario(nombreUsuario):
     #redirect to edit page
 
@@ -162,7 +162,7 @@ def edit_usuario(nombreUsuario):
     return render_template('edit_cuenta.html', usuario=usuario)
 
 @cuentas.route("/update_usuario/<nombreUsuario>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_usuario(nombreUsuario):
     nombreUsuarioNuevo = request.form['nombreUsuario']
     isAdmin = request.form.get('isAdmin')
@@ -187,7 +187,7 @@ def update_usuario(nombreUsuario):
 
 
 @cuentas.route("/delete_usuario/<nombreUsuario>", methods=["GET", "POST"])
-@administrador_requierido
+@administrador_requerido
 def delete_usuario(nombreUsuario):
     cur = mysql.connection.cursor()
     cur.execute("""

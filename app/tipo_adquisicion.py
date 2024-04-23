@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 from db import mysql
 from funciones import validarChar, getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 tipo_adquisicion = Blueprint('tipo_adquisicion', __name__, template_folder='app/templates')
 
@@ -18,7 +18,7 @@ def tipoAdquisicion(page = 1):
     cur = mysql.connection.cursor()
     cur.execute('SELECT * FROM tipo_adquisicion LIMIT {} OFFSET {} '.format(perpage, offset))
     data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM EQUIPO')
+    cur.execute('SELECT COUNT(*) FROM equipo')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     return render_template('tipo_adquisicion.html', 
@@ -26,7 +26,7 @@ def tipoAdquisicion(page = 1):
 
 #agrega un registro para tipo de adquisicion
 @tipo_adquisicion.route('/add_tipoa', methods = ['POST'])    
-@administrador_requierido
+@administrador_requerido
 def add_tipoa():       
     if "user" not in session:
         flash("you are NOT authorized")
@@ -45,7 +45,7 @@ def add_tipoa():
 
 #enviar datos a formulario editar segun el id
 @tipo_adquisicion.route('/edit_tipoa/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_tipoa(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -61,7 +61,7 @@ def edit_tipoa(id):
 
 #actualiza el registro segun su id
 @tipo_adquisicion.route('/update_tipoa/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def actualizar_tipoa(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -84,7 +84,7 @@ def actualizar_tipoa(id):
         
 #elimina un registro segun su id
 @tipo_adquisicion.route('/delete_tipoa/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_tipoa(id):
     if "user" not in session:
         flash("you are NOT authorized")

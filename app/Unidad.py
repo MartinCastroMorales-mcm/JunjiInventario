@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
@@ -19,7 +19,7 @@ def UNIDAD(page=1):
                u.direccionUnidad, u.idComuna, co.nombreComuna,
                co.idComuna, COUNT(e.idEquipo) as num_equipos,
                mo.nombreModalidad
-        FROM Unidad u
+        FROM unidad u
         INNER JOIN comuna co on u.idComuna = co.idComuna
         LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
@@ -44,7 +44,7 @@ def UNIDAD(page=1):
 
 #ruta y metodo para poder agregar una Unidad
 @Unidad.route('/add_Unidad', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_Unidad():
     if request.method == 'POST':
         nombreUnidad = request.form['nombreUnidad']
@@ -54,7 +54,7 @@ def add_Unidad():
         idModalidad = request.form['idModalidad']
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO Unidad (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
+            cur.execute('INSERT INTO unidad (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
             , (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
             mysql.connection.commit()
             flash('Unidad agregada correctamente')
@@ -65,14 +65,15 @@ def add_Unidad():
 
 #ruta para poder enviar los datos a la vista de edicion segun el id correspondiente
 @Unidad.route('/edit_Unidad/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_Unidad(id):
     try:
         cur = mysql.connection.cursor()
         cur.execute(""" 
-        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
-        FROM Unidad u
+        SELECT *
+        FROM unidad u
         INNER JOIN comuna co on u.idComuna = co.idComuna
+        INNER JOIN modalidad mo on u.idModalidad =mo.idModalidad
         WHERE idUnidad = %s
         """, (id,))
         data = cur.fetchall()
@@ -97,7 +98,7 @@ def edit_Unidad(id):
 
 #actualiza los datos de Unidad segun el id correspondiente   
 @Unidad.route('/update_Unidad/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_Unidad(id):
     if request.method == 'POST':
         codigo_Unidad = request.form['codigo_Unidad']
@@ -110,7 +111,7 @@ def update_Unidad(id):
         try:
             cur = mysql.connection.cursor()
             cur.execute(""" 
-            UPDATE Unidad
+            UPDATE unidad
             SET idUnidad = %s,
                 nombreUnidad = %s,
                 contactoUnidad = %s,
@@ -129,11 +130,11 @@ def update_Unidad(id):
         
 #Elimina un registro segun el id
 @Unidad.route('/delete_Unidad/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_Unidad(id):
     try:
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM Unidad WHERE idUnidad = %s', (id,))
+        cur.execute('DELETE FROM unidad WHERE idUnidad = %s', (id,))
         mysql.connection.commit()
         flash('Unidad eliminada correctamente')
         return redirect(url_for('Unidad.UNIDAD'))
@@ -149,7 +150,7 @@ def buscar_unidad(id):
                u.direccionUnidad, u.idComuna, co.nombreComuna,
                co.idComuna, COUNT(e.idEquipo) as num_equipos,
                mo.nombreModalidad
-        FROM Unidad u
+        FROM unidad u
         INNER JOIN comuna co on u.idComuna = co.idComuna
         LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad

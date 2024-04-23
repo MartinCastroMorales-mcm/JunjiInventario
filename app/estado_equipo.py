@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 estado_equipo = Blueprint('estado_equipo', __name__, template_folder='app/templates')
 
@@ -23,7 +23,7 @@ def estadoEquipo(page = 1):
                            page=page, lastpage= page < (total/perpage)+1)
 
 @estado_equipo.route('/add_estado_equipo', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_estado_equipo():
     if "user" not in session:
         flash("you are NOT authorized")
@@ -43,7 +43,7 @@ def add_estado_equipo():
     
 #enviar datos a vista editar
 @estado_equipo.route('/edit_estado_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_estado_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -59,7 +59,7 @@ def edit_estado_equipo(id):
 
 #actualizar
 @estado_equipo.route('/update_estado_equipo/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_estado_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -84,7 +84,7 @@ def update_estado_equipo(id):
 
 #eliminar    
 @estado_equipo.route('/delete_estado_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_estado_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -100,7 +100,7 @@ def delete_estado_equipo(id):
         return redirect(url_for('estado_equipo.estadoEquipo'))
 
 @estado_equipo.route("/mostrar_equipos_segun_tipo/<tipo>")
-@administrador_requierido
+@administrador_requerido
 def mostrar_equipos_segun_tipo(tipo):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -116,15 +116,15 @@ def mostrar_equipos_segun_tipo(tipo):
                     e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
                     e.numerotelefonicoEquipo,
                     te.idTipo_equipo, 
-                    te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+                    te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
                     u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
                 moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
                 FROM equipo e
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
                 INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
 
                 WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
                 UNION 
@@ -132,15 +132,15 @@ def mostrar_equipos_segun_tipo(tipo):
                         e.Num_serieEquipo, e.ObservacionEquipo, 
                         e.codigoproveedor_equipo, e.macEquipo, 
                         e.imeiEquipo, e.numerotelefonicoEquipo,
-                        te.idTipo_equipo, te.nombreidTipoequipo,
+                        te.idTipo_equipo, te.nombreTipo_Equipo,
                         ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
                         u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
                         moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
                 FROM equipo e
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
                 INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+                INNER JOIN unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
 
                 INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
                 INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -157,7 +157,7 @@ def mostrar_equipos_segun_tipo(tipo):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()

@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, url_for, redirect,flash, 
 from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
@@ -36,7 +36,7 @@ def Proveedor(page = 1):
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
 @proveedor.route('/add_proveedor', methods = ['POST'])  
 #se define una funcion  
-@administrador_requierido
+@administrador_requerido
 def add_proveedor():       
     if "user" not in session:
         flash("you are NOT authorized")
@@ -76,7 +76,7 @@ def add_proveedor():
 #ruta para enviar datos a la vista de editarProveedor con el id correspondiente
 @proveedor.route('/edit_proveedor/<id>', methods = ['POST', 'GET'])
 #en esta funcion se agrega el id como parametro
-@administrador_requierido
+@administrador_requerido
 def edit_proveedor(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -95,7 +95,7 @@ def edit_proveedor(id):
 
 #ruta para poder actualizar los datos de proveedor dependiendo del id
 @proveedor.route('/update_proveedor/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def actualizar_proveedor(id):
     if request.method == 'POST':
         nombre_proveedor = request.form['nombre_proveedor']
@@ -115,7 +115,7 @@ def actualizar_proveedor(id):
     
 #ruta para poder eliminar un proveedor por id
 @proveedor.route('/delete_proveedor/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_proveedor(id):
     if "user" not in session:
         flash("you are NOT authorized")

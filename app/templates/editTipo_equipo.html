@@ -6,9 +6,11 @@
       <form action="/update_tipo_equipo/{{tipo_equipo.idTipo_equipo}}" method="POST" class="mi-formulario">
         <label for="nombre_marca_equipo"> Marca Equipo: </label>
         <select name="nombre_marca_equipo" id="marca_equipo">
-          <option value="">Elija la Marca del Equipo</option>
+          <option value="tipo_equipo.idMarca_Equipo">{{tipo_equipo.nombreMarcaEquipo}}</option>
           {% for marcae in marca_equipo %}
+          {% if marcae.idMarca_Equipo != tipo_equipo.idMarca_Equipo %}
           <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+          {% endif %}
           {% endfor %}
         </select>
         <br />

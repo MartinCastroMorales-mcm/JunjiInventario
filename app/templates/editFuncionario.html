@@ -23,9 +23,11 @@
     <div class="form-group">
         <label for="codigo_Unidad">Unidad:</label>
         <select name="codigo_Unidad" id="" >
-            <option value="">Elija la Unidad</option>
+            <option value="funcionario.idUnidad">{{funcionario.nombreUnidad}}</option>
             {% for ubi in Unidad %}
+                {% if funcionario.idUnidad != ubi.idUnidad%}
                 <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
+                {% endif %}
             {% endfor %}
         </select>
     </div>

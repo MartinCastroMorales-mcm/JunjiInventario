@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, url_for, request, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
@@ -49,7 +49,7 @@ def modeloEquipo(page=1):
 
 # agregar un regisro para modelo de equipo
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def add_modelo_equipo():
     if request.method == "POST":
         nombre_modelo_equipo = request.form['nombre_modelo_equipo']
@@ -72,7 +72,7 @@ def add_modelo_equipo():
 
 # Envias datos a formulario editar
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def edit_modelo_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -116,7 +116,7 @@ def edit_modelo_equipo(id):
 
 # actualizar
 @modelo_equipo.route("/update_modelo_equipo/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_modelo_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -145,7 +145,7 @@ def update_modelo_equipo(id):
 
 # eliminar
 @modelo_equipo.route("/delete_modelo_equipo/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def delete_modelo_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")

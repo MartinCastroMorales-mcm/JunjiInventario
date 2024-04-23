@@ -6,7 +6,7 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -55,7 +55,7 @@ def Asignacion(page=1):
 
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
-@administrador_requierido
+@administrador_requerido
 def add_asignacion(idEquipo = "None"):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -77,7 +77,7 @@ def add_asignacion(idEquipo = "None"):
                 SELECT * 
                 FROM equipo e
                 INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
+                INNER JOIN Tipo_Equipo te ON me.idTipo_Equipo = te.idTipo_equipo
                 INNER JOIN unidad u ON e.idUnidad = u.idUnidad
                 INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
                 WHERE ee.nombreEstado_equipo = %s
@@ -90,7 +90,7 @@ def add_asignacion(idEquipo = "None"):
 
 # enviar datos a vista editar
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def edit_asignacion(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -109,8 +109,8 @@ def edit_asignacion(id):
                 f.nombreFuncionario,
                 d.fechaDevolucion
                 FROM asignacion a
-                INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
-                LEFT JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
+                INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+                LEFT JOIN devolucion d ON a.idDevolucion = d.idDevolucion
             WHERE idAsignacion = %s""",
             (id,),
         )
@@ -133,7 +133,7 @@ def edit_asignacion(id):
 
 # actualizar
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_asignacion(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -142,8 +142,6 @@ def update_asignacion(id):
         #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
         observacionasignacion = request.form["observacionasignacion"]
-        rutaactaasignacion = request.form["rutaactaasignacion"]
-        ActivoAsignacion = request.form["Activoasignacion"]
         rutFuncionario = request.form["rutFuncionario"]
         try:
             cur = mysql.connection.cursor()
@@ -151,17 +149,13 @@ def update_asignacion(id):
                 """
             UPDATE asignacion
             SET fecha_inicioAsignacion = %s,
-                ObservacionAsignacion = %s
-                rutaactaAsignacion = %s,
-                ActivoAsignacion = %s,
+                ObservacionAsignacion = %s,
                 rutFuncionario = %s
             WHERE idAsignacion = %s
             """,
                 (
                     fechaasignacion,
                     observacionasignacion,
-                    rutaactaasignacion,
-                    ActivoAsignacion,
                     rutFuncionario,
                     id,
                 ),
@@ -176,7 +170,7 @@ def update_asignacion(id):
 
 # eliminar
 @asignacion.route("/delete_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def delete_asignacion(id):
     try:
         cur = mysql.connection.cursor()
@@ -221,7 +215,7 @@ def delete_asignacion(id):
 
 #Este metodo extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def create_asignacion():
     if "user" not in session:
         flash("you are NOT authorized")
@@ -240,16 +234,12 @@ def create_asignacion():
 
 
 #Este metodo es el que crea la asignacion
-@administrador_requierido
+@administrador_requerido
 def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
-        INSERT INTO ASIGNACION (
+        INSERT INTO asignacion (
             fecha_inicioAsignacion,
             ObservacionAsignacion,
             rutaactaAsignacion, 
@@ -293,10 +283,10 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
         cur.execute("""
                     SELECT *
                     FROM equipo
-                    INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
-                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
                     INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
-                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
+                    INNER JOIN tipo_equipo te on me.idTipo_equipo = te.idTipo_equipo
+                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = te.idMarca_equipo
                     WHERE equipo.idEquipo = %s
                     """, (equipo_id,))
         equipoTupla = cur.fetchone()
@@ -312,7 +302,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
     Funcionario = cur.fetchone()
     cur.execute("""
                 SELECT *
-                FROM Unidad u
+                FROM unidad u
                 WHERE u.idUnidad = %s
                 """, (Funcionario['idUnidad'],))
     Unidad = cur.fetchone()
@@ -334,7 +324,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     class PDF(FPDF):
         def header(self):
             #imagen del encabezado
-            self.image("logo_junji.png", 10, 8, 25)
+            self.image("logo_junji.jpg", 10, 8, 25)
             # font
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
@@ -404,8 +394,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     )
     i = 0
     for equipo in Equipos:
+        print(equipo)
         id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreidTipoequipo"]
+        tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
         modelo = equipo["nombreModeloequipo"]
         num_serie = str(equipo["Num_serieEquipo"])
@@ -425,7 +416,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:"
+    nombreEncargado = "Nombre Encargado TI:" + session['user']
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -482,7 +473,7 @@ def mostrar_pdf(id):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver/<id>")
-@administrador_requierido
+@administrador_requerido
 def devolver(id):
     today = date.today()
     cur = mysql.connection.cursor()
@@ -509,7 +500,7 @@ def devolver(id):
     Funcionario = cur.fetchone()
     cur.execute("""
     SELECT *
-    FROM Unidad u
+    FROM unidad u
     WHERE u.idUnidad = %s
                 """, (str(Funcionario['idUnidad']),))
     Unidad = cur.fetchone()
@@ -527,10 +518,10 @@ def devolver(id):
         SELECT * 
         FROM equipo e
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-        INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
+        INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
         INNER JOIN unidad u ON e.idUnidad = u.idUnidad
         INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
-        INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
+        INNER JOIN marca_equipo mae on mae.idMarca_equipo = te.idMarca_equipo
         WHERE e.idEquipo = %s
                     """, (str(equipo_asignacion['idEquipo']),))
         equipo = cur.fetchone()
@@ -565,7 +556,7 @@ def crear_pdf_devolucion(
             #logo
             #imageUrl = url_for('static', filename='img/logo_junji.png')
             #print(imageUrl)
-            self.image('logo_junji.png', 10, 8, 25)
+            self.image('logo_junji.jpg', 10, 8, 25)
             #font
             self.set_font('times', 'B', 12)
             self.set_text_color(170,170,170)
@@ -627,7 +618,7 @@ def crear_pdf_devolucion(
     i = 0
     for equipo in Equipos:
         id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreidTipoequipo"]
+        tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
         modelo = equipo["nombreModeloequipo"]
         num_serie = str(equipo["Num_serieEquipo"])
@@ -647,7 +638,7 @@ def crear_pdf_devolucion(
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:"
+    nombreEncargado = "Nombre Encargado TI:" + session['user']
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -740,7 +731,7 @@ def buscar(idAsignacion):
     )
 
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
-@administrador_requierido
+@administrador_requerido
 def devolver_uno(id_equipo):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -854,7 +845,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_pdf_asignacion(idAsignacion):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -879,7 +870,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_pdf_devolucion(idAsignacion):
     #TODO: revisar que sea pdf
     #si existe eliminar
@@ -901,3 +892,6 @@ def adjuntar_pdf_devolucion(idAsignacion):
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion) + 
                     "/devolver")
 #/asignacion/listar_pdf/<idAsignacion>/<devolver>
+
+#junji
+#Tijunji2017

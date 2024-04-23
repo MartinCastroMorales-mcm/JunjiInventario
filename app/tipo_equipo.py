@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect,flash, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 tipo_equipo = Blueprint('tipo_equipo', __name__, template_folder='app/templates')
 
@@ -17,7 +17,7 @@ def tipoEquipo(page = 1):
     offset = (int(page)-1) * perpage
     cur = mysql.connection.cursor()
     total = 0
-    cur.execute('SELECT COUNT(*) FROM TIPO_EQUIPO')
+    cur.execute('SELECT COUNT(*) FROM tipo_equipo')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     cur.execute('SELECT * FROM tipo_equipo LIMIT {} OFFSET {}'.format(perpage, offset))
@@ -30,7 +30,7 @@ def tipoEquipo(page = 1):
 
 #agrega un tipo de equipo
 @tipo_equipo.route('/add_tipo_equipo', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_tipo_equipo():
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -54,17 +54,24 @@ def add_tipo_equipo():
 
 #enviar datos a formulario editar para tipo de equipo segun el ide correspondiente
 @tipo_equipo.route('/edit_tipo_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_tipo_equipo(id):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM tipo_equipo WHERE idTipo_equipo = %s', (id,))
+        cur.execute("""
+            SELECT *
+            FROM tipo_equipo te
+            INNER JOIN marca_equipo me ON me.idMarca_Equipo = te.idMarca_Equipo
+            WHERE te.idTipo_Equipo = %s
+                    """, (id,))
         data = cur.fetchall()
         cur.execute('SELECT * FROM marca_equipo')
         marca_data = cur.fetchall()
+        print("revisar tipo_equipo")
+        print(data[0])
         return render_template('editTipo_equipo.html', tipo_equipo = data[0], 
                 marca_equipo=marca_data)
     except Exception as e:
@@ -73,7 +80,7 @@ def edit_tipo_equipo(id):
 
 #actualiza un elemento de tipo de equipo segun el id correspondiente
 @tipo_equipo.route('/update_tipo_equipo/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_tipo_equipo(id):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -98,7 +105,7 @@ def update_tipo_equipo(id):
 
 #elimina el registro segun el id
 @tipo_equipo.route('/delete_tipo_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_tipo_equipo(id):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")

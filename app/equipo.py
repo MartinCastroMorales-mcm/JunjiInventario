@@ -3,7 +3,7 @@ from db import mysql
 from funciones import getPerPage
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
@@ -20,7 +20,7 @@ def Equipo(page=1):
     #si funciona con connection. parece que era algo de la maquina virtual
     #elimine la maquina virtual y ahora funciona
     cur = mysql.connection.cursor() #ahora connect funciona pero no connection ¿?
-    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    cur.execute("SELECT COUNT(*) FROM equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     cur.execute(""" 
@@ -38,7 +38,7 @@ def Equipo(page=1):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
@@ -82,7 +82,7 @@ def Equipo(page=1):
 
 # agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def add_equipo():
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
@@ -150,7 +150,7 @@ def add_equipo():
 
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def edit_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -159,13 +159,12 @@ def edit_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute(
             """ 
-           SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-        moe.idModelo_equipo, moe.nombreModeloequipo
+           SELECT *
         FROM equipo e
         INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
         INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
         INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-        INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+        INNER JOIN unidad u on u.idUnidad = e.idUnidad
         INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
         WHERE idEquipo = %s
         """,
@@ -198,7 +197,7 @@ def edit_equipo(id):
 
 # actualiza registro a traves de id correspondiente
 @equipo.route("/update_equipo/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -211,7 +210,6 @@ def update_equipo(id):
         mac = request.form["mac"]
         imei = request.form["imei"]
         numero = request.form["numero"]
-        nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
         nombre_estado_equipo = request.form["nombre_estado_equipo"]
         codigo_Unidad = request.form["codigo_Unidad"]
         nombre_orden_compra = request.form["nombre_orden_compra"]
@@ -228,11 +226,10 @@ def update_equipo(id):
                 macEquipo=%s,
                 imeiEquipo=%s,
                 numerotelefonicoEquipo=%s,
-                idTipo_Equipo = %s,
-                idEstado_Equpo = %s,
+                idEstado_Equipo = %s,
                 idUnidad = %s,
                 idOrden_compra = %s,
-                idModelo_equipo = %s,
+                idModelo_equipo = %s
                 WHERE idEquipo = %s
             """,
                 (
@@ -243,7 +240,6 @@ def update_equipo(id):
                     mac,
                     imei,
                     numero,
-                    nombre_tipo_equipo,
                     nombre_estado_equipo,
                     codigo_Unidad,
                     nombre_orden_compra,
@@ -261,7 +257,7 @@ def update_equipo(id):
 
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def delete_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -284,19 +280,22 @@ def mostrar_asociados_traslado(idTraslado):
     perpage = 200
     offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    cur.execute("SELECT COUNT(*) FROM equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     cur.execute(
         """ 
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, 
+    e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,
+    e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, 
+    te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN traslacion tras on tras.idEquipo = e.idEquipo
     WHERE tras.idTraslado = %s
     LIMIT %s OFFSET %s
@@ -308,7 +307,7 @@ def mostrar_asociados_traslado(idTraslado):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
@@ -340,19 +339,23 @@ def mostrar_asociados_unidad(idUnidad, page=1):
     perpage = 200  # getPerPage()
     offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    cur.execute("SELECT COUNT(*) FROM equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     cur.execute(
         """ 
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, 
+    e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,
+    e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, 
+    te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+    u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     WHERE e.idUnidad = %s
     LIMIT %s OFFSET %s
     """,
@@ -367,7 +370,7 @@ def mostrar_asociados_unidad(idUnidad, page=1):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
@@ -398,7 +401,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
@@ -410,7 +413,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     perpage = 200 #porque ningun funcionario tendra tantos 
                     #equipos que la paginacion sea nesesaria
     offset = (page - 1) * perpage
-    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    cur.execute("SELECT COUNT(*) FROM equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     #encontar la fecha de la ultima asignacion
@@ -442,10 +445,10 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     cur.execute(""" 
     SELECT *
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
     INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
     INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
@@ -515,14 +518,19 @@ def equipo_detalles(idEquipo):
     data_eventos = cur.fetchall()
     cur.execute(
         """
-                SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo,e.idTipo_Equipo ,e.idEstado_Equipo, e.idUnidad, e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+                SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, 
+                e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+                e.numerotelefonicoEquipo,e.idEstado_Equipo, e.idUnidad, 
+                e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreTipo_Equipo, 
+                ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, 
+                oc.idOrden_compra, oc.nombreOrden_compra,
     moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     WHERE e.idEquipo = {}
                 """.format(idEquipo))
     data_equipo = cur.fetchone()
@@ -631,19 +639,19 @@ def añadir_hoja_de_otros(tipos, ws):
            e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
            e.numerotelefonicoEquipo,
            te.idTipo_equipo, 
-           te.nombreidTipoequipo as tipo_equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           te.nombreTipo_Equipo as tipo_equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
                 me.nombreMarcaEquipo, mo.nombreModalidad,
             pr.nombreProveedor
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = moe.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
@@ -656,7 +664,7 @@ def añadir_hoja_de_otros(tipos, ws):
             e.Num_serieEquipo, e.ObservacionEquipo, 
             e.codigoproveedor_equipo, e.macEquipo, 
             e.imeiEquipo, e.numerotelefonicoEquipo,
-            te.idTipo_equipo, te.nombreidTipoequipo,
+            te.idTipo_equipo, te.nombreTipo_Equipo,
             ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
@@ -664,11 +672,11 @@ def añadir_hoja_de_otros(tipos, ws):
             me.nombreMarcaEquipo, mo.nombreModalidad,
             pr.nombreProveedor
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
@@ -745,19 +753,19 @@ def añadir_hoja_de_tipo(tipo, ws):
            e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
            e.numerotelefonicoEquipo,
            te.idTipo_equipo, 
-           te.nombreidTipoequipo as tipo_equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           te.nombreTipo_Equipo as tipo_equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
     moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
                 me.nombreMarcaEquipo, mo.nombreModalidad,
                 pr.nombreProveedor
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
@@ -770,7 +778,7 @@ def añadir_hoja_de_tipo(tipo, ws):
             e.Num_serieEquipo, e.ObservacionEquipo, 
             e.codigoproveedor_equipo, e.macEquipo, 
             e.imeiEquipo, e.numerotelefonicoEquipo,
-            te.idTipo_equipo, te.nombreidTipoequipo,
+            te.idTipo_equipo, te.nombreTipo_Equipo,
             ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
@@ -779,11 +787,11 @@ def añadir_hoja_de_tipo(tipo, ws):
             pr.nombreProveedor
                 
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
@@ -857,20 +865,20 @@ def crear_excel():
            e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
            e.numerotelefonicoEquipo,
            te.idTipo_equipo, 
-           te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
            u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
            com.nombreComuna, pro.nombreProvincia,
-    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
+        moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
                 me.nombreMarcaEquipo, mo.nombreModalidad,
                 pr.nombreProveedor
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
@@ -882,7 +890,7 @@ def crear_excel():
             e.Num_serieEquipo, e.ObservacionEquipo, 
             e.codigoproveedor_equipo, e.macEquipo, 
             e.imeiEquipo, e.numerotelefonicoEquipo,
-            te.idTipo_equipo, te.nombreidTipoequipo,
+            te.idTipo_equipo, te.nombreTipo_Equipo,
             ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
             u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
             moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
@@ -890,11 +898,11 @@ def crear_excel():
             me.nombreMarcaEquipo, mo.nombreModalidad,
             pr.nombreProveedor
     FROM equipo e
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = moe.idMarca_Equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
@@ -936,7 +944,7 @@ def crear_excel():
         fillCell(equipo_data[fila]['nombreModalidad'], fila + 2)
         fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
-        fillCell(equipo_data[fila]['nombreidTipoequipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreTipo_Equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreMarcaEquipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
         fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
@@ -954,7 +962,7 @@ def crear_pagina_todojunto(wb):
     return wb
 
 @equipo.route("/equipo/importar_excel")
-@administrador_requierido
+@administrador_requerido
 def importar_excel(url):
     pass
 
@@ -972,15 +980,15 @@ def buscar_equipo(id):
                     e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
                     e.numerotelefonicoEquipo,
                     te.idTipo_equipo, 
-                    te.nombreidTipoequipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+                    te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
                     u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
                 moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
                 FROM equipo e
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
                 INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+                INNER JOIN unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
 
                 WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
                 UNION 
@@ -988,15 +996,15 @@ def buscar_equipo(id):
                         e.Num_serieEquipo, e.ObservacionEquipo, 
                         e.codigoproveedor_equipo, e.macEquipo, 
                         e.imeiEquipo, e.numerotelefonicoEquipo,
-                        te.idTipo_equipo, te.nombreidTipoequipo,
+                        te.idTipo_equipo, te.nombreTipo_Equipo,
                         ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
                         u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
                         moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
                 FROM equipo e
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_Equipo
-                INNER JOIN Unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
                 INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+                INNER JOIN unidad u on u.idUnidad = e.idUnidad
+                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
 
                 INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
                 INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
@@ -1012,7 +1020,7 @@ def buscar_equipo(id):
     tipoe_data = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
     estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
@@ -1043,7 +1051,7 @@ def consulta_equipo(page = 1):
     perpage = getPerPage()
     offset = (int(page) - 1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) FROM EQUIPO")
+    cur.execute("SELECT COUNT(*) FROM equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
     cur = mysql.connection.cursor()

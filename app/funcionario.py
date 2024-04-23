@@ -1,7 +1,7 @@
 from flask import Blueprint, request, render_template, flash, url_for, redirect, session
 from db import mysql
 from funciones import validarRut, getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
 #envias los datos a la vista pricipal de funcionario
@@ -23,7 +23,7 @@ def Funcionario(page = 1):
     LIMIT {} OFFSET {}
     """.format(perpage, offset))
     data = cur.fetchall()
-    cur.execute('SELECT * FROM Unidad')
+    cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM funcionario')
     total = cur.fetchone()
@@ -34,7 +34,7 @@ def Funcionario(page = 1):
 
 #agregar funcionario
 @funcionario.route('/add_funcionario', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_funcionario():
     if "user" not in session:
         flash("you are NOT authorized")
@@ -63,7 +63,7 @@ def add_funcionario():
     
 #enviar datos a vista editar
 @funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_funcionario(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -71,13 +71,14 @@ def edit_funcionario(id):
     try:
         cur = mysql.connection.cursor()
         cur.execute(""" 
-        SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, f.idUnidad, u.idUnidad
+        SELECT *
         FROM funcionario f
-        INNER JOIN Unidad u on f.idUnidad = u.idUnidad
+        INNER JOIN unidad u on f.idUnidad = u.idUnidad
         WHERE rutFuncionario = %s
         """, (id,))
         data = cur.fetchall()
-        cur.execute('SELECT idUnidad from Unidad')
+        cur.execute('SELECT * from unidad')
+        print(data) 
         ubi_data = cur.fetchall()
         return render_template('editFuncionario.html', funcionario = data[0], Unidad = ubi_data)
     except Exception as e:
@@ -86,7 +87,7 @@ def edit_funcionario(id):
 
 #actualizar funcionario por id
 @funcionario.route('/update_funcionario/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_funcionario(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -115,7 +116,7 @@ def update_funcionario(id):
 
 #eliminar registro segun id
 @funcionario.route('/delete_funcionario/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_funcionario(id):
     if "user" not in session:
         flash("you are NOT authorized")

@@ -88,9 +88,9 @@ OK -codigo proveedor de sonda *1h
         -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
 OK-añadir buscador solo para equipos --
 OK-cambiar modelo de marca y tipos de equipo
-        -añadir elegir marca y por cada marca mostrar los modelos de esa marca 
-        -cambiar orden marca, tipo_equipo, modelo *2h
-        -error funcionario equipos sin asignar *1h
+OK -añadir elegir marca y por cada marca mostrar los modelos de esa marca 
+OK -cambiar orden marca, tipo_equipo, modelo *2h
+OK -error funcionario equipos sin asignar *1h
 OK -boton agregar funcionario se llama "agregar funcionario"
 OK -cambiar fechaEstado Equipo (sacar)
 OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
@@ -121,6 +121,98 @@ OK -Proteger de inyeccion sql
 
 
 OK boton crear cuenta
-        cuenta de usuario solo puede ver
-        OK agregar usuario a pdfs
-        ver pdfs en tabla
+OK cuenta de usuario solo puede ver
+OK agregar usuario a pdfs
+OK ver pdfs en tabla
+
+
+
+tests {
+        usuarios OK
+        equipo {
+                agregar OK (falta funcionalidad)
+                exportar a Excel OK
+                edit OK
+                Eliminar OK (que pasa si tiene incidencias)
+                Detalles OK
+                Incidencias OK
+                Asignar OK
+                Devolucion OK (error si se devuelve el mismo equipo dos veces)
+        }
+        marca_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        } 
+        modelo_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        tipos_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        Funcionarios {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        Proveedores {
+               agregar OK
+               editar OK
+               eliminar OK 
+        }
+        Unidad {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        Orden de compra {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        tipo_adquisicion {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        estado_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        asignaciones {
+                agregar OK
+                ver acta asignacion OK
+                firmar acta de asignacion OK
+                abrir acta firmada OK
+                editar OK
+                devolver OK
+                ver acta devolucion OK
+                firmar acta de devolucion OK
+                ver acta de devolucion firmada OK
+                eliminar OK
+        }
+        traslado {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+                firmar OK
+        }
+        incidencias {
+               agregar OK 
+               editar OK
+               eliminar OK
+               equipo OK
+        }
+
+
+}
+todas las consultas deben referirse a los nombres de las tablas en minuscula
