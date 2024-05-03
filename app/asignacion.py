@@ -33,7 +33,7 @@ def Asignacion(page=1):
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
-    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -77,7 +77,7 @@ def add_asignacion(idEquipo = "None"):
                 SELECT * 
                 FROM equipo e
                 INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN Tipo_Equipo te ON me.idTipo_Equipo = te.idTipo_equipo
+                INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
                 INNER JOIN unidad u ON e.idUnidad = u.idUnidad
                 INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
                 WHERE ee.nombreEstado_equipo = %s

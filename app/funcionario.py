@@ -19,7 +19,7 @@ def Funcionario(page = 1):
     cur.execute(""" 
     SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, f.idUnidad, u.idUnidad, u.nombreUnidad
     FROM funcionario f
-    INNER JOIN Unidad u on f.idUnidad = u.idUnidad
+    INNER JOIN unidad u on f.idUnidad = u.idUnidad
     LIMIT {} OFFSET {}
     """.format(perpage, offset))
     data = cur.fetchall()
@@ -138,7 +138,7 @@ def buscar_funcionario(id):
     cur.execute("""
     SELECT * 
     FROM funcionario f
-    INNER JOIN Unidad u on f.idUnidad = u.idUnidad
+    INNER JOIN unidad u on f.idUnidad = u.idUnidad
     WHERE f.rutFuncionario = %s
     """, (id,))
     funcionarios = cur.fetchall()
