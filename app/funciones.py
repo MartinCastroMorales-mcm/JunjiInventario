@@ -37,3 +37,13 @@ def validarRut(rut):
 #define el numero de filas en las tablas para la paginacion
 def getPerPage():
     return 100
+
+#categorias
+categorias = {
+    "Mouse": "accesorio",
+    "Teclado": "accesorio",
+
+    "Telefono": "telefono_fijo"
+
+
+}

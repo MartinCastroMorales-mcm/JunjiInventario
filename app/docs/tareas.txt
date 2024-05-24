@@ -216,3 +216,27 @@ tests {
 
 }
 todas las consultas deben referirse a los nombres de las tablas en minuscula
+
+
+
+
+-Marca o modelo nuevo, no lo registro
+-No se puede repetir modelo. o marca (nombre)
+-equipo no se puede repetir la serial.
+
+Mouse modelo y marca
+mac telefono
+imei celular, tablet
+accesorio marca y modelo
+codigo proveedor tiene que estar siempre
+
+al asignar trasladar equipo.
+al devolver mover a ti
+error de traslado 'create_traslado'
+hacer excel falso con cumpleaños.
+
+tipo a marca deberia ser de muchos a muchos
+
+tipo edit
+
+modelo marca unica ¿?

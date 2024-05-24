@@ -7,6 +7,7 @@ import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
 from cuentas import loguear_requerido, administrador_requerido
+from traslado import crear_traslado_generico
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -217,9 +218,6 @@ def delete_asignacion(id):
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
         # Extraer datos del formulario
         fechaasignacion = request.form['fechaasignacion']
@@ -229,13 +227,14 @@ def create_asignacion():
         rut=request.form['rut']
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
         # Obtener la lista de equipos asignados desde el formulario
+        realizar_traslado = request.form['realizar_traslado']
         equipos = request.form.getlist('asignaciones[]')
-        return creacionAsignacion(fechaasignacion, observacion, rut, equipos)
+        return creacionAsignacion(fechaasignacion, observacion, rut, equipos, realizar_traslado)
 
 
 #Este metodo es el que crea la asignacion
 @administrador_requerido
-def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
+def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_traslado):
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
@@ -280,6 +279,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
         mysql.connection.commit()
             
         #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
+
         cur.execute("""
                     SELECT *
                     FROM equipo
@@ -315,6 +315,18 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
 
 
     crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
+    if(realizar_traslado and Funcionario['idUnidad'] == 1):
+        #TODO: que hacer si multiples equipos vienen de distintas direcciones
+
+        #mover desde su posicion actual a la posicion del funcionario
+        #primero revisar si las posiciones son iguales.
+
+        
+        #si son distintas redirigir al metodo de crear traslado con
+        #la informacion de la asignacion
+
+        crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
+                                ,Unidad['idUnidad'], equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):

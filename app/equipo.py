@@ -35,20 +35,24 @@ def Equipo(page=1):
     equipos = cur.fetchall()
     modelos_por_tipo = cur.fetchall()
     cur.execute("SELECT * FROM tipo_equipo")
-    tipoe_data = cur.fetchall()
+    tipo_equipo = cur.fetchall()
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-    estadoe_data = cur.fetchall()
+    _data = cur.fetchall()
     cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
+    cur.execute("""
+    SELECT *
+    FROM marca_equipo
+                """)
+    marcas = cur.fetchall()
+    print(marcas)
 
     modelos_por_tipo = {
 
     }
-    for tipo in tipoe_data:
-        #print("########################")
-        #print(tipo)
+    for tipo in tipo_equipo:
         query = """
         SELECT *
         FROM modelo_equipo me
@@ -69,8 +73,8 @@ def Equipo(page=1):
     return render_template(
         "equipo.html",
         equipo=equipos,
-        tipo_equipo=tipoe_data,
-        estado_equipo=estadoe_data,
+        tipo_equipo=tipo_equipo,
+        marcas_equipo=marcas,
         orden_compra=ordenc_data,
         Unidad=ubi_data,
         modelo_equipo=modelos_por_tipo,
@@ -175,7 +179,7 @@ def edit_equipo(id):
         tipoe_data = cur.fetchall()
         cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
         estadoe_data = cur.fetchall()
-        cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+        cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
         ubi_data = cur.fetchall()
         cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
         ordenc_data = cur.fetchall()
@@ -964,6 +968,7 @@ def crear_pagina_todojunto(wb):
 @equipo.route("/equipo/importar_excel")
 @administrador_requerido
 def importar_excel(url):
+    #Nesesito el excel para ver el formato
     pass
 
 #buscar un equipo singular por id

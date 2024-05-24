@@ -186,10 +186,25 @@ function check_all() {
 //podria tenerlos separados en selects invisibles.
 //por cada tipo un select
 
+//tipos para mostrar Mac
+tipos_mac = {
+  "Telefono": true
+}
+tipos_imei = {
+  "Tablet": true,
+  "celular": true
+}
+tipos_num_telefono = {
+  "Celular": true,
+  "Telefono": true
+}
 function mostrarSelectModelo() {
   console.log("mostrar")
   //obtener la id del tipo
   tipo = document.getElementById("nombre_tipo_equipo").value
+  
+  console.log("tipo")
+  console.log(tipo)
   //get all divs with class x give class x to relevant divs
   div = document.getElementById("select_div")   
   selects = div.querySelectorAll(".select_modelo")
@@ -204,5 +219,63 @@ function mostrarSelectModelo() {
     }
   }
 
+  //esconder mac
+  tipo = document.getElementById("nombre_tipo_equipo").value
+  mac_div = document.getElementById("Mac")
+  if(tipos_mac[tipo]) {
+    mac_div.style.display = "block"
+  }else {
+    mac_div.style.display = "none"
+  }
+
+  //esconder imei
+  imei_div = document.getElementById("Imei")
+  if(tipos_imei[tipo]) {
+    imei_div.style.display = "block"
+  }else {
+    imei_div.style.display = "none"
+  }
+  //esconder numero de telefono
+  num_telefono_div = document.getElementById("Telefono")
+  if(tipos_num_telefono[tipo]) {
+    num_telefono_div.style.display = "block"
+  }else {
+    num_telefono_div.style.display = "none"
+  }
+
+
+}
+
+function mostrarTipo_equipo() {
+  select = document.getElementById("marca_equipo")
+  idMarca = select.value;
+  console.log("mostarTipo_equipo" + idMarca)
+
+  //Obten todos los divs de la clase select_modelo
+  divs_select_para_marca = document.querySelectorAll('.select_modelo')
+  //parece que el objeto retornado es un dicionario por lo que un 
+  //for in no funciona pero las claves son numeros naturales + 0
+  //console.log(divs_select_para_marca)
+  //console.log(divs_select_para_marca[0])
+  
+  for(let i = 0; i < divs_select_para_marca.length; i++) {
+    div = divs_select_para_marca[i]
+    div.style.display = "none"
+  }
+  objective_div = document.getElementById(idMarca)
+  objective_div.style.display = "block"
+
+  boton = document.getElementById("enviar")
+  boton.style.display = "block"
+}
+//Envia el tipo a 
+function enviarTipo(valor) {
+  console.log("test")
+  console.log(valor)
+  select = document.getElementById(valor)
+  tipo_equipo_value = select.value
+  console.log(select.value)
+  output_tipo_equipo = document.getElementById('nombre_tipo_equipo')
+  output_tipo_equipo.value = select.value
 
 }

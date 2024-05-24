@@ -18,30 +18,60 @@ def modeloEquipo(page=1):
     offset = (page - 1) * perpage
 
     cur = mysql.connection.cursor()
-    cur.execute(
-        """ 
+    cur.execute("""
     SELECT *
-    FROM modelo_equipo moe
-    LEFT OUTER JOIN tipo_equipo te on moe.idTipo_equipo = te.idTipo_equipo
-    LEFT OUTER JOIN marca_equipo mae on te.idMarca_equipo = mae.idMarca_equipo
-    LIMIT {} OFFSET {} 
-    """.format(
-            perpage, offset
-        )
-    )
+    FROM modelo_equipo me
+    INNER JOIN tipo_equipo te ON te.idTipo_equipo = me.idTipo_equipo
+                """)
     data = cur.fetchall()
-    cur.execute("SELECT * FROM marca_equipo")
-    mae_data = cur.fetchall()
+    #cur.execute(
+        #""" 
+    #SELECT *
+    #FROM modelo_equipo moe
+    #INNER JOIN tipo_equipo te ON te.idTipo_equipo = moe.idTipo_equipo
+    #INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+    #INNER JOIN marca_equipo me ON me.idMarca_Equipo = mte.idMarca_Equipo
+    #LIMIT {} OFFSET {} 
+    #""".format(
+            #perpage, offset
+        #)
+    #)
+    #data = cur.fetchall()
+    #cur.execute("SELECT * FROM marca_equipo")
+    #mae_data = cur.fetchall()
+    #marcas_con_tipo_equipo = None
+    #for i in range(0, len(mae_data)):
+        #marca = mae_data[i]
+        ##añadir la tupla de tipo como elemento de la tupla de marca
+        #cur.execute("""
+            #SELECT te.idTipo_equipo, te.nombreTipo_equipo, observacionTipoEquipo
+            #FROM marca_tipo_equipo mte
+            #INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+            #WHERE mte.idMarca_Equipo = %s
+                    #""", (marca['idMarca_Equipo'],))
+        #tipo_equipo_data = cur.fetchall()
+
+        #if marcas_con_tipo_equipo == None:
+            #newdict = marca
+            #newdict.update({'tipo_equipo': tipo_equipo_data})
+            #marcas_con_tipo_equipo = (newdict,)
+        #else:
+            #newdict = marca
+            #newdict.update({'tipo_equipo': tipo_equipo_data})
+            #marcas_con_tipo_equipo += (newdict,)
+    #print("marcas_con_tipo_equipo")
+    #print(marcas_con_tipo_equipo)
+        
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_data = cur.fetchall()
     cur.execute("SELECT COUNT(*) FROM modelo_equipo")
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
+
     return render_template(
         "modelo_equipo.html",
         modelo_equipo=data,
         tipo_equipo=tipo_data,
-        marca_equipo=mae_data,
         page=page,
         lastpage=page < (total / perpage) + 1,
     )
@@ -54,13 +84,14 @@ def add_modelo_equipo():
     if request.method == "POST":
         nombre_modelo_equipo = request.form['nombre_modelo_equipo']
         id_tipo_equipo = request.form['nombre_tipo_equipo']
+        print(id_tipo_equipo)
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
             INSERT INTO modelo_equipo (nombreModeloequipo, idTipo_equipo) VALUES (%s,%s)
             """,
-                (nombre_modelo_equipo, id_tipo_equipo),
+                (nombre_modelo_equipo, id_tipo_equipo)
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")
@@ -77,41 +108,57 @@ def edit_modelo_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(
-            """ 
-        SELECT moe.idModelo_Equipo, moe.nombreModeloequipo, mae.idMarca_Equipo,
-        mae.nombreMarcaEquipo, te.idTipo_equipo, te.nombreTipo_equipo
-        FROM modelo_equipo moe
-        LEFT OUTER JOIN tipo_equipo te ON te.idTipo_Equipo = moe.idTipo_Equipo
-        LEFT OUTER JOIN marca_equipo mae on te.idMarca_equipo = mae.idMarca_Equipo
-        WHERE idModelo_Equipo = %s
-        """,
-            (id,),
-        )
-        data = cur.fetchall()
-        #print("#####################")
-        print(data)
-        #print("$$$$$$$$$$$$$$$$$")
-        cur.close()
-        curs = mysql.connection.cursor()
-        curs.execute("SELECT * FROM marca_equipo")
-        mae_data = curs.fetchall()
-        #print(mae_data)
-        #print("&&&&&&&&&&&&&&&&&&&&&&&")
-        cur.close()
-        curs.execute("SELECT * FROM tipo_equipo")
-        tipo_data = curs.fetchall()
-        #print(tipo_data)
-        #print("00000000000000000000000")
-        curs.close()
-        return render_template(
-            "editModelo_equipo.html", modelo_equipo=data[0], 
-            marca_equipo=mae_data, tipo_equipo=tipo_data)
-    except Exception as e:
-        flash(e.args[1])
-        return redirect(url_for("modelo_equipo.modeloEquipo"))
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """ 
+    SELECT *
+    FROM modelo_equipo moe
+    LEFT OUTER JOIN tipo_equipo te ON te.idTipo_Equipo = moe.idTipo_Equipo
+    LEFT OUTER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_Equipo  
+    LEFT OUTER JOIN marca_equipo mae on mte.idMarca_equipo = mae.idMarca_Equipo
+    WHERE idModelo_Equipo = %s
+    """,
+        (id,)
+    )
+    data = cur.fetchone()
+    cur.execute("SELECT * FROM marca_equipo")
+    mae_data = cur.fetchall()
+    print("mae_data")
+    print(mae_data)
+    print(len(mae_data))
+    marcas_con_tipo_equipo = None
+    for i in range(0, len(mae_data)):
+        print("marca_iterada" + str(i))
+        print(marcas_con_tipo_equipo)
+        marca = mae_data[i]
+        #añadir la tupla de tipo como elemento de la tupla de marca
+        cur.execute("""
+            SELECT te.idTipo_equipo, te.nombreTipo_equipo, observacionTipoEquipo
+            FROM marca_tipo_equipo mte
+            INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+            WHERE mte.idMarca_Equipo = %s
+                    """, (marca['idMarca_Equipo'],))
+        tipo_equipo_data = cur.fetchall()
+
+        if marcas_con_tipo_equipo == None:
+            newdict = marca
+            newdict.update({'tipo_equipo': tipo_equipo_data})
+            marcas_con_tipo_equipo = (newdict,)
+        else:
+            newdict = marca
+            newdict.update({'tipo_equipo': tipo_equipo_data})
+            marcas_con_tipo_equipo += (newdict,)
+        
+    cur.close()
+    curs = mysql.connection.cursor()
+    curs.execute("SELECT * FROM tipo_equipo")
+    tipo_data = curs.fetchall()
+    curs.close()
+    print("marcas_con_tipo_equipo")
+    print(marcas_con_tipo_equipo)
+    return render_template(
+        "editModelo_equipo.html", modelo_equipo=data,
+        marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data)
 
 
 # actualizar

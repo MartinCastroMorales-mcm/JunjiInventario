@@ -188,10 +188,14 @@ def create_traslado(origen):
         fechatraslado = request.form['fechatraslado']
         #rutadocumento = request.form['']
         Destino = request.form['Destino']
-        Origen = origen
         #trasladar[] es la notacion para obtener un array con todos los outputs de las checklist
         equipos = request.form.getlist('trasladar[]')
+        crear_traslado_generico(fechatraslado, Destino, origen, equipos)
 
+        return redirect(url_for('traslado.Traslado'))
+    return redirect(url_for('traslado.Traslado'))
+
+def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
         #Añadir fila a traslado
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -258,11 +262,7 @@ def create_traslado(origen):
         UnidadDestino = cur.fetchone()
 
         flash("traslado agregado correctamente")
-
-
         create_pdf(traslado, TuplaEquipos, UnidadOrigen, UnidadDestino)
-        return redirect(url_for('traslado.Traslado'))
-    return redirect(url_for('traslado.Traslado'))
 
 
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
