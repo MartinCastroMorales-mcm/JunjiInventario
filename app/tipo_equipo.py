@@ -89,12 +89,16 @@ def tipoEquipo(page=1):
 def crear_tipo_equipo():
     nombreTipo_Equipo = request.form["nombreTipo_equipo"]
     cur = mysql.connection.cursor()
-    cur.execute(
-        """
-                INSERT INTO tipo_equipo (nombreTipo_equipo) 
-                VALUES (%s)""",
-        (nombreTipo_Equipo,),
-    )
+    try:
+        cur.execute(
+            """
+                    INSERT INTO tipo_equipo (nombreTipo_equipo) 
+                    VALUES (%s)""",
+            (nombreTipo_Equipo,),
+        )
+    except:
+            flash(e.args[1])
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
     mysql.connection.commit()
     cur.execute(
         """

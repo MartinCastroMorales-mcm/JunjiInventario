@@ -279,3 +279,38 @@ function enviarTipo(valor) {
   output_tipo_equipo.value = select.value
 
 }
+function abrir_cerrar_ojo(id_ojo, repetir) {
+  ojo_contrasenna = document.getElementById(id_ojo)
+  src = ojo_contrasenna.src
+  //console.log("src")
+  //console.log(src)
+  //relative_tmp = location.href.split("/")
+  //relative_path = relative_tmp[0] + "//" + relative_tmp[2]
+  //console.log("absURL")
+  //console.log(relative_path)
+  //console.log(document.URL)
+  //console.log(location.href)
+  img_name = src.split("/")
+  console.log("img_name")
+  console.log(img_name)
+  if(img_name[5] == "eye.png") {
+    console.log("if")
+    ojo_contrasenna.src = "../static/img/hidden.png"
+    if(repetir) {
+      input = document.getElementById('contrasenna_repetir').type = 'text'
+    }else {
+      input = document.getElementById('contrasenna').type = 'text'
+    }
+  }else {
+    console.log("else")
+    ojo_contrasenna.src = "../static/img/eye.png"
+    if(repetir) {
+      input = document.getElementById('contrasenna_repetir').type = 'password'
+    }else {
+      input = document.getElementById('contrasenna').type = 'password'
+    }
+  }
+
+
+
+}

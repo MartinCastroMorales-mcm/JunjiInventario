@@ -34,6 +34,10 @@ def validarRut(rut):
     else:
         return False
 
+def validarCorreo(correo_funcionario):
+    #abandonado
+    pass
+
 #define el numero de filas en las tablas para la paginacion
 def getPerPage():
     return 100
