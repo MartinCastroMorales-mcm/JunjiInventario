@@ -66,7 +66,7 @@
     #}
 {% macro select(modelos_del_tipo, id_tipo) %}
 <div id="{{id_tipo}}" style="display: none;" class="select_modelo">
-    <label for="nombre_modelo_equipo">Modelo de Equipo: </label>
+    <label for="nombre_modelo_equipo">Modelo de Equipo: *</label>
     <select name="nombre_modelo_equipo">
         <option value="">Seleccione el Modelo del Equipo</option>
         {% for modelo in modelos_del_tipo %}

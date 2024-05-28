@@ -31,16 +31,15 @@
                     #}
                     <div>
 
-                        <label for="marca">Nombre Marca</label>
+                        <label for="marca">Nombre Marca*</label>
                         <select name="nombre_marca" id="marca" , onchange="mostrarSelectModelo()">
                             <option value="">Seleccione el Marca</option>
                             {% for marca in marcas_equipo %}
                                 <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
-
                             {% endfor%}
                         </select>
                     </div>
-                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
+                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
                     <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for tipoe in tipo_equipo %}
@@ -52,7 +51,7 @@
                         {{select(modelo_equipo[tipo['idTipo_equipo']], tipo['nombreTipo_equipo'])}}
                         {% endfor %}
                     </div>
-                    <label for="codigo_Unidad">Unidad: </label>
+                    <label for="codigo_Unidad">Unidad: *</label>
                     <select name="codigo_Unidad">
                         <option value="">Seleccione la Unidad</option>
                         {% for ubi in Unidad %}
@@ -61,7 +60,7 @@
                     </select>
                     <br>
                     <div>
-                        <label for="nombre_orden_compra">Orden de Compra: </label>
+                        <label for="nombre_orden_compra">Orden de Compra: *</label>
                         <select name="nombre_orden_compra">
                             <option value="">Seleccione el Orden de Compra</option>
                             {% for ordenc in orden_compra %}

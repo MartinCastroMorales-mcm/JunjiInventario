@@ -47,13 +47,12 @@ def add_tipoa():
 @tipo_adquisicion.route('/edit_tipoa/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def edit_tipoa(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
+        print(id)
         cur.execute('SELECT * FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))
         data = cur.fetchall()
+        print(data)
         return render_template('editTipo_Adquisicion.html' , tipo_adquisicion = data[0])
     except Exception as e:
             flash(e.args[1])

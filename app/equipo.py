@@ -66,10 +66,13 @@ def Equipo(page=1):
             """, (tipo['idTipo_equipo'],))
         modelo_tipo = cur.fetchall()
         modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
-
+    print("modelos por tipo")
+    print(modelos_por_tipo)
 
     #print("tipos de equipo ############")
     #print(tipoe_data)
+
+    crear_lista_modelo_tipo_marca()
     return render_template(
         "equipo.html",
         equipo=equipos,
@@ -83,7 +86,57 @@ def Equipo(page=1):
         session=session
     )
 
+def crear_lista_modelo_tipo_marca():
+    #Va a ser de tipo 
+    #[
+    #   {
+    #       llave_marca: dato_marca, ..., tipos_equipo: {
+    #           llave_tipo_equipo: dato_tipo_equipo, ..., modelos_equipo: {
+    #               llave_modelo: dato_modelo, ...
+    #           }
+    #       }
+    #   }
+    #]
+    cur = mysql.connection.cursor()
+    cur.execute("""
+    SELECT *
+    FROM marca_equipo
+                """)
+    marcas = cur.fetchall()
+    marcas_llenadas = []
+    for i in range(0, len(marcas)):
+        tipos_llenados = []
+        marca = marcas[i]
+        cur.execute("""
+            SELECT *
+            FROM tipo_equipo te
+            INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+            WHERE mte.idMarca_Equipo = %s
+            """, (marca['idMarca_Equipo'],))
+        tipos_equipo_asociados_marca = cur.fetchall()
+        for j in range(0, len(tipos_equipo_asociados_marca)):
+            tipo = tipos_equipo_asociados_marca[j]
+            cur.execute("""
+            SELECT *
+            FROM modelo_equipo me
+            WHERE me.idTipo_equipo = %s
+            AND me.idMarca_Equipo = %s
+                        """, (tipo['idTipo_equipo'], marca['idMarca_Equipo']))
+            modelos_equipo_asociados_tipo = cur.fetchall()
+            tipo.update({'modelo_equipo': modelos_equipo_asociados_tipo})
+            tipos_llenados.append(tipo)        
+        tipos_llenados = tuple(tipos_llenados)
+        marca.update({'tipo_equipo': tipos_llenados})
+        marcas_llenadas.append(marca)
+    marcas_llenadas = tuple(marcas_llenadas)
+    print("marcas_llenadas")
+    print(marcas_llenadas)
 
+
+    #añadir tipos a marca
+
+
+    pass
 # agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
 @administrador_requerido

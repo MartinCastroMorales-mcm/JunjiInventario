@@ -230,10 +230,9 @@ imei celular, tablet
 accesorio marca y modelo
 codigo proveedor tiene que estar siempre
 
-al asignar trasladar equipo.
+OK al asignar trasladar equipo.
 al devolver mover a ti
-error de traslado 'create_traslado'
-hacer excel falso con cumpleaños.
+OK error de traslado 'create_traslado'
 
 tipo a marca deberia ser de muchos a muchos
 
@@ -246,4 +245,9 @@ OK esconder contraseña crear usuario y ingresar
 OK agregar ojo para ver contraseña
 ocultar botones a usuario normal porque usuario solo puede ver
 enviar correo en momento de asignar y devolver lo dejo con mauricio.cardenas@junji.cl
-filtro de marca_equipo en agregar equipo
+        (en asignar)
+agregar boton para decidir si se envia o no correo
+agregar opciones para acciones por defecto(traslado, correo, etc)
+OK filtro de marca_equipo en agregar equipo
+
+Pedir el excel para importar los datos
