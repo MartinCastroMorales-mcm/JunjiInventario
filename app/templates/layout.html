@@ -7,13 +7,13 @@
     <title>Inventario JUNJI</title>
     <!-- BOOSTRAP 4 -->
 
-    <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}"/>
+    <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
     <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
     <!-- <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css"> -->
     <script src="https://kit.fontawesome.com/5457f9e89a.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
     <script src="{{url_for('static', filename='js/main.js')}}"></script>
-    <!--<script src="/app/static/js/utils.js"></script>-->  
+    <!--<script src="/app/static/js/utils.js"></script>-->
 </head>
 
 <body>
@@ -108,13 +108,13 @@
                         <i class="lni lni-travel"></i>
                         <span>Traslados</span>
                     </a>
-                </li> 
+                </li>
                 <li class="sidebar-item">
                     <a href="/incidencia" class="sidebar-link">
                         <i class="lni lni-stamp"></i>
                         <span>Incidencias</span>
                     </a>
-                </li> 
+                </li>
             </ul>
             <div class="sidebar-footer">
                 <a href="/desloguear" class="sidebar-link">
@@ -134,8 +134,7 @@ TRASLADO---
       </div>   -->
                 <form action="/buscar" method="GET">
                     <div class="nav-search">
-                        <input name="busqueda" type="text" 
-                        class="search-query" placeholder="Search...">
+                        <input name="busqueda" type="text" class="search-query" placeholder="Search...">
                         <button class="btn" type="submit">Search</button>
                     </div>
                 </form>
@@ -253,7 +252,12 @@ TRASLADO---
             <footer>
                 <div class="footer-wrap">
                     <div class="copyright-text">
-                        <p>© Copyright 2024 by <strong>JUNJI</strong></p>
+                        <ul>
+                            <li>
+                                <p>© Copyright 2024 by <strong>JUNJI</strong></p>
+                            </li>
+                            <li>version: 0.1.1</li>
+                        </ul>
                     </div>
                     <ul class="social-icons">
                         <li><a href="https://www.junji.cl/">Pagina web</a></li>
