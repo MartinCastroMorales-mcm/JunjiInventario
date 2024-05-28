@@ -84,10 +84,11 @@
 {% macro select_para_marca(marcas) %}
 <div id="{{marcas.idMarca_Equipo}}" style="display: none;" class="select_modelo">
     <label for="nombre_modelo_equipo">Tipo Equipo: </label>
-    {#%for tipo in lista_tipos_asociados_marca%}
+    {{lista_tipos_asociados_marca}}
+    {%for tipo in lista_tipos_asociados_marca%}
     {{tipo}}
-    {% endfor%#}
-    <select name="nombre_tipo_equipo" onchange="enviarTipo('{{marcas.idMarca_Equipo}}')">
+    {% endfor%}
+    <select id="s_{{marcas.idMarca_Equipo}}" name="" onchange="enviarTipo('s_{{marcas.idMarca_Equipo}}')">
         <option value="">Seleccione el Tipo del Equipo</option>
         {% for tipo in marcas.tipo_equipo %}
         <option value="{{ tipo.idTipo_equipo }}">

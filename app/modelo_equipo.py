@@ -61,6 +61,37 @@ def modeloEquipo(page=1):
             #marcas_con_tipo_equipo += (newdict,)
     #print("marcas_con_tipo_equipo")
     #print(marcas_con_tipo_equipo)
+
+    cur.execute("SELECT * FROM marca_equipo")
+    marca_data = cur.fetchall()
+    #marca_data = ({id: x, nombre:y, valor:z})
+    marca_con_tipo = []
+    for i in range(0, len(marca_data)):
+        marca = marca_data[i]
+        cur.execute("""
+        SELECT *
+        FROM marca_tipo_equipo mte
+        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        WHERE mte.idMarca_Equipo = %s
+                    """, (marca['idMarca_Equipo'],))
+        tipos_asociados = cur.fetchall()
+        #tipo_asociado = ({id: x, nombre: y, valor:z})
+
+        #print('marca')
+        #print(marca)
+        #print('tipos_asociados')
+        #print(tipos_asociados)
+        nueva_marca = ingresar_elemento_a_tupla(marca, tipos_asociados, 'tipo_equipo')
+        #agregar nueva marca a marca con tipo. ¿pasar de lista a tupla?
+        marca_con_tipo.append(nueva_marca)
+
+    marca_con_tipo = tuple(marca_con_tipo)
+    #print("marca_con_tipo")
+    #print(marca_con_tipo)
+
+
+    #tiene que ser de tipo 
+    #({dato_marca, ..., tipo_equipo})
         
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_data = cur.fetchall()
@@ -70,11 +101,15 @@ def modeloEquipo(page=1):
 
     return render_template(
         "modelo_equipo.html",
+        marca_equipo=marca_con_tipo,
         modelo_equipo=data,
         tipo_equipo=tipo_data,
         page=page,
         lastpage=page < (total / perpage) + 1,
     )
+def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar):
+    tupla_mayor.update({nombre_tupla_agregar: tupla_a_agregar})
+    return tupla_mayor
 
 
 # agregar un regisro para modelo de equipo
@@ -84,7 +119,9 @@ def add_modelo_equipo():
     if request.method == "POST":
         nombre_modelo_equipo = request.form['nombre_modelo_equipo']
         id_tipo_equipo = request.form['nombre_tipo_equipo']
+        print("add")
         print(id_tipo_equipo)
+        print(nombre_modelo_equipo)
         try:
             cur = mysql.connection.cursor()
             cur.execute(

@@ -274,9 +274,13 @@ function enviarTipo(valor) {
   console.log(valor)
   select = document.getElementById(valor)
   tipo_equipo_value = select.value
+  console.log("select")
+  console.log(select)
   console.log(select.value)
   output_tipo_equipo = document.getElementById('nombre_tipo_equipo')
   output_tipo_equipo.value = select.value
+  console.log("tipo_equipo")
+  console.log(output_tipo_equipo)
 
 }
 function abrir_cerrar_ojo(id_ojo, repetir) {

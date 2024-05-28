@@ -1,3 +1,4 @@
+from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session
 from db import mysql
 from fpdf import FPDF
@@ -8,6 +9,12 @@ from werkzeug.utils import secure_filename
 from datetime import date
 from cuentas import loguear_requerido, administrador_requerido
 from traslado import crear_traslado_generico
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+import fitz
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -227,7 +234,7 @@ def create_asignacion():
         rut=request.form['rut']
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
         # Obtener la lista de equipos asignados desde el formulario
-        realizar_traslado = request.form['realizar_traslado']
+        realizar_traslado = request.form.get('realizar_traslado')
         equipos = request.form.getlist('asignaciones[]')
         return creacionAsignacion(fechaasignacion, observacion, rut, equipos, realizar_traslado)
 
@@ -286,7 +293,8 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
                     INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
                     INNER JOIN tipo_equipo te on me.idTipo_equipo = te.idTipo_equipo
                     INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
-                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = te.idMarca_equipo
+                    INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
                     WHERE equipo.idEquipo = %s
                     """, (equipo_id,))
         equipoTupla = cur.fetchone()
@@ -314,7 +322,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
     Asignacion = cur.fetchone()
 
 
-    crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
+    pdf_asignacion = crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
     if(realizar_traslado and Funcionario['idUnidad'] == 1):
         #TODO: que hacer si multiples equipos vienen de distintas direcciones
 
@@ -469,8 +477,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
+    enviar_correo(nombrePdf, 'correo')
     shutil.move(nombrePdf, "app/pdf")
-    return redirect(url_for("asignacion.Asignacion"))
+    return nombrePdf
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
 @loguear_requerido
@@ -533,7 +542,8 @@ def devolver(id):
         INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
         INNER JOIN unidad u ON e.idUnidad = u.idUnidad
         INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
-        INNER JOIN marca_equipo mae on mae.idMarca_equipo = te.idMarca_equipo
+        INNER JOIN marca_tipo_equipo mte ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
         WHERE e.idEquipo = %s
                     """, (str(equipo_asignacion['idEquipo']),))
         equipo = cur.fetchone()
@@ -907,3 +917,99 @@ def adjuntar_pdf_devolucion(idAsignacion):
 
 #junji
 #Tijunji2017
+#def enviar_asignacion(Asignacion):
+    #asunto = 'Nueva Asignacion'
+    #cuerpo = """
+    #<html>
+        #<body>
+        #<p>pretender que este correo se envia a </p>
+        #<table>
+            #<thead>
+                #<tr>
+                    #<th>N°</th>
+                    #<th>Tipo Equipo</th>
+                    #<th>Marca</th>
+                    #<th>Modelo</th>
+                    #<th>N° Serie</th>
+                    #<th>N° Inventario</th>
+                #</tr>
+            #</thead>
+            #<tbody>
+                #<tr>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                #</tr>
+            #</tbody>
+        #</table>
+        #</body>
+    #</html>
+    #""".format(1, Asignacion[''])
+    #enviar_correo(asunto, 'correo', cuerpo, 'filename')
+    #pass
+
+def enviar_correo(filename, correo):
+    #correo = "cacastilloc@junji.cl"
+    print("enviar_correo")
+    remitente = 'martin.castro@junji.cl'
+    destinatario = 'martin.castro@junji.cl'
+    asunto = 'Se le han asignado los siguientes equipos'
+    cuerpo = """
+
+            """.format(correo)
+    username = 'martin.castro@junji.cl'
+    password = 'junji.2024'
+
+    mensaje = MIMEMultipart()
+
+    mensaje['From'] = remitente
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = asunto
+
+    with open(filename, "rb") as pdf_file:
+        pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
+    pdf.add_header('Content-Disposition', 'attachment', filename=filename)
+    mensaje.attach(pdf)
+
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
+
+    texto = mensaje.as_string()
+    server_smtp1 = 'smtp.office365.com'
+    server_smtp2 = 'smtp-mail.outlook.com'
+    server = smtplib.SMTP('smtp.office365.com', port=587)
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(remitente, destinatario, texto)
+    server.quit()
+
+#def enviar_correo(asunto, correo, cuerpo, filename):
+    ##correo = "cacastilloc@junji.cl"
+    #print("enviar_correo")
+    #remitente = 'martin.castro@junji.cl'
+    #destinatario = 'mauricio.cardenas@junji.cl'
+    #username = 'martin.castro@junji.cl'
+    #password = 'junji.2024'
+
+    #mensaje = MIMEMultipart()
+
+    #mensaje['From'] = remitente
+    #mensaje['To'] = destinatario
+    #mensaje['Subject'] = asunto
+
+    #mensaje.attach(MIMEText(cuerpo, 'html'))
+
+    #texto = mensaje.as_string()
+    #server_smtp1 = 'smtp.office365.com'
+    #server_smtp2 = 'smtp-mail.outlook.com'
+    #server = smtplib.SMTP('smtp.office365.com', port=587)
+    #server.starttls()
+    #server.login(username, password)
+    ##print("before send mail")
+    ##print(destinatario + "__")
+    #server.sendmail(remitente, destinatario, texto)
+    ##print("after send mail")
+    #server.quit()

@@ -96,8 +96,8 @@ def add_equipo():
         mac = request.form["mac"]
         imei = request.form["imei"]
         numero = request.form["numero"]
-        nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
-        nombre_estado_equipo = request.form["nombre_estado_equipo"]
+        #nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
+        #nombre_estado_equipo = request.form["nombre_estado_equipo"]
         codigo_Unidad = request.form["codigo_Unidad"]
         nombre_orden_compra = request.form["nombre_orden_compra"]
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
@@ -137,7 +137,7 @@ def add_equipo():
                     mac,
                     imei,
                     numero,
-                    nombre_estado_equipo,
+                    3,
                     codigo_Unidad,
                     nombre_orden_compra,
                     nombre_modelo_equipo,

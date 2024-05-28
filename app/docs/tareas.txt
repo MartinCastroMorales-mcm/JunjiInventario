@@ -246,3 +246,4 @@ OK esconder contraseña crear usuario y ingresar
 OK agregar ojo para ver contraseña
 ocultar botones a usuario normal porque usuario solo puede ver
 enviar correo en momento de asignar y devolver lo dejo con mauricio.cardenas@junji.cl
+filtro de marca_equipo en agregar equipo
