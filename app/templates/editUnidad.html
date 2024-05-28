@@ -27,9 +27,11 @@
         <label>Modalidad: </label>
         <select class="form-select" aria-label="nombreModalidad" 
           name="idModalidad">
-          <option selected>Elija la Modalidad</option>
+          <option value="Unidad.idUnidad">{{Unidad.nombreModalidad}}</option>
           {% for modalidad in Modalidades %}
+          {% if modalidad.idModalidad != Unidad.idModalidad %}
           <option value="{{ modalidad.idModalidad }}">{{ modalidad.nombreModalidad }}</option>
+          {% endif %}
           {% endfor %}
         </select>
         <button type="submit" class="agregar-button"> Guardar</button>

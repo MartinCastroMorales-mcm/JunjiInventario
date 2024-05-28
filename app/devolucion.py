@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 devolucion = Blueprint('devolucion', __name__, template_folder='app/templates')
 
@@ -21,7 +21,7 @@ def Devolucion(page = 1):
     LIMIT {} OFFSET {}
     """.format(perpage, offset))
     data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM DEVOLUCION')
+    cur.execute('SELECT COUNT(*) FROM devolucion')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     cur.execute('SELECT rutFuncionario FROM funcionario')
@@ -52,7 +52,7 @@ def add_estado_equipo():
     
 #enviar datos a vista editar
 @devolucion.route('/edit_devolucion/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_devolucion(id):
     try:
         cur = mysql.connection.cursor()
@@ -71,7 +71,7 @@ def edit_devolucion(id):
 
 #actualizar
 @devolucion.route('/update_devolucion/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_devolucion(id):
     if request.method == 'POST':
         fechaDevolucion = request.form['fechaDevolucion']
@@ -103,7 +103,7 @@ def update_devolucion(id):
 
 #eliminar    
 @devolucion.route('/delete_devolucion/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_devolucion(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -119,6 +119,6 @@ def delete_devolucion(id):
         return redirect(url_for('devolucion.Devolucion'))
 
 @devolucion.route("/test1")
-@administrador_requierido
+@administrador_requerido
 def crear_pdf():
     return redirect(url_for("asignacion.Asignacion"))

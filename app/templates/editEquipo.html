@@ -38,15 +38,6 @@
                     <input type="text" name="numero" value="{{equipo.numerotelefonicoEquipo}}">
                      </div>
             <div class="form-group">
-            <label for="nombre_tipo_equipo">Tipo equipo: </label>
-            <select name="nombre_tipo_equipo">
-                {% for tipoe in tipo_equipo %}
-                    <option value="{{ tipoe.idTipo_equipo }}" {% if tipoe.idTipo_equipo == equipo.idTipo_equipo %}selected{% endif %}>{{ tipoe.nombreidTipoequipo }}</option>
-                {% endfor %}
-            </select>
-            </div>
-
-            <div class="form-group">
              <label for="nombre_estado_equipo">Estado equipo: </label>
             <select name="nombre_estado_equipo">
                 {% for estadoe in estado_equipo %}

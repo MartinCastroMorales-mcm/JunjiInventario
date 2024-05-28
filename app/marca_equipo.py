@@ -1,7 +1,7 @@
 from flask import Blueprint, request, flash, render_template, redirect, url_for, g, session
 from db import mysql
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 
 marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templates')
 
@@ -36,7 +36,7 @@ def marcaEquipo(page=1):
 
 #agregar
 @marca_equipo.route('/add_marca_equipo', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_marca_equipo():
     if "user" not in session:
         flash("you are NOT authorized")
@@ -55,7 +55,7 @@ def add_marca_equipo():
         
 #enviar datos a vista editar
 @marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def edit_marca_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -71,7 +71,7 @@ def edit_marca_equipo(id):
 
 #actualizar
 @marca_equipo.route('/update_marca_equipo/<id>', methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def update_marca_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -94,7 +94,7 @@ def update_marca_equipo(id):
 
 #eliminar    
 @marca_equipo.route('/marca_equipo/delete_marca_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requierido
+@administrador_requerido
 def delete_marca_equipo(id):
     if "user" not in session:
         flash("you are NOT authorized")

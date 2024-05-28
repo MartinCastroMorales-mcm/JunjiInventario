@@ -18,13 +18,17 @@
                 <textarea id="observacion" name="observacion" rows="4" cols="50"></textarea>
             </div>
             <br>
-            <label>Funcionario</label>
-            <select name="rut" id="">
-                <option value="">Seleccione el funcionario</option>
-                {% for f in funcionarios %}
-                <option value="{{ f.rutFuncionario }}">{{f.nombreFuncionario}}</option>
-                {% endfor %}
-            </select>
+            <div>
+                <label>Funcionario</label>
+                <select name="rut" id="">
+                    <option value="">Seleccione el funcionario</option>
+                    {% for f in funcionarios %}
+                    <option value="{{ f.rutFuncionario }}">{{f.nombreFuncionario}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <label for="realizar_traslado">¿Realizar el traslado?</label>
+            <input type="checkbox" name="realizar_traslado" id="realizar_traslado" />
             <button class="agregar-button" type="submit"> Agregar</button>
         </div>
 </div>
@@ -62,11 +66,9 @@
                     <td>
                         Asignar:
                         {% if equipoSeleccionado == eq.idEquipo %}
-                        <input type="checkbox" value="{{eq.idEquipo}}" 
-                        name="asignaciones[]" checked="true"/>
+                        <input type="checkbox" value="{{eq.idEquipo}}" name="asignaciones[]" checked="true" />
                         {% else %}
-                        <input type="checkbox" value="{{eq.idEquipo}}" 
-                        name="asignaciones[]"/>
+                        <input type="checkbox" value="{{eq.idEquipo}}"  name="asignaciones[]"/>
                         {% endif %}
                     </td>
                 </tr>

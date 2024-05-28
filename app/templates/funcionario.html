@@ -33,6 +33,9 @@
                     <label for="nombre_funcionario">Nombre Funcionario: </label>
                     <input type="text" name="nombre_funcionario" placeholder="Nombre funcionario">
                     <br>
+                    <label for="correo_funcionario">Correo Funcionario: </label>
+                    <input type="text" name="correo_funcionario" placeholder="Correo funcionario">
+                    <br>
                     <label for="cargo_funcionario"> Cargo: </label>
                     <input type="text" name="cargo_funcionario" placeholder="Cargo">
                     <br>
@@ -56,6 +59,7 @@
                     <td onclick="sortTable(1)">Nombre funcionario</td>
                     <td onclick="sortTable(2)">Cargo</td>
                     <td onclick="sortTable(3)">Cod. Unidad</td>
+                    <td onclick="sortTable(4)">Correo</td>
                     <td>Operations</td>
                 </tr>
             </thead>
@@ -67,6 +71,7 @@
                     <td>{{fun.nombreFuncionario}}</td>
                     <td>{{fun.cargoFuncionario}}</td>
                     <td>{{fun.nombreUnidad}}</td>
+                    <td>{{fun.correoFuncionario}}</td>
                     <td>
                         <a href="/edit_funcionario/{{fun.rutFuncionario}}" class="success-button">Editar</a>
                         <a href="/delete_funcionario/{{fun.rutFuncionario}}" class="delete-button">Eliminar</a>

@@ -4,7 +4,7 @@ from fpdf import FPDF
 from funciones import getPerPage
 import os
 import shutil 
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
@@ -53,7 +53,7 @@ def Traslado(page = 1):
 
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])
-@administrador_requierido
+@administrador_requerido
 def add_traslado():
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -95,7 +95,7 @@ def add_traslado():
             return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/edit_traslado/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def edit_traslado(id):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -119,14 +119,15 @@ def edit_traslado(id):
             SELECT * 
             FROM unidad u
             ORDER BY u.nombreUnidad
-                    """
-        )
+            """
+    )
         unidades = cur.fetchall()
         cur.execute(
             """
             SELECT * 
             FROM equipo e
-            INNER JOIN tipo_equipo te on te.idTipo_equipo = e.idTipo_equipo
+            INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
+            INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
             ORDER BY e.idEquipo
                     """
         )
@@ -138,7 +139,7 @@ def edit_traslado(id):
         return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/delete_traslado/<id>", methods = ["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def delete_traslado(id):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -178,7 +179,7 @@ def delete_traslado(id):
         return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/create_traslado/<origen>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def create_traslado(origen):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
@@ -187,10 +188,14 @@ def create_traslado(origen):
         fechatraslado = request.form['fechatraslado']
         #rutadocumento = request.form['']
         Destino = request.form['Destino']
-        Origen = origen
         #trasladar[] es la notacion para obtener un array con todos los outputs de las checklist
         equipos = request.form.getlist('trasladar[]')
+        crear_traslado_generico(fechatraslado, Destino, origen, equipos)
 
+        return redirect(url_for('traslado.Traslado'))
+    return redirect(url_for('traslado.Traslado'))
+
+def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
         #Añadir fila a traslado
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -231,7 +236,7 @@ def create_traslado(origen):
                         INNER JOIN tipo_equipo te on me.idTipo_equipo = me.idTipo_equipo
                         INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_equipo
                         WHERE e.idEquipo = %s
-                        """, (idEquipo))
+                        """, (idEquipo,))
             equipoTupla = cur.fetchone()
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
 
@@ -257,11 +262,7 @@ def create_traslado(origen):
         UnidadDestino = cur.fetchone()
 
         flash("traslado agregado correctamente")
-
-
         create_pdf(traslado, TuplaEquipos, UnidadOrigen, UnidadDestino)
-        return redirect(url_for('traslado.Traslado'))
-    return redirect(url_for('traslado.Traslado'))
 
 
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
@@ -498,7 +499,7 @@ def listar_pdf(idTraslado):
         nombreFirmado=nombreFirmado, id=idTraslado, location="traslado")
 
 @traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_firmado(idTraslado):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")

@@ -1,3 +1,4 @@
+from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session
 from db import mysql
 from fpdf import FPDF
@@ -6,7 +7,14 @@ import os
 import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
+from traslado import crear_traslado_generico
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+import fitz
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -33,7 +41,7 @@ def Asignacion(page=1):
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
-    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     LIMIT {} OFFSET {}
         """.format(perpage, offset)
     )
@@ -55,7 +63,7 @@ def Asignacion(page=1):
 
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
-@administrador_requierido
+@administrador_requerido
 def add_asignacion(idEquipo = "None"):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -77,7 +85,7 @@ def add_asignacion(idEquipo = "None"):
                 SELECT * 
                 FROM equipo e
                 INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
+                INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
                 INNER JOIN unidad u ON e.idUnidad = u.idUnidad
                 INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
                 WHERE ee.nombreEstado_equipo = %s
@@ -90,7 +98,7 @@ def add_asignacion(idEquipo = "None"):
 
 # enviar datos a vista editar
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def edit_asignacion(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -109,8 +117,8 @@ def edit_asignacion(id):
                 f.nombreFuncionario,
                 d.fechaDevolucion
                 FROM asignacion a
-                INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
-                LEFT JOIN Devolucion d ON a.idDevolucion = d.idDevolucion
+                INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+                LEFT JOIN devolucion d ON a.idDevolucion = d.idDevolucion
             WHERE idAsignacion = %s""",
             (id,),
         )
@@ -133,7 +141,7 @@ def edit_asignacion(id):
 
 # actualizar
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_asignacion(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -142,8 +150,6 @@ def update_asignacion(id):
         #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
         observacionasignacion = request.form["observacionasignacion"]
-        rutaactaasignacion = request.form["rutaactaasignacion"]
-        ActivoAsignacion = request.form["Activoasignacion"]
         rutFuncionario = request.form["rutFuncionario"]
         try:
             cur = mysql.connection.cursor()
@@ -151,17 +157,13 @@ def update_asignacion(id):
                 """
             UPDATE asignacion
             SET fecha_inicioAsignacion = %s,
-                ObservacionAsignacion = %s
-                rutaactaAsignacion = %s,
-                ActivoAsignacion = %s,
+                ObservacionAsignacion = %s,
                 rutFuncionario = %s
             WHERE idAsignacion = %s
             """,
                 (
                     fechaasignacion,
                     observacionasignacion,
-                    rutaactaasignacion,
-                    ActivoAsignacion,
                     rutFuncionario,
                     id,
                 ),
@@ -176,7 +178,7 @@ def update_asignacion(id):
 
 # eliminar
 @asignacion.route("/delete_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requierido
+@administrador_requerido
 def delete_asignacion(id):
     try:
         cur = mysql.connection.cursor()
@@ -221,11 +223,8 @@ def delete_asignacion(id):
 
 #Este metodo extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def create_asignacion():
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
         # Extraer datos del formulario
         fechaasignacion = request.form['fechaasignacion']
@@ -235,21 +234,18 @@ def create_asignacion():
         rut=request.form['rut']
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
         # Obtener la lista de equipos asignados desde el formulario
+        realizar_traslado = request.form.get('realizar_traslado')
         equipos = request.form.getlist('asignaciones[]')
-        return creacionAsignacion(fechaasignacion, observacion, rut, equipos)
+        return creacionAsignacion(fechaasignacion, observacion, rut, equipos, realizar_traslado)
 
 
 #Este metodo es el que crea la asignacion
-@administrador_requierido
-def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-
+@administrador_requerido
+def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_traslado):
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
-        INSERT INTO ASIGNACION (
+        INSERT INTO asignacion (
             fecha_inicioAsignacion,
             ObservacionAsignacion,
             rutaactaAsignacion, 
@@ -290,13 +286,15 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
         mysql.connection.commit()
             
         #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
+
         cur.execute("""
                     SELECT *
                     FROM equipo
-                    INNER JOIN tipo_equipo te on equipo.idTipo_equipo = te.idTipo_equipo
-                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
                     INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
-                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
+                    INNER JOIN tipo_equipo te on me.idTipo_equipo = te.idTipo_equipo
+                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
+                    INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
                     WHERE equipo.idEquipo = %s
                     """, (equipo_id,))
         equipoTupla = cur.fetchone()
@@ -312,7 +310,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
     Funcionario = cur.fetchone()
     cur.execute("""
                 SELECT *
-                FROM Unidad u
+                FROM unidad u
                 WHERE u.idUnidad = %s
                 """, (Funcionario['idUnidad'],))
     Unidad = cur.fetchone()
@@ -324,7 +322,19 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos):
     Asignacion = cur.fetchone()
 
 
-    crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
+    pdf_asignacion = crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
+    if(realizar_traslado and Funcionario['idUnidad'] == 1):
+        #TODO: que hacer si multiples equipos vienen de distintas direcciones
+
+        #mover desde su posicion actual a la posicion del funcionario
+        #primero revisar si las posiciones son iguales.
+
+        
+        #si son distintas redirigir al metodo de crear traslado con
+        #la informacion de la asignacion
+
+        crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
+                                ,Unidad['idUnidad'], equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
@@ -334,7 +344,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     class PDF(FPDF):
         def header(self):
             #imagen del encabezado
-            self.image("logo_junji.png", 10, 8, 25)
+            self.image("logo_junji.jpg", 10, 8, 25)
             # font
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
@@ -404,8 +414,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     )
     i = 0
     for equipo in Equipos:
+        print(equipo)
         id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreidTipoequipo"]
+        tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
         modelo = equipo["nombreModeloequipo"]
         num_serie = str(equipo["Num_serieEquipo"])
@@ -425,7 +436,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:"
+    nombreEncargado = "Nombre Encargado TI:" + session['user']
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -466,8 +477,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
+    enviar_correo(nombrePdf, 'correo')
     shutil.move(nombrePdf, "app/pdf")
-    return redirect(url_for("asignacion.Asignacion"))
+    return nombrePdf
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
 @loguear_requerido
@@ -482,7 +494,7 @@ def mostrar_pdf(id):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver/<id>")
-@administrador_requierido
+@administrador_requerido
 def devolver(id):
     today = date.today()
     cur = mysql.connection.cursor()
@@ -509,7 +521,7 @@ def devolver(id):
     Funcionario = cur.fetchone()
     cur.execute("""
     SELECT *
-    FROM Unidad u
+    FROM unidad u
     WHERE u.idUnidad = %s
                 """, (str(Funcionario['idUnidad']),))
     Unidad = cur.fetchone()
@@ -527,10 +539,11 @@ def devolver(id):
         SELECT * 
         FROM equipo e
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-        INNER JOIN Tipo_Equipo te ON e.idTipo_Equipo = te.idTipo_equipo
+        INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
         INNER JOIN unidad u ON e.idUnidad = u.idUnidad
         INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
-        INNER JOIN marca_equipo mae on mae.idMarca_equipo = me.idMarca_equipo
+        INNER JOIN marca_tipo_equipo mte ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
         WHERE e.idEquipo = %s
                     """, (str(equipo_asignacion['idEquipo']),))
         equipo = cur.fetchone()
@@ -565,7 +578,7 @@ def crear_pdf_devolucion(
             #logo
             #imageUrl = url_for('static', filename='img/logo_junji.png')
             #print(imageUrl)
-            self.image('logo_junji.png', 10, 8, 25)
+            self.image('logo_junji.jpg', 10, 8, 25)
             #font
             self.set_font('times', 'B', 12)
             self.set_text_color(170,170,170)
@@ -627,7 +640,7 @@ def crear_pdf_devolucion(
     i = 0
     for equipo in Equipos:
         id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreidTipoequipo"]
+        tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
         modelo = equipo["nombreModeloequipo"]
         num_serie = str(equipo["Num_serieEquipo"])
@@ -647,7 +660,7 @@ def crear_pdf_devolucion(
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:"
+    nombreEncargado = "Nombre Encargado TI:" + session['user']
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -740,7 +753,7 @@ def buscar(idAsignacion):
     )
 
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
-@administrador_requierido
+@administrador_requerido
 def devolver_uno(id_equipo):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -854,7 +867,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_pdf_asignacion(idAsignacion):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -879,7 +892,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_pdf_devolucion(idAsignacion):
     #TODO: revisar que sea pdf
     #si existe eliminar
@@ -901,3 +914,102 @@ def adjuntar_pdf_devolucion(idAsignacion):
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion) + 
                     "/devolver")
 #/asignacion/listar_pdf/<idAsignacion>/<devolver>
+
+#junji
+#Tijunji2017
+#def enviar_asignacion(Asignacion):
+    #asunto = 'Nueva Asignacion'
+    #cuerpo = """
+    #<html>
+        #<body>
+        #<p>pretender que este correo se envia a </p>
+        #<table>
+            #<thead>
+                #<tr>
+                    #<th>N°</th>
+                    #<th>Tipo Equipo</th>
+                    #<th>Marca</th>
+                    #<th>Modelo</th>
+                    #<th>N° Serie</th>
+                    #<th>N° Inventario</th>
+                #</tr>
+            #</thead>
+            #<tbody>
+                #<tr>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                    #<td>{}</td>
+                #</tr>
+            #</tbody>
+        #</table>
+        #</body>
+    #</html>
+    #""".format(1, Asignacion[''])
+    #enviar_correo(asunto, 'correo', cuerpo, 'filename')
+    #pass
+
+def enviar_correo(filename, correo):
+    #correo = "cacastilloc@junji.cl"
+    print("enviar_correo")
+    remitente = 'martin.castro@junji.cl'
+    destinatario = 'martin.castro@junji.cl'
+    asunto = 'Se le han asignado los siguientes equipos'
+    cuerpo = """
+
+            """.format(correo)
+    username = 'martin.castro@junji.cl'
+    password = 'junji.2024'
+
+    mensaje = MIMEMultipart()
+
+    mensaje['From'] = remitente
+    mensaje['To'] = destinatario
+    mensaje['Subject'] = asunto
+
+    with open(filename, "rb") as pdf_file:
+        pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
+    pdf.add_header('Content-Disposition', 'attachment', filename=filename)
+    mensaje.attach(pdf)
+
+    mensaje.attach(MIMEText(cuerpo, 'plain'))
+
+    texto = mensaje.as_string()
+    server_smtp1 = 'smtp.office365.com'
+    server_smtp2 = 'smtp-mail.outlook.com'
+    server = smtplib.SMTP('smtp.office365.com', port=587)
+    server.starttls()
+    server.login(username, password)
+    server.sendmail(remitente, destinatario, texto)
+    server.quit()
+
+#def enviar_correo(asunto, correo, cuerpo, filename):
+    ##correo = "cacastilloc@junji.cl"
+    #print("enviar_correo")
+    #remitente = 'martin.castro@junji.cl'
+    #destinatario = 'mauricio.cardenas@junji.cl'
+    #username = 'martin.castro@junji.cl'
+    #password = 'junji.2024'
+
+    #mensaje = MIMEMultipart()
+
+    #mensaje['From'] = remitente
+    #mensaje['To'] = destinatario
+    #mensaje['Subject'] = asunto
+
+    #mensaje.attach(MIMEText(cuerpo, 'html'))
+
+    #texto = mensaje.as_string()
+    #server_smtp1 = 'smtp.office365.com'
+    #server_smtp2 = 'smtp-mail.outlook.com'
+    #server = smtplib.SMTP('smtp.office365.com', port=587)
+    #server.starttls()
+    #server.login(username, password)
+    ##print("before send mail")
+    ##print(destinatario + "__")
+    #server.sendmail(remitente, destinatario, texto)
+    ##print("after send mail")
+    #server.quit()

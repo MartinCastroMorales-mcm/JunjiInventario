@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash,
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requierido
+from cuentas import loguear_requerido, administrador_requerido
 import os
 import shutil 
 from werkzeug.utils import secure_filename
@@ -42,7 +42,7 @@ def Incidencia(page = 1):
 
 #form que se accede desde equipo para crear incidencia
 @incidencia.route("/incidencia/form/<idEquipo>")
-@administrador_requierido
+@administrador_requerido
 def incidencia_form(idEquipo):
     cur = mysql.connection.cursor()
     cur.execute("""
@@ -55,7 +55,7 @@ def incidencia_form(idEquipo):
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
-@administrador_requierido
+@administrador_requerido
 def add_incidencia():
     if "user" not in session:
         flash("you are NOT authorized")
@@ -89,7 +89,7 @@ def add_incidencia():
     return redirect("/incidencia/listar_pdf/" + idEquipo)
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
-@administrador_requierido
+@administrador_requerido
 def delete_incidencia(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -101,7 +101,7 @@ def delete_incidencia(id):
     return redirect(url_for("incidencia.Incidencia"))
 
 @incidencia.route("/incidencia/edit_incidencia/<id>", methods=["GET", "POST"])
-@administrador_requierido
+@administrador_requerido
 def edit_incidencia(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -117,7 +117,7 @@ def edit_incidencia(id):
 
      
 @incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def update_incidencia(id):
    if "user" not in session:
         flash("you are NOT authorized")
@@ -146,7 +146,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @incidencia.route("/incidencia/adjuntar_pdf/<id>", methods=["POST"])
-@administrador_requierido
+@administrador_requerido
 def adjuntar_pdf(id):
     if "user" not in session:
         flash("you are NOT authorized")
@@ -303,15 +303,15 @@ def buscar(idIncidencia):
         """
                 SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
                     i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreidTipoequipo, 
+                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreTipo_Equipo, 
                     me.nombreModeloEquipo,
                     i.numDocumentos, e.idEquipo
                 FROM incidencia i 
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
-                INNER JOIN tipo_equipo te on e.idTipo_Equipo = te.idTipo_Equipo
                 INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
+                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.idTipo_Equipo
                 WHERE i.idIncidencia = %s
-        """, (idIncidencia)
+        """, (idIncidencia,)
     )
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM incidencia')

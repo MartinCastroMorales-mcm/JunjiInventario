@@ -78,3 +78,51 @@
 </div>
 
 {% endmacro %}
+
+{# macro para select de tipos de equipo en base a su asociacion con una marca #}
+
+{% macro select_para_marca(marcas) %}
+<div id="{{marcas.idMarca_Equipo}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">Tipo Equipo: </label>
+    {{lista_tipos_asociados_marca}}
+    {%for tipo in lista_tipos_asociados_marca%}
+    {{tipo}}
+    {% endfor%}
+    <select id="s_{{marcas.idMarca_Equipo}}" name="" onchange="enviarTipo('s_{{marcas.idMarca_Equipo}}')">
+        <option value="">Seleccione el Tipo del Equipo</option>
+        {% for tipo in marcas.tipo_equipo %}
+        <option value="{{ tipo.idTipo_equipo }}">
+            {{tipo.nombreTipo_equipo}}
+        </option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+
+{% endmacro %}
+
+
+{# macro para select abstracto (abandonado)#}
+{#
+{% macro select_abstracto(lista_opciones, id_select, label_text, option_text) %}
+<div id="{{id_select}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">{{label_text}}: </label>
+    <select name="nombre_modelo_equipo">
+        <option value="">{{option_text}}</option>
+        {% for lista_opciones in lista_opciones %}
+        <option value="{{ modelo.idModelo_Equipo }}">
+            {{modelo.nombreModeloequipo}}</option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+
+{% endmacro %}
+
+
+
+
+
+#}
+
+
