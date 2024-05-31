@@ -84,11 +84,12 @@ Select para modelos que tiene en cuenta su relacion con la marca
 y el tipo
 #}
 {% macro select_modelo(tupla_modelos, id_tipo) %}
-<label for="nombre_modelo">Modelo Equipo *</label>
-<select name="nombre_modelo">
+<label for="idModelo_equipo">Modelo Equipo *</label>
+<select id="s_{{idModelo_equipo}}" name="idModelo_equipo" onchange="enviarModelo('s_{{idModelo_equipo}}')">
     <option value="">Selecciones Modelo Equipo</option>
     {% for modelo in tupla_modelos %}
-    <option id="{{modelo.idMarca_Equipo}}" value="{{modelo.idModelo_Equipo}}">
+    <option 
+        id="{{modelo.idModelo_Equipo}}" value="{{modelo.idModelo_Equipo}}">
         {{modelo.nombreModeloequipo}}
     </option>
     {% endfor %}
@@ -98,7 +99,7 @@ y el tipo
 
 {% macro select_tipo(tupla_tipos_equipo, id_marca) %}
 <label for="nombre_modelo">Tipo Equipo *</label>
-<select id="select_tipo_marca:{{id_marca}}" name="nombre_modelo" 
+<select id="select_tipo_marca:{{id_marca}}" name="" 
         onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}')">
 
     <option value="">Seleccione Tipo Equipo</option>

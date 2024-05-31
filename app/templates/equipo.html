@@ -57,17 +57,23 @@
                             siguiente solo se muestra si la marca elegida es la que este 
                             asociada a el tipo y modelo de la iteracion correspondiente
                         #}
-                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca">
+                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca"
+                            style="display:none">
                             {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
                             {% for tipo in marca.tipo_equipo%}
                             {#{tipo.nombreTipo_equipo}#}
-                           <div id="{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo">
+                           <div id="{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo"
+                                style="display: none;">
                                 {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'])}}
                             </div>
                             {% endfor %}
                         </div>
                         {% endfor %}
                     </div>
+
+                    <select style="display: none;" name="modelo_equipo" id="modelo_para_equipo">
+                        <option>asdf</option>
+                    </select>
                     {# select test #}
                     <label for="codigo_Unidad">Unidad: *</label>
                     <select name="codigo_Unidad">

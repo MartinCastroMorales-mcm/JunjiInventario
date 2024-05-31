@@ -154,7 +154,10 @@ def add_equipo():
         #nombre_estado_equipo = request.form["nombre_estado_equipo"]
         codigo_Unidad = request.form["codigo_Unidad"]
         nombre_orden_compra = request.form["nombre_orden_compra"]
-        nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
+        idModelo_equipo = request.form["idModelo_equipo"]
+        print("idModelo_equipo")
+        print(idModelo_equipo)
+        #TODO: Muchos select tienen el mismo nombre y esto provoca un error
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -194,7 +197,7 @@ def add_equipo():
                     3,
                     codigo_Unidad,
                     nombre_orden_compra,
-                    nombre_modelo_equipo,
+                    idModelo_equipo,
                 ),
             )
             mysql.connection.commit()
