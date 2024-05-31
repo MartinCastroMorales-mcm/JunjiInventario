@@ -198,7 +198,8 @@ tipos_num_telefono = {
   "Celular": true,
   "Telefono": true
 }
-function mostrarSelectModelo() {
+function mostrarSelectModelo(id_select_tipo_equipo) {
+  /*
   console.log("mostrar")
   //obtener la id del tipo
   tipo = document.getElementById("nombre_tipo_equipo").value
@@ -218,9 +219,29 @@ function mostrarSelectModelo() {
 
     }
   }
+  */
+  console.log("select_tipo")
+  select_tipo = document.getElementById(id_select_tipo_equipo)
+  console.log(select_tipo)
+  //get all divs with class select_tipo_modelo_rel_marca
+  divs_select_de_tipo = document.querySelectorAll('.select_modelo_rel_tipo')
+  console.log('divs_select_de_tipo')
+  console.log(divs_select_de_tipo)
+  //no puede ser un for in porque divs_select_de_tipo es un diccionario y 
+  //devolveria las llaves no los valores
+  for(let i = 0; i < divs_select_de_tipo.length; i++) {
+    div = divs_select_de_tipo[i]
+    console.log(div.id)
+    console.log(select_tipo.value)
+    if(div.id === select_tipo.value) {
+      div.style.display = "block"
+    }else {
+      div.style.display = "none"
+    }
+  }
 
+  tipo = document.getElementById("select_tipo_marca:" + id_select_tipo_equipo)
   //esconder mac
-  tipo = document.getElementById("nombre_tipo_equipo").value
   mac_div = document.getElementById("Mac")
   if(tipos_mac[tipo]) {
     mac_div.style.display = "block"
@@ -247,6 +268,25 @@ function mostrarSelectModelo() {
 }
 
 function mostrarTipo_equipo() {
+  //console.log("select_marca")
+  select_marca = document.getElementById('marca')
+  console.log(select_marca.value)
+  //get all divs with class select_tipo_modelo_rel_marca
+  divs_select_de_marca = document.querySelectorAll('.select_tipo_modelo_rel_marca')
+  //console.log('divs_select_de_marca')
+  //console.log(divs_select_de_marca)
+  for(let i = 0; i < divs_select_de_marca.length; i++) {
+    div = divs_select_de_marca[i]
+    //console.log(div)
+    if(div.id === select_marca.value) {
+      div.style.display = "block"
+    }else {
+      div.style.display = "none"
+    }
+  }
+
+
+  /*
   select = document.getElementById("marca_equipo")
   idMarca = select.value;
   console.log("mostarTipo_equipo" + idMarca)
@@ -267,6 +307,7 @@ function mostrarTipo_equipo() {
 
   boton = document.getElementById("enviar")
   boton.style.display = "block"
+  */
 }
 //Envia el tipo a 
 function enviarTipo(valor) {
@@ -301,17 +342,17 @@ function abrir_cerrar_ojo(id_ojo, repetir) {
     console.log("if")
     ojo_contrasenna.src = "../static/img/hidden.png"
     if(repetir) {
-      input = document.getElementById('contrasenna_repetir').type = 'text'
+      input = document.getElementById('contrasenna_repetir').type = 'password'
     }else {
-      input = document.getElementById('contrasenna').type = 'text'
+      input = document.getElementById('contrasenna').type = 'password'
     }
   }else {
     console.log("else")
     ojo_contrasenna.src = "../static/img/eye.png"
     if(repetir) {
-      input = document.getElementById('contrasenna_repetir').type = 'password'
+      input = document.getElementById('contrasenna_repetir').type = 'text'
     }else {
-      input = document.getElementById('contrasenna').type = 'password'
+      input = document.getElementById('contrasenna').type = 'text'
     }
   }
 

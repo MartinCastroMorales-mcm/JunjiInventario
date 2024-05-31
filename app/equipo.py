@@ -72,12 +72,12 @@ def Equipo(page=1):
     #print("tipos de equipo ############")
     #print(tipoe_data)
 
-    crear_lista_modelo_tipo_marca()
+    marcas_llenadas = crear_lista_modelo_tipo_marca()
     return render_template(
         "equipo.html",
         equipo=equipos,
         tipo_equipo=tipo_equipo,
-        marcas_equipo=marcas,
+        marcas_equipo=marcas_llenadas,
         orden_compra=ordenc_data,
         Unidad=ubi_data,
         modelo_equipo=modelos_por_tipo,
@@ -131,6 +131,7 @@ def crear_lista_modelo_tipo_marca():
     marcas_llenadas = tuple(marcas_llenadas)
     print("marcas_llenadas")
     print(marcas_llenadas)
+    return marcas_llenadas
 
 
     #añadir tipos a marca

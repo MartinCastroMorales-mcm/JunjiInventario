@@ -61,9 +61,9 @@
 
 
 {#
-   Seria nesesario tener un diccionario con llaves que indiquen la id del tipo
-   por cada llave se tiene una lista de tuplas de los modelos asociados 
-    #}
+Seria nesesario tener un diccionario con llaves que indiquen la id del tipo
+por cada llave se tiene una lista de tuplas de los modelos asociados
+#}
 {% macro select(modelos_del_tipo, id_tipo) %}
 <div id="{{id_tipo}}" style="display: none;" class="select_modelo">
     <label for="nombre_modelo_equipo">Modelo de Equipo: *</label>
@@ -77,6 +77,37 @@
     <br>
 </div>
 
+{% endmacro %}
+
+{#
+Select para modelos que tiene en cuenta su relacion con la marca
+y el tipo
+#}
+{% macro select_modelo(tupla_modelos, id_tipo) %}
+<label for="nombre_modelo">Modelo Equipo *</label>
+<select name="nombre_modelo">
+    <option value="">Selecciones Modelo Equipo</option>
+    {% for modelo in tupla_modelos %}
+    <option id="{{modelo.idMarca_Equipo}}" value="{{modelo.idModelo_Equipo}}">
+        {{modelo.nombreModeloequipo}}
+    </option>
+    {% endfor %}
+</select>
+{% endmacro %}
+{# select para tipos #}
+
+{% macro select_tipo(tupla_tipos_equipo, id_marca) %}
+<label for="nombre_modelo">Tipo Equipo *</label>
+<select id="select_tipo_marca:{{id_marca}}" name="nombre_modelo" 
+        onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}')">
+
+    <option value="">Seleccione Tipo Equipo</option>
+    {% for tipo in tupla_tipos_equipo %}
+    <option id="{{tipo.idTipo_equipo}}" value="{{tipo.nombreTipo_equipo}}">
+        {{tipo.nombreTipo_equipo}}
+    </option>
+    {% endfor %}
+</select>
 {% endmacro %}
 
 {# macro para select de tipos de equipo en base a su asociacion con una marca #}
@@ -98,8 +129,8 @@
     </select>
     <br>
 </div>
-
 {% endmacro %}
+
 
 
 {# macro para select abstracto (abandonado)#}
@@ -124,5 +155,3 @@
 
 
 #}
-
-

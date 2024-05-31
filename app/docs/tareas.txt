@@ -251,3 +251,6 @@ agregar opciones para acciones por defecto(traslado, correo, etc)
 OK filtro de marca_equipo en agregar equipo
 
 Pedir el excel para importar los datos
+
+
+error en editar modelos cambiar nombre
