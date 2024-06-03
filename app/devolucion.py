@@ -18,7 +18,7 @@ def Devolucion(page = 1):
     SELECT d.idDevolucion, d.fechaDevolucion, d.observacionDevolucion, d.rutaactaDevolucion, d.ActivoDevolucion, d.rutFuncionario, f.rutFuncionario
     FROM devolucion d
     INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-    LIMIT {} OFFSET {}
+    LIMIT %s OFFSET %s
     """.format(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM devolucion')

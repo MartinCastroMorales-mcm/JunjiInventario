@@ -31,7 +31,7 @@
                     #}
                     <div>
 
-                        <label for="marca">Nombre Marca*</label>
+                        <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
                         <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
                             <option value="">Seleccione el Marca</option>
                             {% for marca in marcas_equipo %}
@@ -64,18 +64,16 @@
                             {#{tipo.nombreTipo_equipo}#}
                            <div id="{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo"
                                 style="display: none;">
-                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'])}}
+                                {#{tipo.modelo_equipo}#}
+                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
                             </div>
                             {% endfor %}
                         </div>
                         {% endfor %}
                     </div>
-
-                    <select style="display: none;" name="modelo_equipo" id="modelo_para_equipo">
-                        <option>asdf</option>
-                    </select>
+                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo"/>
                     {# select test #}
-                    <label for="codigo_Unidad">Unidad: *</label>
+                    <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
                     <select name="codigo_Unidad">
                         <option value="">Seleccione la Unidad</option>
                         {% for ubi in Unidad %}
@@ -84,7 +82,7 @@
                     </select>
                     <br>
                     <div>
-                        <label for="nombre_orden_compra">Orden de Compra: *</label>
+                        <label for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
                         <select name="nombre_orden_compra">
                             <option value="">Seleccione el Orden de Compra</option>
                             {% for ordenc in orden_compra %}

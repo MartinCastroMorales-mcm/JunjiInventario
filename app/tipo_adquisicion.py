@@ -16,7 +16,7 @@ def tipoAdquisicion(page = 1):
     perpage = getPerPage()
     offset = (page-1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM tipo_adquisicion LIMIT {} OFFSET {} '.format(perpage, offset))
+    cur.execute('SELECT * FROM tipo_adquisicion LIMIT %s OFFSET %s ',(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM equipo')
     total = cur.fetchone()

@@ -254,3 +254,6 @@ Pedir el excel para importar los datos
 
 
 error en editar modelos cambiar nombre
+
+
+error editar tipo_equipo no salen todas las marcas

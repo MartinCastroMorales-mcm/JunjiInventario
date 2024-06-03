@@ -21,8 +21,8 @@ def Funcionario(page = 1):
             f.idUnidad, u.idUnidad, u.nombreUnidad, f.correoFuncionario
     FROM funcionario f
     INNER JOIN unidad u on f.idUnidad = u.idUnidad
-    LIMIT {} OFFSET {}
-    """.format(perpage, offset))
+    LIMIT %s OFFSET %s 
+    """, (perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
@@ -46,6 +46,7 @@ def add_funcionario():
         cargo_funcionario = request.form['cargo_funcionario']
         codigo_Unidad = request.form['codigo_Unidad']
         correo_funcionario = request.form['correo_funcionario']
+
 
         if(not validarRut(rut_funcionario)):
             flash(f'Rut no es valido')

@@ -26,9 +26,9 @@ def Equipo(page=1):
     cur.execute(""" 
     SELECT *
     FROM super_equipo
-    LIMIT {} OFFSET {}
+    LIMIT %s OFFSET %s
 
-    """.format(
+    """,(
             perpage, offset
         )
     )
@@ -47,7 +47,7 @@ def Equipo(page=1):
     FROM marca_equipo
                 """)
     marcas = cur.fetchall()
-    print(marcas)
+    #print(marcas)
 
     modelos_por_tipo = {
 
@@ -56,7 +56,7 @@ def Equipo(page=1):
         query = """
         SELECT *
         FROM modelo_equipo me
-        WHERE me.idTipo_Equipo = {}
+        WHERE me.idTipo_Equipo = %s
 """.format(str(tipo['idTipo_equipo']))
         #print(query)
         cur.execute("""
@@ -66,17 +66,24 @@ def Equipo(page=1):
             """, (tipo['idTipo_equipo'],))
         modelo_tipo = cur.fetchall()
         modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
-    print("modelos por tipo")
-    print(modelos_por_tipo)
+    #print("modelos por tipo")
+    #print(modelos_por_tipo)
 
     #print("tipos de equipo ############")
     #print(tipoe_data)
+    cur.execute("""
+        SELECT *
+        FROM modelo_equipo
+                """)
+    modelo_equipo = cur.fetchall()
+    cur.close()
 
     marcas_llenadas = crear_lista_modelo_tipo_marca()
     return render_template(
         "equipo.html",
         equipo=equipos,
         tipo_equipo=tipo_equipo,
+        modelo_equipo_simple = modelo_equipo,
         marcas_equipo=marcas_llenadas,
         orden_compra=ordenc_data,
         Unidad=ubi_data,
@@ -154,10 +161,11 @@ def add_equipo():
         #nombre_estado_equipo = request.form["nombre_estado_equipo"]
         codigo_Unidad = request.form["codigo_Unidad"]
         nombre_orden_compra = request.form["nombre_orden_compra"]
-        idModelo_equipo = request.form["idModelo_equipo"]
+        idModelo_equipo = request.form["modelo_equipo"]
         print("idModelo_equipo")
         print(idModelo_equipo)
         #TODO: Muchos select tienen el mismo nombre y esto provoca un error
+        #no recuerdo si resolvi la linea anterior
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -205,7 +213,10 @@ def add_equipo():
             return redirect(url_for("equipo.Equipo"))
         except Exception as e:
             print("exception agregar equipo")
-            flash(e.args[1])
+            if(e.args[0] == 1062):
+                flash("No se puede repetir el valor de serie")
+            else:
+                flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
 
 
@@ -592,8 +603,8 @@ def equipo_detalles(idEquipo):
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    WHERE e.idEquipo = {}
-                """.format(idEquipo))
+    WHERE e.idEquipo = %s
+                """,(idEquipo))
     data_equipo = cur.fetchone()
     return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos)
 
@@ -1101,61 +1112,62 @@ def buscar_equipo(id):
         lastpage=True,
     )
 
+
 #buscar todos los equipos en base a una palabra de busqueda
-@equipo.route("/consulta_equipo", methods =["POST"])
-@equipo.route("/consulta_equipo/<page>", methods =["POST"])
-@loguear_requerido
-def consulta_equipo(page = 1):
-    palabra = request.form["palabra"]
-    if palabra == "":
-        print("error_redirect")
-    page = int(page)
-    perpage = getPerPage()
-    offset = (int(page) - 1) * perpage
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) FROM equipo")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
-    cur = mysql.connection.cursor()
-    query = f"""
-    set palabra = CONVERT('%{palabra}%' USING utf8)
-    SELECT *
-    FROM superequipo se
-    WHERE se.Cod_inventarioEquipo LIKE palabra OR
-    se.Num_serieEquipo LIKE '%{palabra}%' OR
-    se.codigoproveedor_equipo LIKE '%{palabra}%' OR
-    se.nombreidTipoequipo LIKE '%{palabra}%' OR
-    se.nombreEstado_equipo LIKE '%{palabra}%' OR
-    se.idUnidad LIKE '%{palabra}%' OR
-    se.nombreUnidad LIKE '%{palabra}%' OR
-    se.nombreOrden_compra LIKE '%{palabra}%' OR
-    se.nombreModeloequipo LIKE '%{palabra}%' OR
-    se.nombreFuncionario LIKE '%{palabra}%'
-    LIMIT {perpage} OFFSET {offset}
-    """
-    print(query)
-    cur.execute(query)
-    equipos = cur.fetchall()
+#@equipo.route("/consulta_equipo", methods =["POST"])
+#@equipo.route("/consulta_equipo/<page>", methods =["POST"])
+#@loguear_requerido
+#def consulta_equipo(page = 1):
+    #palabra = request.form["palabra"]
+    #if palabra == "":
+        #print("error_redirect")
+    #page = int(page)
+    #perpage = getPerPage()
+    #offset = (int(page) - 1) * perpage
+    #cur = mysql.connection.cursor()
+    #cur.execute("SELECT COUNT(*) FROM equipo")
+    #total = cur.fetchone()
+    #total = int(str(total).split(":")[1].split("}")[0])
+    #cur = mysql.connection.cursor()
+    #query = f"""
+    #set palabra = CONVERT('%{palabra}%' USING utf8)
+    #SELECT *
+    #FROM superequipo se
+    #WHERE se.Cod_inventarioEquipo LIKE palabra OR
+    #se.Num_serieEquipo LIKE '%{palabra}%' OR
+    #se.codigoproveedor_equipo LIKE '%{palabra}%' OR
+    #se.nombreidTipoequipo LIKE '%{palabra}%' OR
+    #se.nombreEstado_equipo LIKE '%{palabra}%' OR
+    #se.idUnidad LIKE '%{palabra}%' OR
+    #se.nombreUnidad LIKE '%{palabra}%' OR
+    #se.nombreOrden_compra LIKE '%{palabra}%' OR
+    #se.nombreModeloequipo LIKE '%{palabra}%' OR
+    #se.nombreFuncionario LIKE '%{palabra}%'
+    #LIMIT {perpage} OFFSET {offset}
+    #"""
+    #print(query)
+    #cur.execute(query)
+    #equipos = cur.fetchall()
 
-    cur.execute("SELECT * FROM tipo_equipo")
-    tipoe_data = cur.fetchall()
-    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-    estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
-    ubi_data = cur.fetchall()
-    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
-    ordenc_data = cur.fetchall()
-    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-    modeloe_data = cur.fetchall()
+    #cur.execute("SELECT * FROM tipo_equipo")
+    #tipoe_data = cur.fetchall()
+    #cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    #estadoe_data = cur.fetchall()
+    #cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    #ubi_data = cur.fetchall()
+    #cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    #ordenc_data = cur.fetchall()
+    #cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    #modeloe_data = cur.fetchall()
 
-    return render_template(
-        "equipo.html",
-        equipo=equipos,
-        tipo_equipo=tipoe_data,
-        estado_equipo=estadoe_data,
-        orden_compra=ordenc_data,
-        Unidad=ubi_data,
-        modelo_equipo=modeloe_data,
-        page=page,
-        lastpage=page < (total / perpage) + 1,
-    )
+    #return render_template(
+        #"equipo.html",
+        #equipo=equipos,
+        #tipo_equipo=tipoe_data,
+        #estado_equipo=estadoe_data,
+        #orden_compra=ordenc_data,
+        #Unidad=ubi_data,
+        #modelo_equipo=modeloe_data,
+        #page=page,
+        #lastpage=page < (total / perpage) + 1,
+    #)

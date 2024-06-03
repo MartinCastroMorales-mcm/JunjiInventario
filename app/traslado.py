@@ -31,8 +31,8 @@ def Traslado(page = 1):
                 INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
                 INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
                 ORDER BY idTraslado DESC
-                LIMIT {} OFFSET {}
-        """.format(perpage, offset)
+                LIMIT %s OFFSET %s
+        """, (perpage, offset)
     )
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM traslado')

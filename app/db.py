@@ -30,5 +30,3 @@ MYSQL_DB = app.config['MYSQL_DB'] = os.getenv('MYSQL_DB') or 'inventariofinal'
 #.connection.cursor tiene que ser en una ruta
 mysql = MySQL(app)
 bcrypt = Bcrypt(app)
-app.config["JWT_SECRET_KEY"] = "super_secret"
-jwt = JWTManager(app)

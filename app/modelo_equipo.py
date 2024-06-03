@@ -22,8 +22,11 @@ def modeloEquipo(page=1):
     SELECT *
     FROM modelo_equipo me
     INNER JOIN tipo_equipo te ON te.idTipo_equipo = me.idTipo_equipo
+    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = me.idMarca_Equipo
                 """)
     data = cur.fetchall()
+    print("data")
+    print(data)
     #cur.execute(
         #""" 
     #SELECT *

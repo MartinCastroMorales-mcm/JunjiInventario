@@ -25,8 +25,8 @@ def ordenCompra(page = 1):
                 from orden_compra oc
                 inner join proveedor p on p.idProveedor = oc.idProveedor
                 inner join tipo_adquisicion ta on ta.idTipo_adquisicion = oc.idTipo_adquisicion
-                LIMIT {} OFFSET {}
-    '''.format(perpage, offset))
+                LIMIT %s OFFSET %s
+    ''',(perpage, offset))
     data = cur.fetchall() 
 
     cur.execute('SELECT COUNT(*) FROM orden_compra')

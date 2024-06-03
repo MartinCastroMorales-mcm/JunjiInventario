@@ -42,8 +42,8 @@ def Asignacion(page=1):
         a.ActivoAsignacion
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-    LIMIT {} OFFSET {}
-        """.format(perpage, offset)
+    LIMIT %s OFFSET %s
+        """, (perpage, offset)
     )
     data = cur.fetchall()
     cur.execute(
@@ -232,6 +232,11 @@ def create_asignacion():
         #rutadocumento = request.form['']
         #activo_asignacion = request.form['activo_asignacion']
         rut=request.form['rut']
+        print("rut")
+        print(rut)
+        if(rut == ""):
+            flash("No se ingreso el rut")
+            return redirect("/asignacion")
         # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
         # Obtener la lista de equipos asignados desde el formulario
         realizar_traslado = request.form.get('realizar_traslado')

@@ -24,9 +24,9 @@ def UNIDAD(page=1):
         LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
         GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
-        LIMIT {} OFFSET {}
+        LIMIT %s OFFSET %s
     
-    """.format(perpage, offset))
+    """, (perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT * FROM comuna')
     c_data = cur.fetchall()
