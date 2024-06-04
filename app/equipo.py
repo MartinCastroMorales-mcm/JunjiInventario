@@ -53,12 +53,6 @@ def Equipo(page=1):
 
     }
     for tipo in tipo_equipo:
-        query = """
-        SELECT *
-        FROM modelo_equipo me
-        WHERE me.idTipo_Equipo = %s
-""".format(str(tipo['idTipo_equipo']))
-        #print(query)
         cur.execute("""
         SELECT *
         FROM modelo_equipo me
@@ -1037,7 +1031,264 @@ def crear_pagina_todojunto(wb):
 @administrador_requerido
 def importar_excel(url):
     #Nesesito el excel para ver el formato
-    pass
+    wb = load_workbook(url)
+    ws = wb['Computadores']
+    #Buscar Unidades
+    for row in range(2, ws.max_row):
+        provincia = ws['A' + str(row)].value
+        pass
+    
+
+    ws = wb['Impresoras']
+
+    ws = wb['Bam']
+
+    ws = wb['Proyectores']
+
+    ws = wb['Telefonos']
+
+    ws = wb['Discos Duros Externos']
+
+    ws = wb['Tablets']
+
+def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor, 
+                    col_mac, col_imei, col_telefono, col_idUnidad, col_modelo,
+                    col_tipo_equipo, col_marca,
+                    col_nombre_orden_compra, col_fecha_inicio_compra,
+                    col_fecha_fin_compra, col_tipo_adquisicion,
+                    col_proveedor, worksheet):
+    print("importar equipos")
+    
+
+    for row in range(2, worksheet.max_row):
+        codigo_inventario = worksheet[col_codigo_inventario + str(row)].value
+        n_serie = worksheet[col_n_serie + str(row)].value
+        codigo_proveedor = worksheet[col_codigo_proveedor + str(row)].value
+        mac = worksheet[col_mac + str(row)].value
+        imei = worksheet[col_imei + str(row)].value
+        telefono = worksheet[col_telefono + str(row)].value
+        idUnidad = worksheet[col_idUnidad + str(row)].value
+        modelo = worksheet[col_modelo + str(row)].value
+        nombre_tipo = worksheet[col_tipo_equipo + str(row)].value
+        nombre_marca = worksheet[col_marca + str(row)].value
+        nombre_orden_compra = worksheet[col_nombre_orden_compra + str(row)].value
+        fecha_inicio_compra = worksheet[col_fecha_inicio_compra + str(row)].value
+        fecha_fin_compra = worksheet[col_fecha_fin_compra + str(row)].value
+        nombre_tipo_adquisicion = worksheet[col_tipo_adquisicion + str(row)].value
+        nombre_proveedor = worksheet[col_proveedor + str(row)].value
+
+        cur = mysql.connection.cursor()
+        #buscar modelo con un nombre igual
+        cur.execute("""
+        SELECT *
+        FROM orden_compra oo
+        WHERE oo.nombreOrden_compra = %s
+        """, (nombre_orden_compra,))
+        tupla_orden_compra = cur.fetchall()
+        id_orden_compra = ""
+        if(len(tupla_orden_compra) == 0):
+            #revisar proveedor
+            cur.execute("""
+            SELECT *
+            FROM tipo_adquisicion ta
+            WHERE ta.nombreTipo_adquisicion = %s
+            """, (nombre_tipo_adquisicion,))
+            tupla_adquisicion = cur.fetchall()
+            idTipo_adquisicion = ""
+            if(tupla_adquisicion == 0):
+                cur.execute("""
+                INSERT INTO (nombreTipo_adquisicion)
+                VALUES (%s)
+                """, (nombre_tipo_adquisicion,))
+                mysql.connection.commit()
+                idTipo_adquisicion = cur.lastrowid
+            else:
+                idTipo_adquisicion = tupla_adquisicion[0]['idTipo_adquisicion']
+
+            #revisar tipo adquisicion
+
+            cur.execute("""
+            SELECT *
+            FROM proveedor p
+            WHERE p.nombreProveedor = %s
+            """, (nombre_proveedor,))
+            tupla_proveedor = cur.fetchall()
+            idProveedor = ""
+            if(len(tupla_proveedor) == 0):
+                cur.execute("""
+                INSERT INTO proveedor
+                (nombreProveedor)
+                VALUES (%s)
+                """, (nombre_proveedor,))
+                mysql.connection.commit()
+                idProveedor = cur.lastrowid
+            else:
+                idProveedor = tupla_proveedor[0]['idProveedor']
+
+
+
+            #crear orden de compra
+            cur.execute("""
+            INSERT INTO orden_compra
+            (nombreOrden_compra, fechacompraOrden_compra,
+            fechafin_ORDEN_COMPRA, idTipo_adquisicion,
+                        idProveedor)
+            VALUES(%s, %s,
+                    %s, %s,
+                        %s)
+                        """,(nombre_orden_compra, fecha_inicio_compra,
+                            fecha_fin_compra, idTipo_adquisicion, idProveedor))
+            mysql.connection.commit()
+            id_orden_compra = cur.lastrowid
+        else:
+            id_orden_compra = tupla_orden_compra[0]['idOrden_compra']
+
+
+        cur.execute("""
+        SELECT me.idModelo_Equipo
+        FROM modelo_equipo me
+        WHERE me.nombreModeloequipo = %s
+                    """, (modelo,))
+        
+        tupla_modelo = cur.fetchall()
+        if(len(tupla_modelo) == 0):
+            #insertar el modelo
+
+            Ids = encontrar_o_crear_tipo_equipo(nombre_tipo, cur, nombre_marca)
+            id_tipo_equipo = Ids[0]
+            id_marca_equipo = Ids[1]
+
+            cur.execute("""
+            INSERT INTO modelo
+                (nombreModeloequipo,
+                idTipo_Equipo,
+                idMarca_Equipo)
+            VALUES (%s)
+                """, (modelo, id_tipo_equipo, id_marca_equipo))
+                #commit
+            mysql.connection.commit()
+            
+        else:
+            pass
+        
+        cur.execute("""
+        INSERT INTO equipo 
+                (Cod_inventarioEquipo,
+                Num_serieEquipo,
+                ObservacionEquipo,
+                codigoproveedor_equipo
+                macEquipo,
+                imeiEquipo,
+                numerotelefonicoEquipo
+                idEstado_equipo
+                idUnidad
+                idOrden_compra
+                idModelo_Equipo)
+
+            VALUES (%s, 
+                    %s, 
+                    %s, 
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s,
+                    %s)
+                """, (codigo_inventario,
+                      n_serie,
+                      None,
+                    codigo_proveedor,
+                    mac,
+                    imei,
+                    telefono,
+                    "SIN ASIGNAR",
+                    idUnidad,
+                    "OrdenCompra",
+                    "Modelo"
+                      ))
+
+        
+         
+
+
+        pass
+    pass 
+
+def encontrar_o_crear_tipo_equipo(nombreTipoEquipo, cur, nombre_marca):
+    cur.execute("""
+    SELECT idTipo_equipo
+    FROM tipo_equipo te
+    WHERE te.nombreTipo_equipo = %s
+                """, (nombreTipoEquipo,))
+    tupla_equipos = cur.fetchall()
+    if(len(tupla_equipos) == 0):
+        cur.execute("""
+        INSERT INTO tipo_equipo
+            (nombreTipo_Equipo)
+        VALUES (%s)
+        """, (nombreTipoEquipo,))
+        mysql.connection.commit()
+        
+        id_tipo_equipo = cur.lastrowid
+
+        tupla_marca = cur.fetchall()
+        if(len(tupla_marca) == 0):
+            cur.execute("""
+            INSERT INTO marca
+            (nombreMarcaEquipo)
+            VALUES (%s)
+            """, (nombre_marca))
+            mysql.connection.commit()
+
+            id_marca_equipo = cur.lastrowid
+            cur.execute("""
+            INSERT INTO marca_tipo_equipo
+            (idMarca_Equipo, idTipo_equipo)
+            VALUES (%s, %s)
+                        """, (id_tipo_equipo, id_marca_equipo))
+            return (id_tipo_equipo, id_marca_equipo)
+    else:
+        return (tupla_equipos[0]['idTipo_equipo'], id_marca_equipo)
+
+
+def importar_unidad(col_comuna, col_modalidad, col_codigo, 
+                    col_contacto, col_nombre, col_direccion, worksheet):
+    for row in range(2, worksheet.max_row):
+        comuna = worksheet[col_comuna + str(row)].value
+        nombreModalidad = worksheet[col_modalidad + str(row)].value
+        codigoUnidad = worksheet[col_codigo + str(row)].value
+        contactoUnidad = worksheet[col_contacto + str(row)].value
+        nombreUnidad = worksheet[col_nombre + str(row)].value
+        direccionUnidad = worksheet[col_direccion + str(row)].value
+
+        cur = mysql.connection.cursor()
+        #id comuna
+        cur.execute("""
+            SELECT idComuna
+            FROM comuna c
+            WHERE c.nombreComuna = %s
+                    """, (nombreUnidad))
+        idComuna = cur.fetchone()
+        #id modalidad
+        cur.execute("""
+            SELECT idModalidad
+            FROM modalidad m
+            WHERE m.nombreModalidad = %s
+                    """, (nombreModalidad))
+        idModalidad = cur.fetchone()
+
+        try:
+            cur.execute("""
+            INSERT INTO unidad
+                        (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad)
+                        VALUES (%s, %s, %s, %s, %s)
+                        """, (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
+            mysql.connection.commit()
+        except:
+            print("unidad ya ingresada ¿?")
+    print("unidades importadas")
 
 #buscar un equipo singular por id
 @equipo.route("/equipo/buscar_equipo/<id>")

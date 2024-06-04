@@ -131,6 +131,7 @@
 </div>
 <h2>Equipo</h2>
 <button class="nav-button" onclick="showDiv('formularioExcel')">Exportar a Excel</button>
+<button class="nav-button" onclick="showDiv('importar_excel')">Importar a Excel</button>
 <div class="card card-body" id="formularioExcel" style="display: none;">
     <h2>Seleccione que hojas quiere</h2>
     <form action="/test_excel_form" method="POST" class="mi-formulario">
@@ -187,6 +188,10 @@
             <button class="agregar-button">Exportar</button>
         </div>
     </form>
+</div>
+<div class="card card-body" id="importar_excel" style="display: none;">
+    {#aqui formulario para importar datos#}
+    <p>IMPORTAR</p>
 </div>
 
 <br />

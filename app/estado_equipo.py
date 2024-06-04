@@ -13,7 +13,7 @@ def estadoEquipo(page = 1):
     perpage = getPerPage()
     offset = (page-1) * perpage
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM estado_equipo LIMIT %s OFFSET %s'.format(perpage, offset))
+    cur.execute("SELECT * FROM estado_equipo LIMIT %s OFFSET %s",(perpage, offset))
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM estado_equipo')
     total = cur.fetchone()

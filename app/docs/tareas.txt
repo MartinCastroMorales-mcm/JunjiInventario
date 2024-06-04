@@ -257,3 +257,7 @@ error en editar modelos cambiar nombre
 
 
 error editar tipo_equipo no salen todas las marcas
+
+importar excel(
+        que determina la cantidad de filas en openxl
+)
