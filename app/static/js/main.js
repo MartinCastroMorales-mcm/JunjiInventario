@@ -126,7 +126,7 @@ function sortTable(n) {
   }
 }
 
-function busqueda(tableBodyId="myTBody") {
+function busqueda(tableBodyId = "myTBody") {
   console.log("busqueda")
   var input, a, filter, tbody;
   //busca el bloque de texto
@@ -143,14 +143,14 @@ function busqueda(tableBodyId="myTBody") {
     td = tr[i].querySelectorAll(".toCheck")
     //console.log("td " + td.length)
     //console.log(td)
-    for(let j = 0; j < td.length; j++) {
+    for (let j = 0; j < td.length; j++) {
       console.log("col")
       texto = td[j].textContent.toLowerCase()
       //console.log(texto)
-      if(texto.indexOf(filter) > -1) {
+      if (texto.indexOf(filter) > -1) {
         tr[i].style.display = ""
         break;
-      }else {
+      } else {
         tr[i].style.display = "none"
       }
     }
@@ -160,7 +160,7 @@ function busqueda(tableBodyId="myTBody") {
 function todoCheck() {
   checkboxContainer = document.getElementById("checkbox_container")
   checkboxes = checkboxContainer.getElementsByTagName("input")
-  for(let i = 0; i < checkboxes.length; i++) {
+  for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].checked = false
   }
 }
@@ -177,7 +177,7 @@ function check_all() {
   checkboxContainer = document.getElementById("checkbox_container")
   checkboxes = checkboxContainer.getElementsByTagName("input")
   checkall_element = document.getElementById("checkall")
-  for(let i = 0; i < checkboxes.length; i++) {
+  for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].checked = checkall.checked
   }
 }
@@ -198,7 +198,8 @@ tipos_num_telefono = {
   "Celular": true,
   "Telefono": true
 }
-function mostrarSelectModelo() {
+function mostrarSelectModelo(id_select_tipo_equipo) {
+  /*
   console.log("mostrar")
   //obtener la id del tipo
   tipo = document.getElementById("nombre_tipo_equipo").value
@@ -218,28 +219,48 @@ function mostrarSelectModelo() {
 
     }
   }
+  */
+  console.log("select_tipo")
+  select_tipo = document.getElementById(id_select_tipo_equipo)
+  console.log(select_tipo)
+  //get all divs with class select_tipo_modelo_rel_marca
+  divs_select_de_tipo = document.querySelectorAll('.select_modelo_rel_tipo')
+  console.log('divs_select_de_tipo')
+  console.log(divs_select_de_tipo)
+  //no puede ser un for in porque divs_select_de_tipo es un diccionario y 
+  //devolveria las llaves no los valores
+  for (let i = 0; i < divs_select_de_tipo.length; i++) {
+    div = divs_select_de_tipo[i]
+    console.log(div.id)
+    console.log(select_tipo.value)
+    if (div.id === select_tipo.value) {
+      div.style.display = "block"
+    } else {
+      div.style.display = "none"
+    }
+  }
 
+  tipo = document.getElementById("select_tipo_marca:" + id_select_tipo_equipo)
   //esconder mac
-  tipo = document.getElementById("nombre_tipo_equipo").value
   mac_div = document.getElementById("Mac")
-  if(tipos_mac[tipo]) {
+  if (tipos_mac[tipo]) {
     mac_div.style.display = "block"
-  }else {
+  } else {
     mac_div.style.display = "none"
   }
 
   //esconder imei
   imei_div = document.getElementById("Imei")
-  if(tipos_imei[tipo]) {
+  if (tipos_imei[tipo]) {
     imei_div.style.display = "block"
-  }else {
+  } else {
     imei_div.style.display = "none"
   }
   //esconder numero de telefono
   num_telefono_div = document.getElementById("Telefono")
-  if(tipos_num_telefono[tipo]) {
+  if (tipos_num_telefono[tipo]) {
     num_telefono_div.style.display = "block"
-  }else {
+  } else {
     num_telefono_div.style.display = "none"
   }
 
@@ -247,6 +268,25 @@ function mostrarSelectModelo() {
 }
 
 function mostrarTipo_equipo() {
+  //console.log("select_marca")
+  select_marca = document.getElementById('marca')
+  console.log(select_marca.value)
+  //get all divs with class select_tipo_modelo_rel_marca
+  divs_select_de_marca = document.querySelectorAll('.select_tipo_modelo_rel_marca')
+  //console.log('divs_select_de_marca')
+  //console.log(divs_select_de_marca)
+  for (let i = 0; i < divs_select_de_marca.length; i++) {
+    div = divs_select_de_marca[i]
+    //console.log(div)
+    if (div.id === select_marca.value) {
+      div.style.display = "block"
+    } else {
+      div.style.display = "none"
+    }
+  }
+
+
+  /*
   select = document.getElementById("marca_equipo")
   idMarca = select.value;
   console.log("mostarTipo_equipo" + idMarca)
@@ -267,6 +307,7 @@ function mostrarTipo_equipo() {
 
   boton = document.getElementById("enviar")
   boton.style.display = "block"
+  */
 }
 //Envia el tipo a 
 function enviarTipo(valor) {
@@ -297,24 +338,81 @@ function abrir_cerrar_ojo(id_ojo, repetir) {
   img_name = src.split("/")
   console.log("img_name")
   console.log(img_name)
-  if(img_name[5] == "eye.png") {
+  if (img_name[5] == "eye.png") {
     console.log("if")
     ojo_contrasenna.src = "../static/img/hidden.png"
-    if(repetir) {
-      input = document.getElementById('contrasenna_repetir').type = 'text'
-    }else {
-      input = document.getElementById('contrasenna').type = 'text'
+    if (repetir) {
+      input = document.getElementById('contrasenna_repetir').type = 'password'
+    } else {
+      input = document.getElementById('contrasenna').type = 'password'
     }
-  }else {
+  } else {
     console.log("else")
     ojo_contrasenna.src = "../static/img/eye.png"
-    if(repetir) {
-      input = document.getElementById('contrasenna_repetir').type = 'password'
-    }else {
-      input = document.getElementById('contrasenna').type = 'password'
+    if (repetir) {
+      input = document.getElementById('contrasenna_repetir').type = 'text'
+    } else {
+      input = document.getElementById('contrasenna').type = 'text'
     }
   }
 
 
 
+}
+//Envia el tipo a 
+//Hay una forma mas facil pero ya lo hice asi
+
+
+
+
+
+
+
+
+function enviarModelo(valor) {
+  console.log("test")
+  console.log(valor)
+  select = document.getElementById(valor)
+  console.log("select")
+  console.log(select)
+  tipo_equipo_value = select.value
+  console.log("select value")
+  console.log(select.value)
+  options = select.options
+  a = options[select.selectedIndex].value
+  console.log(a)
+  output_modelo_equipo = document.getElementById('modelo_para_equipo')
+  output_modelo_equipo.value = select.value
+  console.log("modelo_equipo")
+  console.log(output_modelo_equipo)
+}
+
+
+
+function mostrarTipo_para_agregar_modelo() {
+  select_marca = document.getElementById('marca')
+  console.log(select_marca.value)
+  //get all divs with class select_tipo_modelo_rel_marca
+  divs_select_de_marca = document.querySelectorAll('.select_modelo')
+  //console.log('divs_select_de_marca')
+  //console.log(divs_select_de_marca)
+  for (let i = 0; i < divs_select_de_marca.length; i++) {
+    div = divs_select_de_marca[i]
+    //console.log(div)
+    if (div.id === select_marca.value) {
+      div.style.display = "block"
+    } else {
+      div.style.display = "none"
+    }
+  }
+}
+function mostrar_agregar(id_select) {
+  //mostrar el boton de agregar
+  select = document.getElementById(id_select)
+  boton = document.getElementById('enviar')
+  boton.style.display = "block"
+  //enviar tipo de equipo
+  input_tipo_equipo = document.getElementById('nombre_tipo_equipo')
+  input_tipo_equipo.value = select.value
+  console.log(input_tipo_equipo)
 }

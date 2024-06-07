@@ -24,14 +24,11 @@ def tipoEquipo(page=1):
     # Se pediran todos las filas de tipo_equipo. Luego se pediran todas las filas de las
     # marcas asociadas con el tipo de equipo. Luego estas marcas se van a añadir a la
     # tupla del tipo de equipo de manera que se tenga marca_i=(tupla,) donde i = 0 y ++ cada iteracion
-    cur.execute(
-        """
+    cur.execute("""
         SELECT *
         FROM tipo_equipo te
-        LIMIT {} OFFSET {}
-                """.format(
-            perpage, offset
-        )
+        LIMIT %s OFFSET %s 
+                """,(perpage, offset)
     )
     tipo_equipo_data = cur.fetchall()
     tipo_equipo_con_marcas = None
@@ -43,8 +40,7 @@ def tipoEquipo(page=1):
     for i in range(0, len(tipo_equipo_data)):
         print("tipo con marcas")
         print(tipo_equipo_con_marcas)
-        cur.execute(
-            """
+        cur.execute("""
         SELECT *
         FROM marca_equipo me
         INNER JOIN marca_tipo_equipo mte ON me.idMarca_Equipo = mte.idMarca_Equipo
@@ -90,8 +86,7 @@ def crear_tipo_equipo():
     nombreTipo_Equipo = request.form["nombreTipo_equipo"]
     cur = mysql.connection.cursor()
     try:
-        cur.execute(
-            """
+        cur.execute("""
                     INSERT INTO tipo_equipo (nombreTipo_equipo) 
                     VALUES (%s)""",
             (nombreTipo_Equipo,),
@@ -233,7 +228,9 @@ def edit_tipo_equipo(id):
         flash(e.args[1])
         return redirect(url_for("tipo_equipo.tipoEquipo"))
 
-
+#Funcion que pide las marcas y 
+#def getMarcas():
+    #pass
 # actualiza un elemento de tipo de equipo segun el id correspondiente
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido

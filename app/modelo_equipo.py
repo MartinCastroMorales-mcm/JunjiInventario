@@ -22,8 +22,11 @@ def modeloEquipo(page=1):
     SELECT *
     FROM modelo_equipo me
     INNER JOIN tipo_equipo te ON te.idTipo_equipo = me.idTipo_equipo
+    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = me.idMarca_Equipo
                 """)
     data = cur.fetchall()
+    print("data")
+    print(data)
     #cur.execute(
         #""" 
     #SELECT *
@@ -119,6 +122,7 @@ def add_modelo_equipo():
     if request.method == "POST":
         nombre_modelo_equipo = request.form['nombre_modelo_equipo']
         id_tipo_equipo = request.form['nombre_tipo_equipo']
+        id_marca_equipo = request.form['nombre_marca_equipo']
         print("add")
         print(id_tipo_equipo)
         print(nombre_modelo_equipo)
@@ -126,9 +130,11 @@ def add_modelo_equipo():
             cur = mysql.connection.cursor()
             cur.execute(
                 """
-            INSERT INTO modelo_equipo (nombreModeloequipo, idTipo_equipo) VALUES (%s,%s)
+            INSERT INTO modelo_equipo 
+                (nombreModeloequipo, idTipo_equipo, idMarca_Equipo) 
+            VALUES (%s, %s, %s)
             """,
-                (nombre_modelo_equipo, id_tipo_equipo)
+                (nombre_modelo_equipo, id_tipo_equipo, id_marca_equipo)
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")

@@ -23,7 +23,7 @@ def Proveedor(page = 1):
     offset  = (page -1) * perpage
     #el cursor permite interactuar con la base de datos
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor LIMIT {} OFFSET {}'.format(perpage, offset))
+    cur.execute('SELECT * FROM proveedor LIMIT %s OFFSET %s',(perpage, offset))
     #almacenamos los datos consultados en una variable
     data = cur.fetchall()
     #se retorna la vista con render_template y la informacion de la base de datos de los proveedores para ser manipulados

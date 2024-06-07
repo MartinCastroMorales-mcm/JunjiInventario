@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion, select%}
+{% from 'funciones_macro.html' import paginacion, select, select_modelo, select_tipo%}
 
 <div class="row">
 
@@ -31,28 +31,49 @@
                     #}
                     <div>
 
-                        <label for="marca">Nombre Marca</label>
-                        <select name="nombre_marca" id="marca" , onchange="mostrarSelectModelo()">
+                        <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
+                        <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
                             <option value="">Seleccione el Marca</option>
                             {% for marca in marcas_equipo %}
                                 <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
-
                             {% endfor%}
                         </select>
                     </div>
-                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: </label>
+                    {#}
+                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
                     <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
                         <option value="">Seleccione el Tipo de Equipo</option>
                         {% for tipoe in tipo_equipo %}
-                        <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
+                        <div id="{{}}">
+                            <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
+                        </div>
                         {% endfor %}
                     </select>
+                    #}
                     <div id="select_div">
-                        {% for tipo in tipo_equipo%}
-                        {{select(modelo_equipo[tipo['idTipo_equipo']], tipo['nombreTipo_equipo'])}}
+                        {% for marca in marcas_equipo %}
+                        {#{marca.nombreMarcaEquipo}#}
+                        {# el div tiene la marca ya que todo lo que se muestra en el div
+                            siguiente solo se muestra si la marca elegida es la que este 
+                            asociada a el tipo y modelo de la iteracion correspondiente
+                        #}
+                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca"
+                            style="display:none">
+                            {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
+                            {% for tipo in marca.tipo_equipo%}
+                            {#{tipo.nombreTipo_equipo}#}
+                           <div id="{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo"
+                                style="display: none;">
+                                {#{tipo.modelo_equipo}#}
+                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
+                            </div>
+                            {% endfor %}
+                        </div>
                         {% endfor %}
                     </div>
-                    <label for="codigo_Unidad">Unidad: </label>
+                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo"/>
+                    {# select test #}
+                    <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
                     <select name="codigo_Unidad">
                         <option value="">Seleccione la Unidad</option>
                         {% for ubi in Unidad %}
@@ -61,7 +82,7 @@
                     </select>
                     <br>
                     <div>
-                        <label for="nombre_orden_compra">Orden de Compra: </label>
+                        <label for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
                         <select name="nombre_orden_compra">
                             <option value="">Seleccione el Orden de Compra</option>
                             {% for ordenc in orden_compra %}
@@ -110,6 +131,7 @@
 </div>
 <h2>Equipo</h2>
 <button class="nav-button" onclick="showDiv('formularioExcel')">Exportar a Excel</button>
+<button class="nav-button" onclick="showDiv('importar_excel')">Importar a Excel</button>
 <div class="card card-body" id="formularioExcel" style="display: none;">
     <h2>Seleccione que hojas quiere</h2>
     <form action="/test_excel_form" method="POST" class="mi-formulario">
@@ -166,6 +188,30 @@
             <button class="agregar-button">Exportar</button>
         </div>
     </form>
+</div>
+<div class="card card-body" id="importar_excel" style="display: none;">
+    {#aqui formulario para importar datos#}
+    <p>IMPORTAR</p>
+<div class="card card-body" id="formulario" style="display: block;">
+    <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir Excel e importar Equipos</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
+<div class="card card-body" id="formulario" style="display: block;">
+    <form action="/equipo/importar_excel/unidad" method="POST" class="mi-formulario" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir Excel e importar Unidad</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
 </div>
 
 <br />

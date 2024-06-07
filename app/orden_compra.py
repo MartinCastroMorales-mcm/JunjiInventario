@@ -25,8 +25,8 @@ def ordenCompra(page = 1):
                 from orden_compra oc
                 inner join proveedor p on p.idProveedor = oc.idProveedor
                 inner join tipo_adquisicion ta on ta.idTipo_adquisicion = oc.idTipo_adquisicion
-                LIMIT {} OFFSET {}
-    '''.format(perpage, offset))
+                LIMIT %s OFFSET %s
+    ''',(perpage, offset))
     data = cur.fetchall() 
 
     cur.execute('SELECT COUNT(*) FROM orden_compra')
@@ -57,7 +57,10 @@ def add_ordenc():
         nombre_proveedor = request.form['nombre_proveedor_ordenc']
         try:      
             cur = mysql.connection.cursor()
-            cur.execute('''INSERT INTO orden_compra (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,rutadocumentoOrden_compra,idTipo_adquisicion,idProveedor) VALUES (%s,%s,%s,%s,%s,%s,%s)
+            cur.execute('''INSERT INTO orden_compra 
+                        (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,rutadocumentoOrden_compra,
+                            idTipo_adquisicion,idProveedor) 
+                        VALUES (%s,%s,%s,%s,%s,%s,%s)
                         ''', (id_ordenc, nombre_ordenc, fecha_compra, fecha_fin,docu_ordenc, nombre_tipoa, nombre_proveedor))
             cur.connection.commit()
             flash("Orden de compra agregada correctamente")
@@ -87,7 +90,7 @@ def edit_ordenc(id):
         cur.execute('SELECT * FROM tipo_adquisicion')
         dataso = cur.fetchall()
         cur.close()
-        return render_template('editOrden_Compra.html', orden_compra = data[0], tipo_adquisicion = dataso, proveedor = datas)
+        return render_template('editOrden_compra.html', orden_compra = data[0], tipo_adquisicion = dataso, proveedor = datas)
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for('orden_compra.ordenCompra'))

@@ -29,8 +29,8 @@ def Incidencia(page = 1):
                 INNER JOIN equipo e on i.idEquipo = e.idEquipo
                 INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
                 INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.idTipo_Equipo
-                LIMIT {} OFFSET {}
-        """.format(perpage, offset)
+                LIMIT %s OFFSET %s
+        """, (perpage, offset)
     )
     data = cur.fetchall()
     cur.execute('SELECT COUNT(*) FROM incidencia')

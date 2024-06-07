@@ -8,26 +8,26 @@ devolucion = Blueprint('devolucion', __name__, template_folder='app/templates')
 @devolucion.route('/devolucion')
 @devolucion.route('/devolucion/<page>')
 
-@loguear_requerido
-def Devolucion(page = 1):
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page-1) * perpage
-    cur = mysql.connection.cursor()
-    cur.execute(""" 
-    SELECT d.idDevolucion, d.fechaDevolucion, d.observacionDevolucion, d.rutaactaDevolucion, d.ActivoDevolucion, d.rutFuncionario, f.rutFuncionario
-    FROM devolucion d
-    INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
-    LIMIT {} OFFSET {}
-    """.format(perpage, offset))
-    data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM devolucion')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    cur.execute('SELECT rutFuncionario FROM funcionario')
-    f_data = cur.fetchall()
-    return render_template('devolucion.html', devolucion = data, funcionario= f_data,
-                           page=page, lastpage= page < (total/perpage)+1)
+#@loguear_requerido
+#def Devolucion(page = 1):
+    #page = int(page)
+    #perpage = getPerPage()
+    #offset = (page-1) * perpage
+    #cur = mysql.connection.cursor()
+    #cur.execute(""" 
+    #SELECT d.idDevolucion, d.fechaDevolucion, d.observacionDevolucion, d.rutaactaDevolucion, d.ActivoDevolucion, d.rutFuncionario, f.rutFuncionario
+    #FROM devolucion d
+    #INNER JOIN funcionario f on d.rutFuncionario = f.rutFuncionario
+    #LIMIT %s OFFSET %s
+    #""".format(perpage, offset))
+    #data = cur.fetchall()
+    #cur.execute('SELECT COUNT(*) FROM devolucion')
+    #total = cur.fetchone()
+    #total = int(str(total).split(':')[1].split('}')[0])
+    #cur.execute('SELECT rutFuncionario FROM funcionario')
+    #f_data = cur.fetchall()
+    #return render_template('devolucion.html', devolucion = data, funcionario= f_data,
+                           #page=page, lastpage= page < (total/perpage)+1)
 
 @devolucion.route('/add_devolucion', methods = ['POST'])
 @loguear_requerido
