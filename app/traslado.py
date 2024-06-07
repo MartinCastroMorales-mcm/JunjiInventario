@@ -445,7 +445,7 @@ def mostrar_pdf(id, firmado="0"):
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")
-        #return redirect(url_for('traslado.Traslado'))
+        return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 @loguear_requerido

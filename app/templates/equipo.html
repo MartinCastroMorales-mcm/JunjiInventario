@@ -192,6 +192,26 @@
 <div class="card card-body" id="importar_excel" style="display: none;">
     {#aqui formulario para importar datos#}
     <p>IMPORTAR</p>
+<div class="card card-body" id="formulario" style="display: block;">
+    <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir Excel e importar Equipos</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
+<div class="card card-body" id="formulario" style="display: block;">
+    <form action="/equipo/importar_excel/unidad" method="POST" class="mi-formulario" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir Excel e importar Unidad</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
 </div>
 
 <br />
