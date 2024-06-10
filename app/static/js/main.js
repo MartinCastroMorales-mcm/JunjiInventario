@@ -192,7 +192,7 @@ tipos_mac = {
 }
 tipos_imei = {
   "Tablet": true,
-  "celular": true
+  "Celular": true
 }
 tipos_num_telefono = {
   "Celular": true,

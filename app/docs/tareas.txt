@@ -270,3 +270,4 @@ OK Tipo equipo telefono no funciona
 posible error en cumpleaños. Quizas no deje leer la ultima linea tal y como esta hecha la iteracion
         (arreglado pero no agregado a Linux)
 selector de fecha estan en formato mm/dd/yyyy pero seria preferible un formato dd/mm/yyyy
+Al editar modelo no estan los valores anteriores
