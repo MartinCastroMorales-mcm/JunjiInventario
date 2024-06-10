@@ -7,7 +7,7 @@
     <div class="col-md-4 offset-md-4">
         <div class="card card-body" style="display: block;" id="formulario">
 
-            <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
+            <form action="/update_modelo_equipo/{{id}}" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
                     <input type="text" name="nombre_modelo_equipo" placeholder="Modelo">
@@ -23,7 +23,7 @@
                 <div class="form-group">
                     <div id="selector_marca">
                         <label for="nombre_marca_equipo"> Marca Equipo: </label>
-                        <select name="nombre_marca_equipo" id="marca_equipo" onchange="mostrarTipo_equipo()">
+                        <select name="nombre_marca_equipo" id="marca" onchange="mostrarTipo_para_agregar_modelo()">
                             <option value="">Elija la Marca del Equipo</option>
                             {% for marcae in marca_equipo %}
                             <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>

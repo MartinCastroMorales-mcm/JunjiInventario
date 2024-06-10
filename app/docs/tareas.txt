@@ -262,7 +262,11 @@ importar excel(
         que determina la cantidad de filas en openxl
 )
 
-modelo editar no muestra boton de agregar
-cambiar rutas a variables de entorno
-cambiar contraseñas por variables de entorno
+OK modelo editar no muestra boton de agregar
+OK cambiar rutas a variables de entorno
+OK cambiar contraseñas por variables de entorno
 error orden de compra
+OK Tipo equipo telefono no funciona
+posible error en cumpleaños. Quizas no deje leer la ultima linea tal y como esta hecha la iteracion
+        (arreglado pero no agregado a Linux)
+selector de fecha estan en formato mm/dd/yyyy pero seria preferible un formato dd/mm/yyyy

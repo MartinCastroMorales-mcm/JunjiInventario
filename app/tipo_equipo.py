@@ -91,7 +91,7 @@ def crear_tipo_equipo():
                     VALUES (%s)""",
             (nombreTipo_Equipo,),
         )
-    except:
+    except Exception as e:
             flash(e.args[1])
             return redirect(url_for("tipo_equipo.tipoEquipo"))
     mysql.connection.commit()
@@ -194,11 +194,10 @@ def edit_tipo_equipo(id):
         marcas_aceptadas = {}
         for i in range(0, len(marcas)):
             marca = marcas[i]
+            #print("marca")
             #print(marca)
-            #print(marca['nombreMarcaEquipo'] != ultima_marca_aceptada)
-            #print(marca['idTipo_equipo'] == id)
-            #print(marca['idTipo_equipo'] == None)
-            
+            #print("ultima marca aceptada")
+            #print(ultima_marca_aceptada)
             if marca['nombreMarcaEquipo'] != ultima_marca_aceptada and (str(marca['idTipo_equipo']) == id or marca['idTipo_equipo'] == None):
                 #print("aceptada")
                 ultima_marca_aceptada = marca['nombreMarcaEquipo']
@@ -210,15 +209,27 @@ def edit_tipo_equipo(id):
                     #print(not marcas_aceptadas.get(marca['nombreMarcaEquipo']))
                     #print(marcas[i+1]['nombreMarcaEquipo'] != marca['nombreMarcaEquipo'])
                     if ((not marcas_aceptadas.get(marca['nombreMarcaEquipo'])) and marcas[i+1]['nombreMarcaEquipo'] != marca['nombreMarcaEquipo']):
-                        print("test")
+                        #print("test")
                         marcasModificadas.append(marca)
                         ultima_marca_aceptada = marca['nombreMarcaEquipo']
                         marcas_aceptadas[ultima_marca_aceptada] = True
-                        print("accepted")
-        marcasModificadas = tuple(marcasModificadas)
+                        #print("accepted")
+                elif not marcas_aceptadas.get(marca['nombreMarcaEquipo']):
+                    marcasModificadas.append(marca)
 
-        print("Marcas Modificadas")
-        print(marcasModificadas)
+        marcasModificadas = tuple(marcasModificadas)
+        #cur.execute("""
+        #SELECT * 
+        #FROM marca_equipo
+        #""")
+        #marca_equipo = cur.fetchall()
+
+        #print("test1")
+        #print("Marcas Modificadas")
+        #print(marcasModificadas)
+        #print("test2")
+        #print("Marcas Sin Modificadas")
+        #print(marca_equipo)
         return render_template(
             "editTipo_equipo.html",
             tipo_equipo=data[0],

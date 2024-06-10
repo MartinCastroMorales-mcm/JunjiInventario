@@ -1049,11 +1049,13 @@ def importar_excel():
                     col_modelo='H', 
                     col_tipo_equipo='I',
                     col_marca='J', 
+                    col_id_orden_compra='P',
                     col_nombre_orden_compra='K', 
                     col_fecha_inicio_compra='O',
                     col_fecha_fin_compra='L',
                     col_tipo_adquisicion='M',
                     col_proveedor='N',
+                    
                     worksheet=ws)
     return redirect("/equipo")
 
@@ -1081,7 +1083,7 @@ def importar_excel_unidad():
 
 def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor, 
                     col_mac, col_imei, col_telefono, col_idUnidad, col_modelo,
-                    col_tipo_equipo, col_marca,
+                    col_tipo_equipo, col_marca, col_id_orden_compra,
                     col_nombre_orden_compra, col_fecha_inicio_compra,
                     col_fecha_fin_compra, col_tipo_adquisicion,
                     col_proveedor, worksheet):
@@ -1099,6 +1101,7 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
         modelo = worksheet[col_modelo + str(row)].value
         nombre_tipo = worksheet[col_tipo_equipo + str(row)].value
         nombre_marca = worksheet[col_marca + str(row)].value
+        id_orden_compra = worksheet[col_id_orden_compra + str(row)].value
         nombre_orden_compra = worksheet[col_nombre_orden_compra + str(row)].value
         fecha_inicio_compra = worksheet[col_fecha_inicio_compra + str(row)].value
         fecha_fin_compra = worksheet[col_fecha_fin_compra + str(row)].value
@@ -1108,14 +1111,16 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
         cur = mysql.connection.cursor()
 
         #nombre orden de compra
-        id_orden_compra = ""
         if(nombre_orden_compra != None):
             cur.execute("""
             SELECT *
             FROM orden_compra oo
-            WHERE LOWER(oo.nombreOrden_compra) LIKE LOWER(%s)
-            """, (nombre_orden_compra,))
+            WHERE LOWER(oo.idOrden_compra) LIKE LOWER(%s)
+            """, (id_orden_compra,))
             tupla_orden_compra = cur.fetchall()
+            print('tupla_orden_compra')
+            print(tupla_orden_compra)
+            print(len(tupla_orden_compra))
             if(len(tupla_orden_compra) == 0):
                 #revisar proveedor
                 cur.execute("""
@@ -1156,6 +1161,8 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                     idProveedor = tupla_proveedor[0]['idProveedor']
 
 
+                print("id_orden_compra")
+                print(id_orden_compra)
                 #crear orden de compra
                 cur.execute("""
                 INSERT INTO orden_compra
@@ -1165,16 +1172,17 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                 VALUES(%s, %s, %s,
                         %s, %s,
                             %s)
-                            """,(nombre_orden_compra, fecha_inicio_compra,
+                            """,(id_orden_compra, nombre_orden_compra, fecha_inicio_compra,
                                 fecha_fin_compra, idTipo_adquisicion, idProveedor))
                 mysql.connection.commit()
-                id_orden_compra = cur.lastrowid
             else:
                 id_orden_compra = tupla_orden_compra[0]['idOrden_compra']
         else:
             id_orden_compra = None
         #buscar modelo con un nombre igual
 
+        print("id_orden_equipo")
+        print(id_orden_compra)
 
         cur.execute("""
         SELECT me.idModelo_Equipo
@@ -1191,6 +1199,7 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
             id_tipo_equipo = Ids[0]
             id_marca_equipo = Ids[1]
 
+            print("insert modelo")
             cur.execute("""
             INSERT INTO modelo_equipo
                 (nombreModeloequipo,
@@ -1212,6 +1221,7 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
         """, ("SIN ASIGNAR",))
         idEstado_equipo = cur.fetchone()['idEstado_equipo']
 
+        print("insertar equipo")
         cur.execute("""
         INSERT INTO equipo 
                 (Cod_inventarioEquipo,
@@ -1249,11 +1259,14 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                     id_orden_compra,
                     id_modelo_equipo
                       ))
+        mysql.connection.commit()
+        flash("equipos importados")
 
         
          
 
     #TODO orden de compra no es nulable. deberia ser nulable
+
         pass
     pass 
 
@@ -1263,7 +1276,9 @@ def encontrar_o_crear_tipo_equipo(nombreTipoEquipo, cur, nombre_marca):
     FROM tipo_equipo te
     WHERE te.nombreTipo_equipo = %s
                 """, (nombreTipoEquipo,))
-    tupla_tipo_equipos = cur.fetchall()[0]
+    tupla_tipo_equipos = cur.fetchall()
+    print("tupla_tipo_equipo")
+    print(tupla_tipo_equipos)
     id_tipo_equipo = ""
     #revisar si se encontro un tipo de equipo.
     #asignar valor a id_tipo_equipo consecuentemente

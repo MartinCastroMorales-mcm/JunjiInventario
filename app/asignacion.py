@@ -15,11 +15,11 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 import fitz
+from env_vars import paths
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
-PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
-
+PDFS_DIR = paths['pdf_path']
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
 @loguear_requerido
@@ -495,7 +495,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 def mostrar_pdf(id):
     try:
         nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -717,7 +717,7 @@ def crear_pdf_devolucion(
 def mostrar_pdf_devolucion(id):
     try:
         nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -853,7 +853,7 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -868,7 +868,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:

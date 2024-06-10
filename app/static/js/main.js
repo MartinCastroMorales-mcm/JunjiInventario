@@ -233,17 +233,26 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
     div = divs_select_de_tipo[i]
     console.log(div.id)
     console.log(select_tipo.value)
-    if (div.id === select_tipo.value) {
+    if (div.id === "div_modelo_" + select_tipo.value) {
       div.style.display = "block"
     } else {
       div.style.display = "none"
     }
   }
 
-  tipo = document.getElementById("select_tipo_marca:" + id_select_tipo_equipo)
+
+
+}
+
+function mostrarSelectsEspeciales(id_marca) {
+  tipo = document.getElementById('select_tipo_marca:' + id_marca)
+  valor_tipo_equipo = tipo.value
+  console.log('valor_tipo_equipo')
+  console.log(valor_tipo_equipo)
   //esconder mac
+  console.log("mostrarSelectsEspeciales")
   mac_div = document.getElementById("Mac")
-  if (tipos_mac[tipo]) {
+  if (tipos_mac[valor_tipo_equipo]) {
     mac_div.style.display = "block"
   } else {
     mac_div.style.display = "none"
@@ -251,20 +260,20 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
 
   //esconder imei
   imei_div = document.getElementById("Imei")
-  if (tipos_imei[tipo]) {
+  if (tipos_imei[valor_tipo_equipo]) {
     imei_div.style.display = "block"
   } else {
     imei_div.style.display = "none"
   }
   //esconder numero de telefono
   num_telefono_div = document.getElementById("Telefono")
-  if (tipos_num_telefono[tipo]) {
+  if (tipos_num_telefono[valor_tipo_equipo]) {
+    console.log("test")
+    console.log(num_telefono_div)
     num_telefono_div.style.display = "block"
   } else {
     num_telefono_div.style.display = "none"
   }
-
-
 }
 
 function mostrarTipo_equipo() {
@@ -406,7 +415,13 @@ function mostrarTipo_para_agregar_modelo() {
     }
   }
 }
-function mostrar_agregar(id_select) {
+function mostrarBotonAgregarAlUsarSelect() {
+  boton = document.getElementById("enviar")
+  boton.style.display = "block"
+  console.log(boton)
+  
+}
+function mostrar_agregar(id_select)  {
   //mostrar el boton de agregar
   select = document.getElementById(id_select)
   boton = document.getElementById('enviar')

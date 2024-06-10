@@ -100,8 +100,7 @@ y el tipo
 {% macro select_tipo(tupla_tipos_equipo, id_marca) %}
 <label for="nombre_modelo">Tipo Equipo <span style="color: red;">*</span></label>
 <select id="select_tipo_marca:{{id_marca}}" name="" 
-        onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}')">
-
+        onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}'); mostrarSelectsEspeciales('{{id_marca}}')">
     <option value="">Seleccione Tipo Equipo</option>
     {% for tipo in tupla_tipos_equipo %}
     <option id="{{tipo.idTipo_equipo}}" value="{{tipo.nombreTipo_equipo}}">

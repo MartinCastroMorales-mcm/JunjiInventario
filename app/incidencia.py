@@ -6,8 +6,9 @@ from cuentas import loguear_requerido, administrador_requerido
 import os
 import shutil 
 from werkzeug.utils import secure_filename
+from env_vars import paths
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
-PDFS_INCIDENCIAS = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
+PDFS_INCIDENCIAS = paths['pdf_path']
 
 #pestaña principal de incidencias
 @incidencia.route("/incidencia")

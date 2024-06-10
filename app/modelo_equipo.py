@@ -200,7 +200,7 @@ def edit_modelo_equipo(id):
     print("marcas_con_tipo_equipo")
     print(marcas_con_tipo_equipo)
     return render_template(
-        "editModelo_equipo.html", modelo_equipo=data,
+        "editModelo_equipo.html", modelo_equipo=data, id=id,
         marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data)
 
 
@@ -214,17 +214,25 @@ def update_modelo_equipo(id):
     if request.method == "POST":
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
         nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
+        idMarca_Equipo = request.form['nombre_marca_equipo']
+        print("marca")
+        print(idMarca_Equipo)
+        print("nombre tipo equipo")
+        print(nombre_tipo_equipo)
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
             UPDATE modelo_equipo 
             SET nombreModeloequipo = %s,
-                idTipo_Equipo = %s
+                idTipo_Equipo = %s,
+                idMarca_Equipo = %s
             WHERE idModelo_Equipo = %s
             """,
-                (nombre_modelo_equipo, nombre_tipo_equipo, id),
+                (nombre_modelo_equipo, nombre_tipo_equipo, idMarca_Equipo, id),
             )
+            print('id')
+            print(id)
             mysql.connection.commit()
             flash("Modelo actualizado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
