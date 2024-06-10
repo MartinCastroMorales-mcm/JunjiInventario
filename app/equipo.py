@@ -584,23 +584,28 @@ def equipo_detalles(idEquipo):
                 ORDER BY fecha DESC
                 """, (idEquipo, idEquipo, idEquipo, idEquipo))
     data_eventos = cur.fetchall()
-    cur.execute(
-        """
-                SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, 
-                e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
-                e.numerotelefonicoEquipo,e.idEstado_Equipo, e.idUnidad, 
-                e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreTipo_Equipo, 
-                ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, 
-                oc.idOrden_compra, oc.nombreOrden_compra,
-    moe.idModelo_equipo, moe.nombreModeloequipo
-    FROM equipo e
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    WHERE e.idEquipo = %s
-                """,(idEquipo))
+    #cur.execute(
+        #"""
+                #SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, 
+                #e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+                #e.numerotelefonicoEquipo,e.idEstado_Equipo, e.idUnidad, 
+                #e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreTipo_Equipo, 
+                #ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, 
+                #oc.idOrden_compra, oc.nombreOrden_compra,
+    #moe.idModelo_equipo, moe.nombreModeloequipo
+    #FROM equipo e
+    #INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    #INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    #INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    #INNER JOIN unidad u on u.idUnidad = e.idUnidad
+    #INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    #WHERE e.idEquipo = %s
+                #""",(idEquipo))
+    cur.execute("""
+    SELECT *
+    FROM super_equipo
+    """
+    )
     data_equipo = cur.fetchone()
     return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos)
 
