@@ -1,5 +1,7 @@
-inLinux = False
-if(not inLinux):
+def inLinux():
+    return False
+
+if(not inLinux()):
     paths = {
         "pdf_path": r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
         ,

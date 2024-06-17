@@ -15,7 +15,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 import fitz
-from env_vars import paths
+from env_vars import paths, inLinux
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -482,7 +482,10 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
+    if inLinux():
+        shutil.move(nombrePdf, "pdf/" + nombrePdf)
+    else:
+        shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
     #try:
         #enviar_correo(nombrePdf, 'correo')
     #except:
