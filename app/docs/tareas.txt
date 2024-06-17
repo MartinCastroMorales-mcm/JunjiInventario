@@ -250,7 +250,7 @@ agregar boton para decidir si se envia o no correo
 agregar opciones para acciones por defecto(traslado, correo, etc)
 OK filtro de marca_equipo en agregar equipo
 
-Pedir el excel para importar los datos
+OK Pedir el excel para importar los datos
 
 
 error en editar modelos cambiar nombre
@@ -279,5 +279,6 @@ Mejoras de diseño {
         La tabla de detalles podria ser mas grande dejando espacio a detalles
 }
 editAsignacion es muy pobre falta una opcion para cambiar la tabla de equipos asignados
-add_asignacion no funciona
+OK add_asignacion no funciona
 
+OK TODO: en modelo_equipo editar el tipo de equipo no sale seleccionado con el valor actual

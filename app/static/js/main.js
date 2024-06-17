@@ -431,3 +431,30 @@ function mostrar_agregar(id_select)  {
   input_tipo_equipo.value = select.value
   console.log(input_tipo_equipo)
 }
+
+//para editar modelo. Mueve el valor del input al selector de tipo_equipo que se muestra
+function seleccionarTipoEquipoEditarModelo(id_select) {
+  console.log("seleccionarTipoEquipoEditarModelo")
+  input = document.getElementById("nombre_tipo_equipo")
+  console.log("input")
+  console.log(input)
+  select = document.getElementById("s_" + id_select) 
+  console.log("select")
+  console.log(select)
+  Options = select.options
+  console.log("options")
+  console.log(Options)
+  console.log("")
+  for(let i = 0; i < Options.length; i++) {
+    option = Options[i]
+    console.log(option)
+    if(option.value === input.value) {
+      console.log("selected")
+      option.selected = true
+    }else {
+      console.log("not selected")
+      option.selected = false
+    }
+  }
+
+}
