@@ -88,8 +88,7 @@ y el tipo
 <select id="s_{{id_tipo}}_{{id_marca}}" name="iModelo_Equipo" onchange="enviarModelo('s_{{id_tipo}}_{{id_marca}}')">
     <option value="">Selecciones Modelo Equipo</option>
     {% for modelo in tupla_modelos %}
-    <option 
-        id="{{modelo.idModelo_Equipo}}" value="{{modelo.idModelo_Equipo}}">
+    <option id="{{modelo.idModelo_Equipo}}" value="{{modelo.idModelo_Equipo}}">
         {{modelo.nombreModeloequipo}}
     </option>
     {% endfor %}
@@ -99,8 +98,8 @@ y el tipo
 
 {% macro select_tipo(tupla_tipos_equipo, id_marca) %}
 <label for="nombre_modelo">Tipo Equipo <span style="color: red;">*</span></label>
-<select id="select_tipo_marca:{{id_marca}}" name="" 
-        onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}'); mostrarSelectsEspeciales('{{id_marca}}')">
+<select id="select_tipo_marca:{{id_marca}}" name=""
+    onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}'); mostrarSelectsEspeciales('{{id_marca}}')">
     <option value="">Seleccione Tipo Equipo</option>
     {% for tipo in tupla_tipos_equipo %}
     <option id="{{tipo.idTipo_equipo}}" value="{{tipo.nombreTipo_equipo}}">
@@ -118,8 +117,7 @@ y el tipo
     {%for tipo in lista_tipos_asociados_marca%}
     {{tipo}}
     {% endfor%}
-    <select id="s_{{marcas.idMarca_Equipo}}" name="" 
-        onchange="mostrar_agregar('s_{{marcas.idMarca_Equipo}}')">
+    <select id="s_{{marcas.idMarca_Equipo}}" name="" onchange="mostrar_agregar('s_{{marcas.idMarca_Equipo}}')">
         <option value="">Seleccione el Tipo del Equipo</option>
         {% for tipo in marcas.tipo_equipo %}
         <option value="{{ tipo.idTipo_equipo }}">

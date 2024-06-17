@@ -11,7 +11,7 @@ cuentas = Blueprint("cuentas", __name__, template_folder="app/templates")
 def loguear_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kargs):
-        print("DECORATOR 1")
+        #print("DECORATOR 1")
         if "user" not in session:
             flash("Nesesita estar logueado para usar esta ruta")
             return redirect("/ingresar")
@@ -23,15 +23,15 @@ def loguear_requerido(f):
 def administrador_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kargs):
-        print("DECORATOR 2")
-        print(session)
-        print(session['privilegio'])
+        #print("DECORATOR 2")
+        #print(session)
+        #print(session['privilegio'])
         if "user" not in session:
             flash("Nesesita estar logueado para usar esta ruta")
             return redirect("/ingresar")
         
         if session['privilegio'] == 1:
-            print("test")
+            #print("test")
             return f(*args, **kargs)
         
         flash("Se nesesita ser administrador para usar esta funcion")

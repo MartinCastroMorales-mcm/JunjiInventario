@@ -482,12 +482,12 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    shutil.copy(nombrePdf, "app/pdf")
-    try:
-        enviar_correo(nombrePdf, 'correo')
-    except:
+    shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
+    #try:
+        #enviar_correo(nombrePdf, 'correo')
+    #except:
         #TODO: agregar error
-        flash("no se pudo enviar el correo")
+        #flash("no se pudo enviar el correo")
     return nombrePdf
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")

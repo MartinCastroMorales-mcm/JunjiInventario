@@ -20,9 +20,10 @@
 {% extends "layout.html" %}
 {% block body %}
 
+
+<a class="nav-button" href="/incidencia">Volver</a>
 <div class="row">
     <div class="col-md-4 offset-md-4">
-        <h1>Editando una Incidencia</h1>
         <div class="card card-body" id="formulario" style="display: bloc;">
             <form action="/incidencia/update_incidencia/{{incidencia.idIncidencia}}" method="POST" class="mi-formulario">
                 <div class="form-group">

@@ -271,3 +271,13 @@ posible error en cumpleaños. Quizas no deje leer la ultima linea tal y como est
         (arreglado pero no agregado a Linux)
 selector de fecha estan en formato mm/dd/yyyy pero seria preferible un formato dd/mm/yyyy
 Al editar modelo no estan los valores anteriores
+
+
+
+Mejoras de diseño {
+        La tabla de equipos es muy grande y es poco practica
+        La tabla de detalles podria ser mas grande dejando espacio a detalles
+}
+editAsignacion es muy pobre falta una opcion para cambiar la tabla de equipos asignados
+add_asignacion no funciona
+

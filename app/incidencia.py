@@ -189,10 +189,16 @@ def listar_pdf(id):
     #try:
     cur = mysql.connection.cursor()
     cur.execute("""
+    SELECT idEquipo
+    FROM incidencia i
+    WHERE i.idIncidencia = %s
+                """, (id,))
+    Incidencia = cur.fetchone()
+    cur.execute("""
                 SELECT *
                 FROM super_equipo e
                 WHERE e.idEquipo = %s
-                """, (id,))
+                """, (Incidencia['idEquipo'],))
     data_equipo = cur.fetchone()
     dir = PDFS_INCIDENCIAS
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
@@ -233,14 +239,11 @@ def listar_pdf(id):
     mysql.connection.commit()
     
     return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, 
-                           documentos=pdfTupla, equipo=data_equipo)
+                           documentos=pdfTupla, equipo=data_equipo, location='incidencia')
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
 @loguear_requerido
 def mostrar_pdf(id, nombrePdf):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         nombrePdf = nombrePdf
         dir = PDFS_INCIDENCIAS
