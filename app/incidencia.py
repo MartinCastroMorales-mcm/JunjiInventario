@@ -179,29 +179,30 @@ def adjuntar_pdf(id):
     flash("se subio correctamente")
     return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
-@incidencia.route("/incidencia/listar_pdf/<id>")
+@incidencia.route("/incidencia/listar_pdf/<idEquipo>")
 @loguear_requerido
-def listar_pdf(id):
+def listar_pdf(idEquipo):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
     #verificar la existencia de la carpeta incidencia
     #try:
     cur = mysql.connection.cursor()
-    cur.execute("""
-    SELECT idEquipo
-    FROM incidencia i
-    WHERE i.idIncidencia = %s
-                """, (id,))
-    Incidencia = cur.fetchone()
+    #cur.execute("""
+    ##SELECT idEquipo
+    ##FROM incidencia i
+    ##WHERE i.idIncidencia = %s
+                ##""", (idEquipo,))
+    #Incidencia = cur.fetchone()
+    #print(Incidencia)
     cur.execute("""
                 SELECT *
                 FROM super_equipo e
                 WHERE e.idEquipo = %s
-                """, (Incidencia['idEquipo'],))
+                """, (idEquipo,))
     data_equipo = cur.fetchone()
     dir = PDFS_INCIDENCIAS
-    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
+    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idEquipo))
     if(not os.path.exists(carpeta_incidencias)):
         #insertar numero de documentos
         cur = mysql.connection.cursor()
@@ -209,9 +210,9 @@ def listar_pdf(id):
             UPDATE incidencia
             SET numDocumentos = %s
             WHERE idIncidencia = %s
-                    """, (0 , id))
+                    """, (0 , idEquipo))
         mysql.connection.commit()
-        return render_template("mostrar_pdf_incidencia.html", idIncidencia=id,
+        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idEquipo,
                 documentos=(), equipo=data_equipo)
 
         
@@ -235,10 +236,10 @@ def listar_pdf(id):
         UPDATE incidencia
         SET numDocumentos = %s
         WHERE idIncidencia = %s
-                """, (len(pdfTupla), id))
+                """, (len(pdfTupla), idEquipo))
     mysql.connection.commit()
     
-    return render_template("mostrar_pdf_incidencia.html", idIncidencia=id, 
+    return render_template("mostrar_pdf_incidencia.html", idIncidencia=idEquipo, 
                            documentos=pdfTupla, equipo=data_equipo, location='incidencia')
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
