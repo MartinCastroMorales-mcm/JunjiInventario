@@ -197,8 +197,6 @@ def edit_modelo_equipo(id):
     curs.execute("SELECT * FROM tipo_equipo")
     tipo_data = curs.fetchall()
     curs.close()
-    #print("marcas_con_tipo_equipo")
-    #print(marcas_con_tipo_equipo)
     return render_template(
         "editModelo_equipo.html", modelo_equipo=data, id=id,
         marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data)

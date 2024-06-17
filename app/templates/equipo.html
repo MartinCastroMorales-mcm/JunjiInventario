@@ -229,17 +229,11 @@
             <tr>
                 <td onclick="sortTable(0)">Cod. inventario</td>
                 <td onclick="sortTable(1)">Num. serie</td>
-                <td onclick="sortTable(2)">Observacion</td>
-                <td onclick="sortTable(3)">Funcionario</td>
-                <td onclick="sortTable(4)">Codigo Proveedor</td>
-                <td onclick="sortTable(5)">Mac</td>
-                <td onclick="sortTable(6)">Imei</td>
-                <td onclick="sortTable(7)">Numero de Telefono</td>
-                <td onclick="sortTable(8)">Tipo equipo</td>
-                <td onclick="sortTable(9)">Estado equipo</td>
-                <td onclick="sortTable(10)">Unidad</td>
-                <td onclick="sortTable(11)">Nombre orden compra</td>
-                <td onclick="sortTable(12)">Modelo</td>
+                <td onclick="sortTable(2)">Funcionario</td>
+                <td onclick="sortTable(3)">Codigo Proveedor</td>
+                <td onclick="sortTable(4)">Unidad</td>
+                <td onclick="sortTable(5)">Tipo equipo</td>
+                <td onclick="sortTable(6)">Modelo</td>
                 <td>Operations</td>
             </tr>
         </thead>
@@ -249,16 +243,14 @@
             <tr>
                 <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                 <td class="toCheck">{{equi.Num_serieEquipo}}</td>
-                <td class="toCheck">{{equi.ObservacionEquipo}}</td>
+                {% if equi.nombreFuncionario == '' %}
+                <td class="toCheck">SIN ASIGNAR</td>
+                {% else %}
                 <td class="toCheck">{{equi.nombreFuncionario}}</td>
+                {% endif %}
                 <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
-                <td class="toCheck">{{equi.macEquipo}}</td>
-                <td class="toCheck">{{equi.imeiEquipo}}</td>
-                <td class="toCheck">{{equi.numerotelefonicoEquipo}}</td>
-                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
-                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
                 <td class="toCheck">{{equi.nombreUnidad}}</td>
-                <td class="toCheck">{{equi.nombreOrden_compra}}</td>
+                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                 <td class="toCheck">{{equi.nombreModeloequipo}}</td>
                 <td>
                     {#clase para tener un boton que despliega los otros botones #}

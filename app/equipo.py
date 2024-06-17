@@ -35,6 +35,7 @@ def Equipo(page=1):
         )
     )
     equipos = cur.fetchall()
+    print(equipos)
     modelos_por_tipo = cur.fetchall()
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_equipo = cur.fetchall()
@@ -548,9 +549,6 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
 @equipo.route("/equipo_detalles/<idEquipo>")
 @loguear_requerido
 def equipo_detalles(idEquipo):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     #Como funcionaria con la asignacion cambiada ¿?
     #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
@@ -603,11 +601,24 @@ def equipo_detalles(idEquipo):
                 #""",(idEquipo))
     cur.execute("""
     SELECT *
-    FROM super_equipo
-    """
+    FROM super_equipo se
+    WHERE se.idEquipo = %s
+    """, (idEquipo,)
     )
     data_equipo = cur.fetchone()
-    return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos)
+    #revisar si este equipo esta asignado a un funcionario
+    if data_equipo['rutFuncionario'] != '':
+        cur.execute("""
+        SELECT *
+        FROM funcionario f
+        INNER JOIN unidad u ON u.idUnidad = f.idUnidad
+        WHERE f.rutFuncionario = %s
+        """, (data_equipo['rutFuncionario'],))
+        funcionario = cur.fetchone()
+    else:
+        funcionario = None
+
+    return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos, funcionario=funcionario)
 
 #
     #cur.execute("""
