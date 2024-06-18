@@ -719,7 +719,14 @@ def crear_pdf_devolucion(
             cols.ln()
     nombrePdf = "devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "app/pdf")
+    if inLinux():
+        print("in Linux save pdf")
+        shutil.move(nombrePdf, "pdf/")
+        print("inLinux saved pdf")
+    else:
+        print("out of Linux save pdf")
+        shutil.move(nombrePdf, "app/pdf")
+        print("out of Linux saved pdf")
 
 @asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
 @loguear_requerido
