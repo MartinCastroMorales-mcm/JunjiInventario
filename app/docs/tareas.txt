@@ -284,3 +284,5 @@ OK add_asignacion no funciona
 OK TODO: en modelo_equipo editar el tipo de equipo no sale seleccionado con el valor actual
 Falta añadir observaciones a editar equipos
 editar contraseña
+
+parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo

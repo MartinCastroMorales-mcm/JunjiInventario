@@ -483,9 +483,13 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
     if inLinux():
+        print("inLinux save pdf")
         shutil.move(nombrePdf, "pdf/" + nombrePdf)
+        print("inLinux saved pdf")
     else:
+        print("out of Linux save pdf")
         shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
+        print("out of Linux saved pdf")
     #try:
         #enviar_correo(nombrePdf, 'correo')
     #except:
@@ -500,6 +504,8 @@ def mostrar_pdf(id):
         nombrePdf = "asignacion_" + str(id) + ".pdf"
         dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
+        print("mostrar_pdf")
+        print(file)
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")

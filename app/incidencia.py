@@ -156,10 +156,9 @@ def adjuntar_pdf(id):
     file = request.files["file"]
     dir = PDFS_INCIDENCIAS
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
-    try:
-        os.mkdir(os.path.join(dir, carpeta_incidencias))
-    except:
-        pass
+    print(carpeta_incidencias)
+    #podria dar error pero mejor que tire error y ver cual es
+    os.mkdir(carpeta_incidencias)
     fileName = file.filename
     file.save(os.path.join(
         carpeta_incidencias,
