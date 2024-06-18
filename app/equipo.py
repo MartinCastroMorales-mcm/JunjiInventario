@@ -1,10 +1,11 @@
-from flask import request, flash, render_template, url_for, redirect, Blueprint, session
+from flask import request, flash, render_template, url_for, redirect, Blueprint, session, send_file
 from db import mysql
 from funciones import getPerPage
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
 from cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
+
 import os
 
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
@@ -941,65 +942,17 @@ def crear_excel():
     #consulta datos
     cur = mysql.connection.cursor()
     cur.execute(""" 
-    SELECT *
-    FROM
-    (
-    SELECT e.idEquipo, e.Cod_inventarioEquipo, 
-           e.Num_serieEquipo, e.ObservacionEquipo,
-           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
-           e.numerotelefonicoEquipo,
-           te.idTipo_equipo, 
-           te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
-           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-           com.nombreComuna, pro.nombreProvincia,
-        moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario,
-                me.nombreMarcaEquipo, mo.nombreModalidad,
-                pr.nombreProveedor
-    FROM equipo e
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    INNER JOIN unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
-    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
-
-    LEFT JOIN comuna com ON com.idComuna = u.idComuna
-    LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
-
-    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
-    UNION 
-    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
-            e.Num_serieEquipo, e.ObservacionEquipo, 
-            e.codigoproveedor_equipo, e.macEquipo, 
-            e.imeiEquipo, e.numerotelefonicoEquipo,
-            te.idTipo_equipo, te.nombreTipo_Equipo,
-            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
-            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario,
-            com.nombreComuna, pro.nombreProvincia,
-            me.nombreMarcaEquipo, mo.nombreModalidad,
-            pr.nombreProveedor
-    FROM equipo e
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-    INNER JOIN unidad u on u.idUnidad = e.idUnidad
-    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    LEFT JOIN marca_equipo me on me.idMarca_Equipo = te.idMarca_Equipo
-    LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
-
-    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
-    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    LEFT JOIN asignacion a on a.idAsignacion = ea.idAsignacion
-    LEFT JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-    LEFT JOIN comuna com ON com.idComuna = u.idComuna
-    LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
-    INNER JOIN proveedor pr ON oc.idProveedor = pr.idProveedor
-    WHERE ee.nombreEstado_equipo LIKE "EN USO"
-    ) as subquery
-    
-                """)
+    SELECT * 
+    FROM super_equipo se
+    INNER JOIN unidad u ON u.idUnidad = se.idUnidad
+    INNER JOIN modalidad m ON u.idModalidad = m.idModalidad
+    INNER JOIN comuna c ON c.idComuna = u.idComuna
+    INNER JOIN provincia p ON c.idProvincia = p.idProvincia
+    INNER JOIN modelo_equipo me ON me.idModelo_Equipo = se.idModelo_Equipo
+    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = me.idMarca_Equipo
+    INNER JOIN orden_compra oc ON oc.idOrden_compra = se.idOrden_compra
+    INNER JOIN proveedor pvr ON pvr.idProveedor = oc.idProveedor
+    """)
     equipo_data = cur.fetchall()
 
     #generar encabezado
@@ -1028,7 +981,7 @@ def crear_excel():
         fillCell(equipo_data[fila]['nombreModalidad'], fila + 2)
         fillCell(equipo_data[fila]['codigoproveedor_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreUnidad'], fila + 2)
-        fillCell(equipo_data[fila]['nombreTipo_Equipo'], fila + 2)
+        fillCell(equipo_data[fila]['nombreTipo_equipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreMarcaEquipo'], fila + 2)
         fillCell(equipo_data[fila]['nombreModeloequipo'], fila + 2)
         fillCell(equipo_data[fila]['Num_serieEquipo'], fila + 2)
@@ -1039,8 +992,8 @@ def crear_excel():
 
 
     #ingresar datos
-    wb.save("test.xlsx")
-    return redirect(url_for("equipo.Equipo"))
+    wb.save("app/datos_exportados.xlsx")
+    return send_file('datos_exportados.xlsx', as_attachment=True)
 
 def crear_pagina_todojunto(wb):
     return wb
