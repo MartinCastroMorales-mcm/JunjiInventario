@@ -501,12 +501,19 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 @loguear_requerido
 def mostrar_pdf(id):
     try:
-        nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir =  PDFS_DIR
-        file = os.path.join(dir, nombrePdf)
-        print("mostrar_pdf")
-        print(file)
-        return send_file(file, as_attachment=True)
+        if inLinux():
+            nombrePdf = "asignacion_" + str(id) + ".pdf"
+            dir = 'pdf' 
+            file = os.path.join(dir, nombrePdf)
+            print('file')
+            return send_file(file, as_attachment=True)
+        else:
+            nombrePdf = "asignacion_" + str(id) + ".pdf"
+            dir =  PDFS_DIR
+            file = os.path.join(dir, nombrePdf)
+            print("mostrar_pdf")
+            print(file)
+            return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
