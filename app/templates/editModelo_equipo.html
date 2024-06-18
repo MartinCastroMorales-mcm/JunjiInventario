@@ -3,30 +3,29 @@
 {% from 'funciones_macro.html' import select_para_marca %}
 
 
+<a class="nav-button" href="/modelo_equipo">Volver</a>
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <div class="card card-body" style="display: block;" id="formulario">
 
-            <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
+            <form action="/update_modelo_equipo/{{id}}" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo">
+                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                        value="{{modelo_equipo.nombreModeloequipo}}">
                 </div>
-                {#
-                TODO: Al apretar el boton verde agregar se muestra un boton para seleccionar la marca
-                Despues de seleccionar la marca se muestra el tipo de equipo y el boton gris de agregar.
-
-                - modificar la tupla de marcas para que tenga como uno de sus objetos una tupla de tipos de equipo
-                #}
-
-                {#Usar una macro para crear por cada marca crear un select con el tipo y esconderlo #}
                 <div class="form-group">
                     <div id="selector_marca">
                         <label for="nombre_marca_equipo"> Marca Equipo: </label>
-                        <select name="nombre_marca_equipo" id="marca_equipo" onchange="mostrarTipo_equipo()">
-                            <option value="">Elija la Marca del Equipo</option>
+                        <select name="nombre_marca_equipo" id="marca" 
+                            onchange="mostrarTipo_para_agregar_modelo()">
+                            <option value="{{modelo_equipo.idMarca_Equipo}}" selected="true">
+                                    {{modelo_equipo.nombreMarcaEquipo}}</option>
+
                             {% for marcae in marca_equipo %}
-                            <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+                            {% if modelo_equipo.idMarca_Equipo == marcae.idMarca_Equipo%}
+                            <option value="{{marcae.idMarca_Equipo}}">{{marcae.nombreMarcaEquipo}}</option>
+                            {% endif %}
                             {% endfor %}
                         </select>
                         <br />
@@ -36,14 +35,19 @@
                     {% endfor %}
 
                     <div id="selector_tipo_equipo" style="display: none;">
-                        <input name="nombre_tipo_equipo" id="nombre_tipo_equipo" />
+                        <input name="nombre_tipo_equipo" id="nombre_tipo_equipo" value="{{modelo_equipo.idTipo_equipo}}"/>
                     </div>
                 </div>
+
 
                 <button id="enviar" class="agregar-button" style="display: none;"> Agregar</button>
             </form>
         </div>
     </div>
 </div>
+<script>
+    mostrarTipo_para_agregar_modelo();
+    seleccionarTipoEquipoEditarModelo("{{modelo_equipo.idMarca_Equipo}}");
+</script>
 
 {% endblock %}

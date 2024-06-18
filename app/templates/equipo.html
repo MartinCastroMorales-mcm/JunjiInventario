@@ -35,7 +35,7 @@
                         <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
                             <option value="">Seleccione el Marca</option>
                             {% for marca in marcas_equipo %}
-                                <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
+                            <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
                             {% endfor%}
                         </select>
                     </div>
@@ -54,16 +54,14 @@
                         {% for marca in marcas_equipo %}
                         {#{marca.nombreMarcaEquipo}#}
                         {# el div tiene la marca ya que todo lo que se muestra en el div
-                            siguiente solo se muestra si la marca elegida es la que este 
-                            asociada a el tipo y modelo de la iteracion correspondiente
+                        siguiente solo se muestra si la marca elegida es la que este
+                        asociada a el tipo y modelo de la iteracion correspondiente
                         #}
-                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca"
-                            style="display:none">
+                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca" style="display:none">
                             {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
                             {% for tipo in marca.tipo_equipo%}
                             {#{tipo.nombreTipo_equipo}#}
-                           <div id="{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo"
-                                style="display: none;">
+                            <div id="div_modelo_{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo" style="display: none;">
                                 {#{tipo.modelo_equipo}#}
                                 {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
                             </div>
@@ -71,7 +69,7 @@
                         </div>
                         {% endfor %}
                     </div>
-                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo"/>
+                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo" />
                     {# select test #}
                     <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
                     <select name="codigo_Unidad">
@@ -124,7 +122,7 @@
                     <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50"></textarea>
                     <br>
 
-                <button class="agregar-button" type="submit"> Agregar</button>
+                    <button class="agregar-button" type="submit"> Agregar</button>
             </form>
         </div>
     </div>
@@ -192,26 +190,26 @@
 <div class="card card-body" id="importar_excel" style="display: none;">
     {#aqui formulario para importar datos#}
     <p>IMPORTAR</p>
-<div class="card card-body" id="formulario" style="display: block;">
-    <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="file">Añadir Excel e importar Equipos</label>
-            <input type="file" name="file" />
-            {# se nesesita una forma eficiente de añadir el equipo#}
-            <button class="agregar-button"> Agregar</button>
-        </div>
-    </form>
-</div>
-<div class="card card-body" id="formulario" style="display: block;">
-    <form action="/equipo/importar_excel/unidad" method="POST" class="mi-formulario" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="file">Añadir Excel e importar Unidad</label>
-            <input type="file" name="file" />
-            {# se nesesita una forma eficiente de añadir el equipo#}
-            <button class="agregar-button"> Agregar</button>
-        </div>
-    </form>
-</div>
+    <div class="card card-body" id="formulario" style="display: block;">
+        <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Añadir Excel e importar Equipos</label>
+                <input type="file" name="file" />
+                {# se nesesita una forma eficiente de añadir el equipo#}
+                <button class="agregar-button"> Agregar</button>
+            </div>
+        </form>
+    </div>
+    <div class="card card-body" id="formulario" style="display: block;">
+        <form action="/equipo/importar_excel/unidad" method="POST" class="mi-formulario" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Añadir Excel e importar Unidad</label>
+                <input type="file" name="file" />
+                {# se nesesita una forma eficiente de añadir el equipo#}
+                <button class="agregar-button"> Agregar</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <br />
@@ -231,17 +229,11 @@
             <tr>
                 <td onclick="sortTable(0)">Cod. inventario</td>
                 <td onclick="sortTable(1)">Num. serie</td>
-                <td onclick="sortTable(2)">Observacion</td>
-                <td onclick="sortTable(3)">Funcionario</td>
-                <td onclick="sortTable(4)">Codigo Proveedor</td>
-                <td onclick="sortTable(5)">Mac</td>
-                <td onclick="sortTable(6)">Imei</td>
-                <td onclick="sortTable(7)">Numero de Telefono</td>
-                <td onclick="sortTable(8)">Tipo equipo</td>
-                <td onclick="sortTable(9)">Estado equipo</td>
-                <td onclick="sortTable(10)">Unidad</td>
-                <td onclick="sortTable(11)">Nombre orden compra</td>
-                <td onclick="sortTable(12)">Modelo</td>
+                <td onclick="sortTable(2)">Funcionario</td>
+                <td onclick="sortTable(3)">Codigo Proveedor</td>
+                <td onclick="sortTable(4)">Unidad</td>
+                <td onclick="sortTable(5)">Tipo equipo</td>
+                <td onclick="sortTable(6)">Modelo</td>
                 <td>Operations</td>
             </tr>
         </thead>
@@ -251,16 +243,14 @@
             <tr>
                 <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                 <td class="toCheck">{{equi.Num_serieEquipo}}</td>
-                <td class="toCheck">{{equi.ObservacionEquipo}}</td>
+                {% if equi.nombreFuncionario == '' %}
+                <td class="toCheck">SIN ASIGNAR</td>
+                {% else %}
                 <td class="toCheck">{{equi.nombreFuncionario}}</td>
+                {% endif %}
                 <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
-                <td class="toCheck">{{equi.macEquipo}}</td>
-                <td class="toCheck">{{equi.imeiEquipo}}</td>
-                <td class="toCheck">{{equi.numerotelefonicoEquipo}}</td>
-                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
-                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
                 <td class="toCheck">{{equi.nombreUnidad}}</td>
-                <td class="toCheck">{{equi.nombreOrden_compra}}</td>
+                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                 <td class="toCheck">{{equi.nombreModeloequipo}}</td>
                 <td>
                     {#clase para tener un boton que despliega los otros botones #}

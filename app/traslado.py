@@ -6,10 +6,10 @@ import os
 import shutil 
 from cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
+from env_vars import paths
 traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
-PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
-
+PDFS_DIR = paths['pdf_path']
 @traslado.route("/traslado")
 @traslado.route("/traslado/<page>")
 @loguear_requerido
@@ -440,7 +440,9 @@ def mostrar_pdf(id, firmado="0"):
         else:
             nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
             print("se encontro el firmado" + nombrePdf)
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir = PDFS_DIR
+        print("test")
+        print(dir)
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:

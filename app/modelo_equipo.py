@@ -123,9 +123,9 @@ def add_modelo_equipo():
         nombre_modelo_equipo = request.form['nombre_modelo_equipo']
         id_tipo_equipo = request.form['nombre_tipo_equipo']
         id_marca_equipo = request.form['nombre_marca_equipo']
-        print("add")
-        print(id_tipo_equipo)
-        print(nombre_modelo_equipo)
+        #print("add")
+        #print(id_tipo_equipo)
+        #print(nombre_modelo_equipo)
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -159,20 +159,20 @@ def edit_modelo_equipo(id):
     LEFT OUTER JOIN tipo_equipo te ON te.idTipo_Equipo = moe.idTipo_Equipo
     LEFT OUTER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_Equipo  
     LEFT OUTER JOIN marca_equipo mae on mte.idMarca_equipo = mae.idMarca_Equipo
-    WHERE idModelo_Equipo = %s
+    WHERE idModelo_Equipo = %s AND moe.idMarca_Equipo = mte.idMarca_Equipo
     """,
         (id,)
     )
     data = cur.fetchone()
     cur.execute("SELECT * FROM marca_equipo")
     mae_data = cur.fetchall()
-    print("mae_data")
-    print(mae_data)
-    print(len(mae_data))
+    #print("mae_data")
+    #print(mae_data)
+    #print(len(mae_data))
     marcas_con_tipo_equipo = None
     for i in range(0, len(mae_data)):
-        print("marca_iterada" + str(i))
-        print(marcas_con_tipo_equipo)
+        #print("marca_iterada" + str(i))
+        #print(marcas_con_tipo_equipo)
         marca = mae_data[i]
         #añadir la tupla de tipo como elemento de la tupla de marca
         cur.execute("""
@@ -197,10 +197,8 @@ def edit_modelo_equipo(id):
     curs.execute("SELECT * FROM tipo_equipo")
     tipo_data = curs.fetchall()
     curs.close()
-    print("marcas_con_tipo_equipo")
-    print(marcas_con_tipo_equipo)
     return render_template(
-        "editModelo_equipo.html", modelo_equipo=data,
+        "editModelo_equipo.html", modelo_equipo=data, id=id,
         marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data)
 
 
@@ -214,17 +212,25 @@ def update_modelo_equipo(id):
     if request.method == "POST":
         nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
         nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
+        idMarca_Equipo = request.form['nombre_marca_equipo']
+        print("marca")
+        print(idMarca_Equipo)
+        print("nombre tipo equipo")
+        print(nombre_tipo_equipo)
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
             UPDATE modelo_equipo 
             SET nombreModeloequipo = %s,
-                idTipo_Equipo = %s
+                idTipo_Equipo = %s,
+                idMarca_Equipo = %s
             WHERE idModelo_Equipo = %s
             """,
-                (nombre_modelo_equipo, nombre_tipo_equipo, id),
+                (nombre_modelo_equipo, nombre_tipo_equipo, idMarca_Equipo, id),
             )
+            print('id')
+            print(id)
             mysql.connection.commit()
             flash("Modelo actualizado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))

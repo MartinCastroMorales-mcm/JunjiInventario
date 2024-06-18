@@ -250,7 +250,7 @@ agregar boton para decidir si se envia o no correo
 agregar opciones para acciones por defecto(traslado, correo, etc)
 OK filtro de marca_equipo en agregar equipo
 
-Pedir el excel para importar los datos
+OK Pedir el excel para importar los datos
 
 
 error en editar modelos cambiar nombre
@@ -262,7 +262,27 @@ importar excel(
         que determina la cantidad de filas en openxl
 )
 
-modelo editar no muestra boton de agregar
-cambiar rutas a variables de entorno
-cambiar contraseñas por variables de entorno
+OK modelo editar no muestra boton de agregar
+OK cambiar rutas a variables de entorno
+OK cambiar contraseñas por variables de entorno
 error orden de compra
+OK Tipo equipo telefono no funciona
+posible error en cumpleaños. Quizas no deje leer la ultima linea tal y como esta hecha la iteracion
+        (arreglado pero no agregado a Linux)
+selector de fecha estan en formato mm/dd/yyyy pero seria preferible un formato dd/mm/yyyy
+Al editar modelo no estan los valores anteriores
+
+
+
+Mejoras de diseño {
+        La tabla de equipos es muy grande y es poco practica
+        La tabla de detalles podria ser mas grande dejando espacio a detalles
+}
+editAsignacion es muy pobre falta una opcion para cambiar la tabla de equipos asignados
+OK add_asignacion no funciona
+
+OK TODO: en modelo_equipo editar el tipo de equipo no sale seleccionado con el valor actual
+Falta añadir observaciones a editar equipos
+editar contraseña
+
+parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo

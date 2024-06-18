@@ -192,7 +192,7 @@ tipos_mac = {
 }
 tipos_imei = {
   "Tablet": true,
-  "celular": true
+  "Celular": true
 }
 tipos_num_telefono = {
   "Celular": true,
@@ -233,17 +233,26 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
     div = divs_select_de_tipo[i]
     console.log(div.id)
     console.log(select_tipo.value)
-    if (div.id === select_tipo.value) {
+    if (div.id === "div_modelo_" + select_tipo.value) {
       div.style.display = "block"
     } else {
       div.style.display = "none"
     }
   }
 
-  tipo = document.getElementById("select_tipo_marca:" + id_select_tipo_equipo)
+
+
+}
+
+function mostrarSelectsEspeciales(id_marca) {
+  tipo = document.getElementById('select_tipo_marca:' + id_marca)
+  valor_tipo_equipo = tipo.value
+  console.log('valor_tipo_equipo')
+  console.log(valor_tipo_equipo)
   //esconder mac
+  console.log("mostrarSelectsEspeciales")
   mac_div = document.getElementById("Mac")
-  if (tipos_mac[tipo]) {
+  if (tipos_mac[valor_tipo_equipo]) {
     mac_div.style.display = "block"
   } else {
     mac_div.style.display = "none"
@@ -251,20 +260,20 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
 
   //esconder imei
   imei_div = document.getElementById("Imei")
-  if (tipos_imei[tipo]) {
+  if (tipos_imei[valor_tipo_equipo]) {
     imei_div.style.display = "block"
   } else {
     imei_div.style.display = "none"
   }
   //esconder numero de telefono
   num_telefono_div = document.getElementById("Telefono")
-  if (tipos_num_telefono[tipo]) {
+  if (tipos_num_telefono[valor_tipo_equipo]) {
+    console.log("test")
+    console.log(num_telefono_div)
     num_telefono_div.style.display = "block"
   } else {
     num_telefono_div.style.display = "none"
   }
-
-
 }
 
 function mostrarTipo_equipo() {
@@ -406,7 +415,13 @@ function mostrarTipo_para_agregar_modelo() {
     }
   }
 }
-function mostrar_agregar(id_select) {
+function mostrarBotonAgregarAlUsarSelect() {
+  boton = document.getElementById("enviar")
+  boton.style.display = "block"
+  console.log(boton)
+  
+}
+function mostrar_agregar(id_select)  {
   //mostrar el boton de agregar
   select = document.getElementById(id_select)
   boton = document.getElementById('enviar')
@@ -415,4 +430,31 @@ function mostrar_agregar(id_select) {
   input_tipo_equipo = document.getElementById('nombre_tipo_equipo')
   input_tipo_equipo.value = select.value
   console.log(input_tipo_equipo)
+}
+
+//para editar modelo. Mueve el valor del input al selector de tipo_equipo que se muestra
+function seleccionarTipoEquipoEditarModelo(id_select) {
+  console.log("seleccionarTipoEquipoEditarModelo")
+  input = document.getElementById("nombre_tipo_equipo")
+  console.log("input")
+  console.log(input)
+  select = document.getElementById("s_" + id_select) 
+  console.log("select")
+  console.log(select)
+  Options = select.options
+  console.log("options")
+  console.log(Options)
+  console.log("")
+  for(let i = 0; i < Options.length; i++) {
+    option = Options[i]
+    console.log(option)
+    if(option.value === input.value) {
+      console.log("selected")
+      option.selected = true
+    }else {
+      console.log("not selected")
+      option.selected = false
+    }
+  }
+
 }

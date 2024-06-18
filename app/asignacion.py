@@ -15,11 +15,11 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 import fitz
+from env_vars import paths, inLinux
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
-PDFS_DIR = r'C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf'
-
+PDFS_DIR = paths['pdf_path']
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
 @loguear_requerido
@@ -482,12 +482,19 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    shutil.copy(nombrePdf, "app/pdf")
-    try:
-        enviar_correo(nombrePdf, 'correo')
-    except:
+    if inLinux():
+        print("inLinux save pdf")
+        shutil.move(nombrePdf, "pdf/" + nombrePdf)
+        print("inLinux saved pdf")
+    else:
+        print("out of Linux save pdf")
+        shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
+        print("out of Linux saved pdf")
+    #try:
+        #enviar_correo(nombrePdf, 'correo')
+    #except:
         #TODO: agregar error
-        flash("no se pudo enviar el correo")
+        #flash("no se pudo enviar el correo")
     return nombrePdf
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
@@ -495,8 +502,10 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 def mostrar_pdf(id):
     try:
         nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
+        print("mostrar_pdf")
+        print(file)
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro el pdf")
@@ -717,7 +726,7 @@ def crear_pdf_devolucion(
 def mostrar_pdf_devolucion(id):
     try:
         nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -853,7 +862,7 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -868,7 +877,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
-        dir = r"C:\Users\Junji\Downloads\Junji_inventario-main1\Junji_inventario-main\Junji_inventario-main\app\pdf"
+        dir =  PDFS_DIR
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
