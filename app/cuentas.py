@@ -87,8 +87,8 @@ def crear_cuenta():
     contrasenna = request.form['contrasenna']
     contrasenna2 = request.form['repetir']
     isAdmin = request.form.get("isAdmin")
-    print("##############")
-    print(isAdmin)
+    #print("##############")
+    #print(isAdmin)
     if isAdmin == "on":
         isAdmin = 1
     else:
@@ -160,6 +160,40 @@ def edit_usuario(nombreUsuario):
                 """, (nombreUsuario,))
     usuario = cur.fetchone()
     return render_template('edit_cuenta.html', usuario=usuario)
+
+@cuentas.route("/update_usuario_contrasenna/<nombre_usuario>", methods=["POST"])
+@administrador_requerido
+def edit_contrasenna(nombre_usuario):
+    #comprobar que la contraseña antigua es correcta
+    contrasenna_vieja = request.form['contranna_vieja']
+    contrasenna_nueva = request.form['contrasenna_nueva']
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
+    SELECT *
+    FROM usuario u
+    WHERE u.nombreUsuario = %s
+    """, (nombre_usuario,))
+    Usuario = cur.fetchone()
+    if bcrypt.check_password_hash(Usuario['contrasennaUsuario'], contrasenna_vieja):
+        #cambiar la contraseña
+        contrasennaHasheada = bcrypt.generate_password_hash(contrasenna_nueva).decode('utf-8')
+        cur.execute("""
+        UPDATE usuario SET
+        contrasennaUsuario = %s 
+        WHERE usuario.nombreUsuario = %s
+        """, (contrasennaHasheada, nombre_usuario))
+        mysql.connection.commit()
+        flash("se cambio la contraseña")
+        return redirect("/registrar")
+    flash("la contraseña ingresada es incorrecta")
+    return redirect("/registrar")
+    
+
+
+
+
+    pass
 
 @cuentas.route("/update_usuario/<nombreUsuario>", methods=["POST"])
 @administrador_requerido

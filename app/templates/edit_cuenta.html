@@ -4,6 +4,7 @@
 <a class="nav-button" href="/">Volver</a>
 <div class="card card-body" id="formulario" >
     <form action="/update_usuario/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
+        <h3>Editar Cuenta</h3>
         <div class="form-group">
             <label for="nombreUsuario">Nombre de Usuario</label>
             <input type="text" class="form-control" 
@@ -18,6 +19,26 @@
             name="isAdmin"/>
             {% endif %}
             <br/>
+            <button class="agregar-button">Ingresar</button>
+        </div>
+    </form>
+</div>
+<div class="card card-body" id="formulario" >
+    <form action="/update_usuario_contrasenna/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
+        <h3>Editar Contraseña</h3>
+        <div class="form-group">
+            <label for="nombreUsuario">Ingrese Contraseña Actual</label>
+            <input type="password" class="form-control" id="contrasenna"
+            name="contranna_vieja" placeholder="Contraseña Antigua">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
+            <br>
+            <label for="nombreUsuario">Ingrese Contraseña Nueva</label>
+            <input type="password" class="form-control" id="contrasenna_repetir"
+            name="contrasenna_nueva" placeholder="Contraseña Nueva" >
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
+
             <button class="agregar-button">Ingresar</button>
         </div>
     </form>
