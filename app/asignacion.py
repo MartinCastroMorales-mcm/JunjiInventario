@@ -880,7 +880,7 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
