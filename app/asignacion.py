@@ -491,6 +491,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
         print("out of Linux saved pdf")
     #try:
+    #funcion para enviar un correo a un funcionario (se envia el acta)
         #enviar_correo(nombrePdf, 'correo')
     #except:
         #TODO: agregar error
@@ -762,7 +763,7 @@ def buscar(idAsignacion):
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
-    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     WHERE a.idAsignacion = %s
         """, (idAsignacion,)
     )

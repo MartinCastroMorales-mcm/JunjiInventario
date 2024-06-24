@@ -6,3 +6,4 @@ test.xlsx
 inventario_venv
 env_vars.py
 integrationtest.py
+wsgi.py
