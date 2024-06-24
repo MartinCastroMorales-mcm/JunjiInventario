@@ -913,7 +913,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     #TODO: revisar que sea pdf
     file = request.files["file"]
     #subir archivo
-    dir = PDFS_DIR
+    dir = 'app/pdf' #TODO cuando la ruta relativa es app/pdf y cuando es pdf
     filenameToDelete = "asignacion_" + str(idAsignacion) + "_firmado.pdf"
     filenameToDelete = secure_filename(filenameToDelete)
     if os.path.exists(os.path.join(dir, filenameToDelete)):

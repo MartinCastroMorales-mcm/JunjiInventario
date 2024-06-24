@@ -295,4 +295,7 @@ OK Error pdf devolucion
 Error subir pdf a incidencia
 Error subir pdf a asignacion
 
+agregar regla para que solo se pueda subir archivos pdf a las asignaciones
+o foto¿?
+
 
