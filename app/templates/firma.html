@@ -29,6 +29,9 @@
     </div>
     <br />
         <h2>Documento de Traslado</h2>
+        {% if location = 'devolucion' %}
+            {{tablaDocumentos(id, (nombreFirmado,), 'asignacion')}}
+        {% endif %}
         {{tablaDocumentos(id, (nombreFirmado,), location)}}
 
 {% endblock %}

@@ -858,7 +858,7 @@ def listar_pdf(idAsignacion, devolver="None"):
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
         #print(nombreFirmado)
-        location = "asignacion"
+        location = "devolucion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join(dir, nombreFirmado)):
         #mostrar
