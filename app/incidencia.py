@@ -156,6 +156,8 @@ def adjuntar_pdf(id):
         return redirect("/ingresar")
     #guardar pdf
     file = request.files["file"]
+    print("adjuntar incidencia")
+    print("inLinux" + inLinux())
     if inLinux():
         dir ="pdf"
     else:
@@ -181,6 +183,7 @@ def adjuntar_pdf(id):
                      WHERE i.idIncidencia = %s
                 """, (id,))
     obj_incidencia = cur.fetchone()
+    print(obj_incidencia)
     #redirigir a si add_pdf_incidencia
     flash("se subio correctamente")
     return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
@@ -221,7 +224,7 @@ def listar_pdf(idIncidencia):
         mysql.connection.commit()
         print("equipo")
         print(data_equipo)
-        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idEquipo,
+        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia,
                 documentos=(), equipo=data_equipo)
 
         
