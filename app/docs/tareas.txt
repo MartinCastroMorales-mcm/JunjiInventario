@@ -291,3 +291,8 @@ parece haber varios errores en incidencia. Seria bueno hacer una revision comple
 OK Error detalles devolucion
 OK Error leer pdf asignacion
 OK Error pdf devolucion
+
+Error subir pdf a incidencia
+Error subir pdf a asignacion
+
+

@@ -154,11 +154,13 @@ def adjuntar_pdf(id):
         return redirect("/ingresar")
     #guardar pdf
     file = request.files["file"]
-    dir = PDFS_INCIDENCIAS
+    dir = 'app/pdf' 
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     print(carpeta_incidencias)
     #podria dar error pero mejor que tire error y ver cual es
-    os.mkdir(carpeta_incidencias)
+    if not os.path.isdir(carpeta_incidencias):
+        os.mkdir(carpeta_incidencias)
+        print("se creo la carpeta de la incidencia")
     fileName = file.filename
     file.save(os.path.join(
         carpeta_incidencias,
