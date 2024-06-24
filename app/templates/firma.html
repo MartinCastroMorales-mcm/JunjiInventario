@@ -22,17 +22,16 @@
         {% endif %}
         {% endwith %}
         <!-- Se termina la seccion de errores -->
-
-        <a class="nav-button" href="/{{location}}">Volver</a>
+        {% if location == 'devolucion' %}
+            <a class="nav-button" href="/{{asignacion}}">Volver</a>
+        {% else %}
+            <a class="nav-button" href="/{{location}}">Volver</a>
+        {% endif %}
         <!-- ----- -->
         {{ subirArchivo(location, id) }}
     </div>
     <br />
         <h2>Documento de Traslado</h2>
-        {% if location == 'devolucion' %}
-            {{tablaDocumentos(id, (nombreFirmado,), 'asignacion')}}
-        {%else %}
         {{tablaDocumentos(id, (nombreFirmado,), location)}}
-        {% endif %}
 
 {% endblock %}
