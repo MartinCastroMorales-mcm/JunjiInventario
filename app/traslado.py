@@ -436,20 +436,16 @@ def mostrar_pdf(id, firmado="0"):
         flash("Se nesesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
     print(firmado)
-    try:
-        if firmado == "0":
-            nombrePdf = "traslado_" + str(id) + ".pdf"
-        else:
-            nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
-            print("se encontro el firmado" + nombrePdf)
-        dir = PDFS_DIR
-        print("test")
-        print(dir)
-        file = os.path.join(dir, nombrePdf)
-        return send_file(file, as_attachment=True)
-    except:
-        flash("no se encontro el pdf")
-        return redirect(url_for('traslado.Traslado'))
+    if firmado == "0":
+        nombrePdf = "traslado_" + str(id) + ".pdf"
+    else:
+        nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
+        print("se encontro el firmado" + nombrePdf)
+    dir = 'pdf' 
+    print("test")
+    print(dir)
+    file = os.path.join(dir, nombrePdf)
+    return send_file(file, as_attachment=True)
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 @loguear_requerido
