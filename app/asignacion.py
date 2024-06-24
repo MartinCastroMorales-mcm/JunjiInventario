@@ -895,7 +895,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
-        dir =  PDFS_DIR
+        dir =  'pdf'
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
