@@ -860,7 +860,7 @@ def listar_pdf(idAsignacion, devolver="None"):
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
         #print(nombreFirmado)
-        location = "devolucion"
+        location = "asignacion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join(dir, nombreFirmado)):
         #mostrar
@@ -916,7 +916,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     if inLinux:
         dir = 'pdf'
     else:
-        dir = 'app/pdf' #TODO cuando la ruta relativa es app/pdf y cuando es pdf
+        dir = 'app/pdf' #TODO cuando la ruta relativa es app/pdf y cuando es pdf?
     filenameToDelete = "asignacion_" + str(idAsignacion) + "_firmado.pdf"
     filenameToDelete = secure_filename(filenameToDelete)
     if os.path.exists(os.path.join(dir, filenameToDelete)):
@@ -930,6 +930,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
 
     os.rename(os.path.join(dir, sfilename), 
               os.path.join(dir, "asignacion_" + str(idAsignacion) + "_firmado.pdf"))
+    flash("Se subio la firma correctamente")
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])

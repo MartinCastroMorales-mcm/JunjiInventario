@@ -158,10 +158,10 @@ def adjuntar_pdf(id):
     file = request.files["file"]
     print("adjuntar incidencia")
     print("inLinux" + str(inLinux()))
-    if inLinux():
-        dir ="pdf"
-    else:
-        dir = 'app/pdf' 
+    #if inLinux():
+    dir ="pdf"
+    #else:
+        #dir = 'app/pdf' 
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     print(carpeta_incidencias)
     #podria dar error pero mejor que tire error y ver cual es
@@ -211,10 +211,10 @@ def listar_pdf(idIncidencia):
                 WHERE e.idEquipo = %s
                 """, (idEquipo,))
     data_equipo = cur.fetchone()
-    if inLinux():
-        dir = "pdf"
-    else:
-        dir = "app/pdf"
+    #if inLinux():
+    dir = "pdf"
+    #else:
+        #dir = "app/pdf"
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idIncidencia))
     if(not os.path.exists(carpeta_incidencias)):
         #insertar numero de documentos
