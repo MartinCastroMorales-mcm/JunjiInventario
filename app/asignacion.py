@@ -936,7 +936,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
 def adjuntar_pdf_devolucion(idAsignacion):
     #TODO: revisar que sea pdf
     #si existe eliminar
-    dir = PDFS_DIR
+    dir = 'pdf'
     filenameToDelete = "devolucion_" + str(idAsignacion) + "_firmado.pdf"
     if os.path.exists(os.path.join(dir, filenameToDelete)):
         os.remove(os.path.join(dir, filenameToDelete))
