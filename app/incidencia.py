@@ -157,7 +157,7 @@ def adjuntar_pdf(id):
     #guardar pdf
     file = request.files["file"]
     print("adjuntar incidencia")
-    print("inLinux" + inLinux())
+    print("inLinux" + str(inLinux()))
     if inLinux():
         dir ="pdf"
     else:
