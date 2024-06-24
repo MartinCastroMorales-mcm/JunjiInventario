@@ -501,23 +501,21 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
 @loguear_requerido
 def mostrar_pdf(id):
-    try:
-        if inLinux():
-            nombrePdf = "asignacion_" + str(id) + ".pdf"
-            dir = 'pdf' 
-            file = os.path.join(dir, nombrePdf)
-            print('file')
-            return send_file(file, as_attachment=True)
-        else:
-            nombrePdf = "asignacion_" + str(id) + ".pdf"
-            dir =  PDFS_DIR
-            file = os.path.join(dir, nombrePdf)
-            print("mostrar_pdf")
-            print(file)
-            return send_file(file, as_attachment=True)
-    except:
-        flash("no se encontro el pdf")
-        return redirect(url_for('asignacion.Asignacion'))
+    if inLinux():
+        nombrePdf = "asignacion_" + str(id) + ".pdf"
+        dir = 'pdf' 
+        file = os.path.join(dir, nombrePdf)
+        print('file')
+        return send_file(file, as_attachment=True)
+    else:
+        nombrePdf = "asignacion_" + str(id) + ".pdf"
+        dir =  PDFS_DIR
+        file = os.path.join(dir, nombrePdf)
+        print("mostrar_pdf")
+        print(file)
+        return send_file(file, as_attachment=True)
+        #flash("no se encontro el pdf")
+        #return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver/<id>")
 @administrador_requerido
@@ -853,7 +851,7 @@ def listar_pdf(idAsignacion, devolver="None"):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    dir = PDFS_DIR   
+    dir = 'pdf'   
     if devolver == "None":
         nombreFirmado = "asignacion_" + str(idAsignacion) + "_" + "firmado.pdf"
         location = "asignacion"
