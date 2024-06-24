@@ -288,6 +288,6 @@ editar contraseña
 parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo
 
 
-Error detalles devolucion
-Error leer pdf asignacion
-Error pdf devolucion
+OK Error detalles devolucion
+OK Error leer pdf asignacion
+OK Error pdf devolucion

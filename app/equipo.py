@@ -992,7 +992,7 @@ def crear_excel():
 
 
     #ingresar datos
-    wb.save("app/datos_exportados.xlsx")
+    wb.save("datos_exportados.xlsx")
     return send_file('datos_exportados.xlsx', as_attachment=True)
 
 def crear_pagina_todojunto(wb):
