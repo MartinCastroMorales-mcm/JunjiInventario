@@ -6,7 +6,7 @@ from cuentas import loguear_requerido, administrador_requerido
 import os
 import shutil 
 from werkzeug.utils import secure_filename
-from env_vars import paths
+from env_vars import paths, inLinux
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = paths['pdf_path']
 
@@ -156,7 +156,10 @@ def adjuntar_pdf(id):
         return redirect("/ingresar")
     #guardar pdf
     file = request.files["file"]
-    dir = 'app/pdf' 
+    if inLinux():
+        dir ="pdf"
+    else:
+        dir = 'app/pdf' 
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     print(carpeta_incidencias)
     #podria dar error pero mejor que tire error y ver cual es
