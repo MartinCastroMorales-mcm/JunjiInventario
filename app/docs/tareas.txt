@@ -298,4 +298,4 @@ Error subir pdf a asignacion
 agregar regla para que solo se pueda subir archivos pdf a las asignaciones
 o foto¿?
 
-
+no se listan los pdf en incidencias en linux

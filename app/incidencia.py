@@ -211,7 +211,10 @@ def listar_pdf(idIncidencia):
                 WHERE e.idEquipo = %s
                 """, (idEquipo,))
     data_equipo = cur.fetchone()
-    dir = "app/pdf"
+    if inLinux():
+        dir = "pdf"
+    else:
+        dir = "app/pdf"
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idIncidencia))
     if(not os.path.exists(carpeta_incidencias)):
         #insertar numero de documentos
@@ -234,6 +237,7 @@ def listar_pdf(idIncidencia):
 
     #obtener un listado de los nombres de la carpeta
     #generar las tuplas tal que se pueda abrir en otra ventana
+    print("pdfTupla añadir documentos")
     pdfTupla = []
     print("antes de crear pdfTupla")
     for fileName in os.listdir(carpeta_incidencias):
