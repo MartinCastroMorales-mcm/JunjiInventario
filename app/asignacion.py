@@ -741,7 +741,7 @@ def crear_pdf_devolucion(
 def mostrar_pdf_devolucion(id):
     try:
         nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
