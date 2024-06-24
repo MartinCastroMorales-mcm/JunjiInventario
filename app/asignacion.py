@@ -784,6 +784,11 @@ def buscar(idAsignacion):
         funcionarios=funcionarios, asignacion=Asignaciones,
         page=1, lastpage=True
     )
+#@asignacion.route("/asignacion/buscar_devolucion/<idDevolucion>")
+#@loguear_requerido
+#def buscar_devolucion():
+
+    #pass
 
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
 @administrador_requerido

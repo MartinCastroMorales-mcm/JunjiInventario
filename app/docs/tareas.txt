@@ -286,3 +286,8 @@ Falta añadir observaciones a editar equipos
 editar contraseña
 
 parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo
+
+
+Error detalles devolucion
+Error leer pdf asignacion
+Error pdf devolucion
