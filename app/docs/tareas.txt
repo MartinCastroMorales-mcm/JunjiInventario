@@ -304,3 +304,6 @@ Porque aveces la ruta debe ser pdf y aveces app/pdf:
         Depende desde que directorio se ejecuta el main.py. En linux se inicia desde wsgi.py que esta dentro de la carpeta app.
         Por esta razon siempre se debe ejecutar el codigo windows desde dentro del directorio app. Por alguna razon intentar evadir el problema
         usando rutas absolutas genera mas problemas
+
+
+Hay cosas redundantes en editar traslados y no muestra el tipo de equipo

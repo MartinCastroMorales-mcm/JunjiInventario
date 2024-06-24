@@ -295,7 +295,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             self.set_text_color(170,170,170)
             self.cell(0,0, "", ln=1)
             self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
+            self.cell(0,12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
             self.cell(0,12, "www.junji.cl", ln=1)
             #self.image('logo_inferior.jpg', 30, -30, 25) Las imagenes en el Footer no parecen funcionar correctamente
 
@@ -309,6 +309,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
 
 
     titulo = "ACTA DE TRASLADO N°" + str(traslado['idTraslado']) 
+    creado_por = "Documento creado por: " + session['user']
     parrafo_1 = "En Concepción {} se procede al traslado de bienes JUNJI de registro inventario desde {} hasta {} el siguiente detalle: ".format(traslado['fechatraslado'], UnidadOrigen['nombreUnidad'], UnidadDestino['nombreUnidad'])
     #encabezado de la tabla
     TABLE_DATA = (
@@ -341,6 +342,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     pdf.set_font('times', '', 20)
     pdf.cell(0, 10, titulo, ln=True, align='C')            
     pdf.set_font('times', '', 12)
+    pdf.cell(0, 10, creado_por, ln=True, align="L")
             
     pdf.multi_cell(0, 10, parrafo_1)
     #crea una tabla en base a los datos anteriores
@@ -423,7 +425,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     #print(str(os.curdir)) 
 
     #mover pdf a la carpeta
-    shutil.move(nombrePdf, "app/pdf")
+    shutil.move(nombrePdf, "pdf")
     return redirect(url_for('traslado.Traslado'))
 
 @traslado.route("/traslado/mostrar_pdf/<id>")

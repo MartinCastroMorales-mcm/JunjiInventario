@@ -368,7 +368,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             self.cell(0, 0, "", ln=1)
             self.cell(0, 0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
             self.cell(
-                0, 12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1
+                0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1
             )  # problema con el caracter ’
             self.cell(0, 12, "www.junji.cl", ln=1)
 
@@ -383,6 +383,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
+    creado_por = "Documento creado por: " + session['user']
+    pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
     presentacion2 = "Dependiente de la Unidad: "
     presentacion22 = "En la Fecha: "
@@ -482,14 +484,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    if inLinux():
-        print("inLinux save pdf")
-        shutil.move(nombrePdf, "pdf/" + nombrePdf)
-        print("inLinux saved pdf")
-    else:
-        print("out of Linux save pdf")
-        shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
-        print("out of Linux saved pdf")
+    shutil.move(nombrePdf, "pdf/" + nombrePdf)
     #try:
     #funcion para enviar un correo a un funcionario (se envia el acta)
         #enviar_correo(nombrePdf, 'correo')
@@ -620,16 +615,18 @@ def crear_pdf_devolucion(
                 self.set_text_color(170,170,170)
                 self.cell(0,0, "", ln=1)
                 self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-                self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
+                self.cell(0,12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
                 self.cell(0,12, "www.junji.cl", ln=1)
         
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA Devolucion de Equipo Informatico N°" + str(Asignacion['idAsignacion'])
+    creado_por = "Documento creado por: " + session['user']
 
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
+    pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
     presentacion2 = "Dependiente de la Unidad: "
     presentacion22 = "En la Fecha: "
@@ -682,9 +679,8 @@ def crear_pdf_devolucion(
                 row.cell(datum)
 
     observacion = "Esta es una observacion"
-
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:" + session['user']
+    nombreEncargado = "Nombre Encargado TI:" 
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -723,16 +719,10 @@ def crear_pdf_devolucion(
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
+    creado_por = "documento creado por: " + session['user']
     nombrePdf = "devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    if inLinux():
-        print("in Linux save pdf")
-        shutil.move(nombrePdf, "pdf/")
-        print("inLinux saved pdf")
-    else:
-        print("out of Linux save pdf")
-        shutil.move(nombrePdf, "app/pdf")
-        print("out of Linux saved pdf")
+    shutil.move(nombrePdf, "pdf/")
 
 @asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
 @loguear_requerido
