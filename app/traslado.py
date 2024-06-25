@@ -507,7 +507,7 @@ def adjuntar_firmado(idTraslado):
     #TODO: revisar que sea pdf
     file = request.files["file"]
     #subir archivo
-    dir = PDFS_DIR
+    dir = 'pdf'
     #renombrar archivo
     filename = file.filename
     sfilename = secure_filename(filename)
