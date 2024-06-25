@@ -800,11 +800,11 @@ def devolver_uno(id_equipo):
     equipos = resultados_consulta[1]
     asignacion_vieja = resultados_consulta[0]
 
-    if len(equipos) == 1:
+    if len(equipos) == 0:
         return devolver(asignacion_vieja['idAsignacion'])
-    else:
-        flash("Este equipo forma parte de una asignacion de multiples equipos")
-        return redirect('/equipo')
+    #else:
+        #flash("Este equipo forma parte de una asignacion de multiples equipos")
+        #return redirect('/equipo')
     #extraer las ids
     equipos_id = []
     for equipo in equipos:
@@ -814,6 +814,7 @@ def devolver_uno(id_equipo):
     print("asignacion vieja")
     print(asignacion_vieja)
     devolver(asignacion_vieja['idAsignacion'])
+    print(date.today)
     creacionAsignacion(date.today, asignacion_vieja['ObservacionAsignacion'], 
                 asignacion_vieja['rutFuncionario'], equipos_id, True)
 
