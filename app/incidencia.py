@@ -86,7 +86,7 @@ def add_incidencia():
                      WHERE i.idIncidencia = %s
                      """, (idIncidencia,))
          obj_incidencia = cur.fetchone()
-    return redirect("/incidencia/listar_pdf/" + idIncidencia)
+    return redirect("/incidencia/listar_pdf/" + str(idIncidencia))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
 @administrador_requerido
