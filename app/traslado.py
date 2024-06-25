@@ -487,7 +487,7 @@ def listar_pdf(idTraslado):
     if "user" not in session:
         flash("Se nesesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
-    dir = PDFS_DIR   
+    dir = 'pdf'   
     nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join(dir, nombreFirmado)):
