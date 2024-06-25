@@ -246,7 +246,7 @@ def create_asignacion():
 
 #Este metodo es el que crea la asignacion
 @administrador_requerido
-def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_traslado):
+def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_traslado):
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
@@ -267,7 +267,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
 
     TuplaEquipos = ()
     # Iterar sobre los equipos y realizar las operaciones necesarias
-    for equipo_id in equipos:
+    for equipo_id in equipos_id:
         # Insertar en la tabla Equipo_asignacion
         cur.execute("""
             INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
@@ -339,7 +339,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
         #la informacion de la asignacion
 
         crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
-                                ,Unidad['idUnidad'], equipos)
+                                ,Unidad['idUnidad'], equipos_id)
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
@@ -781,54 +781,44 @@ def buscar(idAsignacion):
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
 @administrador_requerido
 def devolver_uno(id_equipo):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    cur = mysql.connection.cursor()
-    #encontrar la id de la asignacion del equipo
-    cur.execute("""
-    SELECT * 
-    FROM equipo_asignacion ea
-    WHERE ea.idEquipo = %s
-                """, (id_equipo,))
-    id_asignacion = cur.fetchone()
-    #encontrar el numero de equipos en la asignacion
-    cur.execute("""
-    SELECT COUNT(*) as count
-    FROM equipo_asignacion ea
-    WHERE ea.idAsignacion = %s
-                """, (id_asignacion['idAsignacion'],))
-    cantidad_equipos = cur.fetchone()['count']
-    #si tiene mas de uno seguir de lo contrario redirigir a devolucion
-    if cantidad_equipos == 1:
-        return devolver(id_asignacion['idAsignacion'])
-    #TODO: generar otra acta? 
+    def consulta():
+        cur = mysql.connection.cursor()
+        #encontrar la id de la asignacion del equipo
+        cur.execute("""
+        SELECT * 
+        FROM equipo_asignacion ea
+        INNER JOIN asignacion a ON ea.idAsignacion = a.idAsignacion 
+        WHERE ea.idEquipo = %s
+        AND a.ActivoAsignacion = 1
+                    """, (id_equipo,))
+        asignacion_vieja = cur.fetchone()
+        #si tiene mas de uno seguir de lo contrario redirigir a devolucion
+        #encontar todos los equipos excepto el que se devuelve
+        cur.execute("""
+        SELECT *
+        FROM equipo_asignacion ea
+        WHERE NOT ea.idEquipo = %s
+        AND ea.idAsignacion = %s
+                    """, (id_equipo, asignacion_vieja['idAsignacion']))
+        equipos = cur.fetchall()
+        return (asignacion_vieja, equipos)
+    resultados_consulta = consulta()
+    equipos = resultados_consulta[1]
+    asignacion_vieja = resultados_consulta[0]
 
-    fecha = date.today()#buscar la funcion para la fecha
-    #print(id_asignacion)
-    cur.execute("""
-    SELECT *
-    FROM asignacion a
-    WHERE a.idAsignacion = %s
-        """, (str(id_asignacion['idAsignacion']),))
-    Asignacion = cur.fetchone()
+    if len(equipos) == 1:
+        return devolver(asignacion_vieja['idAsignacion'])
+    #extraer las ids
+    equipos_id = []
+    for equipo in equipos:
+        equipos_id.append(equipo['idEquipo'])
 
-    
-    #encontar todos los equipos excepto el que se devuelve
-    cur.execute("""
-    SELECT *
-    FROM equipo e
-    WHERE NOT e.idEquipo = %s
-                """, (id_equipo,))
-    equipos_data = cur.fetchall()
-    equipos = ()
-    for equipo in equipos_data:
-        equipos = equipos + ((equipo['idEquipo']),)
         
-    #print(Asignacion)
-    devolver(id_asignacion['idAsignacion'])
-    creacionAsignacion(fecha, Asignacion['ObservacionAsignacion'], 
-                Asignacion['rutFuncionario'], equipos)
+    print("asignacion vieja")
+    print(asignacion_vieja)
+    devolver(asignacion_vieja['idAsignacion'])
+    creacionAsignacion(date.today, asignacion_vieja['ObservacionAsignacion'], 
+                asignacion_vieja['rutFuncionario'], equipos_id, True)
 
 
     #cambiar redirect

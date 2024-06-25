@@ -307,3 +307,6 @@ Porque aveces la ruta debe ser pdf y aveces app/pdf:
 
 
 Hay cosas redundantes en editar traslados y no muestra el tipo de equipo
+
+Al devolver desde la pestaña de equipo cuando se asignan multiples 
+equipos a una persona. Al devolver no crea las asignaciones correctamente
