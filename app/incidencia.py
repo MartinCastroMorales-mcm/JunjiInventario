@@ -60,9 +60,6 @@ def incidencia_form(idEquipo):
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
 @administrador_requerido
 def add_incidencia():
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
          nombreIncidencia = request.form['nombreIncidencia']
          observacionIncidencia = request.form['observacionIncidencia']
@@ -89,7 +86,7 @@ def add_incidencia():
                      WHERE i.idIncidencia = %s
                      """, (idIncidencia,))
          obj_incidencia = cur.fetchone()
-    return redirect("/incidencia/listar_pdf/" + idEquipo)
+    return redirect("/incidencia/listar_pdf/" + idIncidencia)
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
 @administrador_requerido
