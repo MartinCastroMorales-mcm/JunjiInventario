@@ -244,7 +244,7 @@
                 <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                 <td class="toCheck">{{equi.Num_serieEquipo}}</td>
                 {% if equi.nombreFuncionario == '' %}
-                <td class="toCheck">SIN ASIGNAR</td>
+                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
                 {% else %}
                 <td class="toCheck">{{equi.nombreFuncionario}}</td>
                 {% endif %}

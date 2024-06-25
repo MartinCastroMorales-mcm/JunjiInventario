@@ -100,9 +100,6 @@ def add_asignacion(idEquipo = "None"):
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def edit_asignacion(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         #se obtiene la asignacion actual
@@ -143,9 +140,6 @@ def edit_asignacion(id):
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
 @administrador_requerido
 def update_asignacion(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
         #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
