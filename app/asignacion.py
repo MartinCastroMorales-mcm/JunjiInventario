@@ -802,6 +802,9 @@ def devolver_uno(id_equipo):
 
     if len(equipos) == 1:
         return devolver(asignacion_vieja['idAsignacion'])
+    else:
+        flash("Este equipo forma parte de una asignacion de multiples equipos")
+        return redirect('/equipo')
     #extraer las ids
     equipos_id = []
     for equipo in equipos:
