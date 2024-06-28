@@ -72,10 +72,11 @@ def add_incidencia():
                         observacionIncidencia,
                         rutaActaIncidencia,
                         fechaIncidencia,
-                        idEquipo
+                        idEquipo,
+                        numDocumentosIncidencia
                         )
-                     VALUES (%s, %s, %s, %s, %s)
-                    """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo,)
+                     VALUES (%s, %s, %s, %s, %s, %s)
+                    """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo, 0)
                     )
          mysql.connection.commit()
          flash("Incidencia Agregada Corectamante")
@@ -188,9 +189,6 @@ def adjuntar_pdf(id):
 @incidencia.route("/incidencia/listar_pdf/<idIncidencia>")
 @loguear_requerido
 def listar_pdf(idIncidencia):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     #verificar la existencia de la carpeta incidencia
     #try:
     cur = mysql.connection.cursor()
@@ -251,7 +249,7 @@ def listar_pdf(idIncidencia):
         UPDATE incidencia
         SET numDocumentos = %s
         WHERE idIncidencia = %s
-                """, (len(pdfTupla), idEquipo))
+                """, (len(pdfTupla), idIncidencia))
     mysql.connection.commit()
     
     return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia, 

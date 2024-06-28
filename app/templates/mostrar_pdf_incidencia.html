@@ -44,8 +44,8 @@
             <tr>
                 <td class="toCheck">{{equipo.Cod_inventarioEquipo}}</td>
                 <td class="toCheck">{{equipo.Num_serieEquipo}}</td>
-                {% if equipo.nombreFuncionarpoio == '' %}
-                <td class="toCheck">SIN ASIGNAR</td>
+                {% if equipo.nombreFuncionario == '' %}
+                <td class="toCheck">No asignado</td>
                 {% else %}
                 <td class="toCheck">{{equipo.nombreFuncionario}}</td>
                 {% endif %}

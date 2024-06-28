@@ -358,7 +358,7 @@ Verificacion Final {
                Agregar OK
                Editar OK
                Eliminar OK
-               Buscar Equipos: MEH
+               Buscar Equipos: OK
         }
         Proveedores {
                 Agregar OK
@@ -397,10 +397,6 @@ Verificacion Final {
                 Editar NO
                 Eliminar OK
         }
-
-
-
-
         Incidencia {
                 Subir archivo OK
                 Abri archivo OK
@@ -410,14 +406,14 @@ Verificacion Final {
 }
 
 Resultados:
- Tipo_equipo: 
+Tipo_equipo: 
         Podria mostrar las marcas en una lista (No es muy importante)
                 aunque dificil que un tipo tenga tantas marcas 
         Error al editar tipo de equipo (asignar todas las marcas y luego quitarla todas menos una. Cambiar nombre) OK
 Funcionarios:
-        Muestra equipos que no estan asignados en este momento
+        Muestra equipos que no estan asignados en este momento OK
 Unidad: 
-        Al agregar Unidad No hay forma de agregar el codigo
+        Al agregar Unidad No hay forma de agregar el codigo OK
 Orden de Compra:
         El formulario para agregar ordenes de compra funciona pero contiene informacion irrelevante
         El formulario de edicion no permite que se edite la id de la orden de compra
@@ -426,8 +422,8 @@ Tipo Adquisicion:
 Estado Equipo:
         ¿Que significa la fecha de modificacion?
 Asignacion:
-        editar el funcionario
+        editar el funcionario OK
 Traslado       
-        Si se edita no cambia el funcionario mejor no dejar editar
+        Si se edita no cambia el funcionario mejor no dejar editar OK
 Incidencia:
-        Error N° Documento
+        Error N° Documento OK
