@@ -498,7 +498,7 @@ def mostrar_pdf(id):
         return send_file(file, as_attachment=True)
     else:
         nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         print("mostrar_pdf")
         print(file)
@@ -579,7 +579,6 @@ def devolver(id):
     crear_pdf_devolucion(Funcionario, Unidad, Asignacion, tupla_equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
-    
 
 def crear_pdf_devolucion(
         Funcionario,
@@ -814,8 +813,7 @@ def devolver_uno(id_equipo):
     print("asignacion vieja")
     print(asignacion_vieja)
     devolver(asignacion_vieja['idAsignacion'])
-    print(date.today)
-    creacionAsignacion(date.today, asignacion_vieja['ObservacionAsignacion'], 
+    creacionAsignacion(str(date.today()), asignacion_vieja['ObservacionAsignacion'], 
                 asignacion_vieja['rutFuncionario'], equipos_id, True)
 
 

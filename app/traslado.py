@@ -233,7 +233,7 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
                         SELECT *
                         FROM equipo e
                         INNER JOIN modelo_equipo me ON me.idModelo_equipo = e.idModelo_equipo
-                        INNER JOIN tipo_equipo te on me.idTipo_equipo = me.idTipo_equipo
+                        INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
                         INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_equipo
                         WHERE e.idEquipo = %s
                         """, (idEquipo,))
@@ -266,9 +266,7 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
 
 
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
-    if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
-        return redirect("/ingresar")
+    print("create_pdf")
 
     #se añade el encabezado y footer creando una clase PDF que hereda de FPDF y sobreescribe los
     #metodos
@@ -322,6 +320,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     #ingresa los datos de la tabla como una tupla, donde la primera tupla es el encabezado
     i = 0
     for equipo in equipos:
+        print(equipo)
         i += 1
         TABLE_DATA = TABLE_DATA + ((str((i)), equipo['nombreTipo_equipo'],
                         equipo['nombreModeloequipo'],
