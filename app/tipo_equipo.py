@@ -246,9 +246,12 @@ def edit_tipo_equipo(id):
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_tipo_equipo(id):
+    print("update tipo equipo")
     if request.method == "POST":
-        nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
-        id_marca = request.form["nombre_marca_equipo"]
+        nombre_tipo_equipo = request.form["nombreTipo_equipo"]
+        ids_marca = request.form.getlist("marcas[]")
+        print("ids_marca")
+        print(ids_marca)
 
         cur = mysql.connection.cursor()
         cur.execute(
@@ -260,44 +263,29 @@ def update_tipo_equipo(id):
             (id,),
         )
         tipo_equipo = cur.fetchone()
-        print("tipo_equipo")
-        print(tipo_equipo)
-        print(id_marca)
-        print(",,,")
-        if tipo_equipo["idMarca_Equipo"] == id_marca:
-            print("test tipo equipo")
-            try:
-                cur.execute(
-                    """ 
-                UPDATE tipo_equipo
-                SET nombreTipo_equipo = %s,
-                WHERE idTipo_equipo = %s
-                """,
-                    (nombre_tipo_equipo, id),
-                )
-                mysql.connection.commit()
-                flash("Tipo de equipo actualizado correctamente")
-                return redirect(url_for("tipo_equipo.tipoEquipo"))
-            except Exception as e:
-                flash(e.args[1])
-                return redirect(url_for("tipo_equipo.tipoEquipo"))
-        else:
-            try:
-                cur.execute(
-                    """ 
-                UPDATE tipo_equipo
-                SET nombreTipo_equipo = %s,
-                idMarca_Equipo = %s
-                WHERE idTipo_equipo = %s
-                """,
-                    (nombre_tipo_equipo, id_marca, id),
-                )
-                mysql.connection.commit()
-                flash("Tipo de equipo actualizado correctamente")
-                return redirect(url_for("tipo_equipo.tipoEquipo"))
-            except Exception as e:
-                flash(e.args[1])
-                return redirect(url_for("tipo_equipo.tipoEquipo"))
+        cur.execute(
+            """ 
+        UPDATE tipo_equipo
+        SET nombreTipo_equipo = %s
+        WHERE idTipo_equipo = %s
+        """,
+            (nombre_tipo_equipo, id),
+        )
+        #editar la relacion entre tipo y marcas
+        cur.execute("""
+        DELETE FROM marca_tipo_equipo
+        WHERE idTipo_equipo = %s
+        """, (id,))
+        
+        for id_marca in ids_marca:
+            cur.execute("""
+            INSERT INTO marca_tipo_equipo
+            (idTipo_equipo, idMarca_Equipo)
+            VALUES (%s, %s)
+            """, (id,id_marca))
+        mysql.connection.commit()
+        return redirect(url_for("tipo_equipo.tipoEquipo"))
+
 
 
 # elimina el registro segun el id

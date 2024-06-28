@@ -323,8 +323,111 @@ Verificacion Final {
                 Añadir usuario OK
                 Editar usuario OK
                 Cambiar contraseña OK
+                Eliminar OK
         }
         Equipo {
+                Exportar equipos (Funciona quizas no de la manera esperada no lo se)
+                Importar equipos OK
+                Agregar Equipo OK
+                Editar OK 
+                Eliminar OK
+                Incidencia OK
+                Asignar OK
+        }
+        Detalles {
+                Buscar OK
+                Datos telefonicos OK
+                Acta OK
+        }
+        Marca {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Modelo_equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Tipo_equipo {
+                Agregar OK
+                Editar NO
+                Eliminar OK
+        }
+        Funcionarios {
+               Agregar OK
+               Editar OK
+               Eliminar OK
+               Buscar Equipos: MEH
+        }
+        Proveedores {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Unidad {
+               Agregar NO
+               Editar OK
+               Eliminar OK
+        }
+        Orden de compra {
+                Agregar MEH
+                Editar MEH
+                Eliminar OK
+        }
+        Tipo adquisicion {
+                Agregar OK
+                Editar NO
+                Eliminar OK
+        }
+        Estado Equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+                Equipo OK
+        }
+        Asignacion {
+                Crear asignacion OK
+                Editar NO
+                Eliminar OK
+        }
+        Traslado {
+                Agregar OK
+                Acta OK
+                Editar NO
+                Eliminar OK
+        }
 
+
+
+
+        Incidencia {
+                Subir archivo OK
+                Abri archivo OK
+                Boton documentos OK
+                Editar Funciona OK
         }
 }
+
+Resultados:
+ Tipo_equipo: 
+        Podria mostrar las marcas en una lista (No es muy importante)
+                aunque dificil que un tipo tenga tantas marcas 
+        Error al editar tipo de equipo (asignar todas las marcas y luego quitarla todas menos una. Cambiar nombre) OK
+Funcionarios:
+        Muestra equipos que no estan asignados en este momento
+Unidad: 
+        Al agregar Unidad No hay forma de agregar el codigo
+Orden de Compra:
+        El formulario para agregar ordenes de compra funciona pero contiene informacion irrelevante
+        El formulario de edicion no permite que se edite la id de la orden de compra
+Tipo Adquisicion:
+        Editar da error
+Estado Equipo:
+        ¿Que significa la fecha de modificacion?
+Asignacion:
+        editar el funcionario
+Traslado       
+        Si se edita no cambia el funcionario mejor no dejar editar
+Incidencia:
+        Error N° Documento

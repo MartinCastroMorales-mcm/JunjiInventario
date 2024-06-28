@@ -10,9 +10,6 @@ modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templa
 @modelo_equipo.route("/modelo_equipo/<page>")
 @loguear_requerido
 def modeloEquipo(page=1):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
