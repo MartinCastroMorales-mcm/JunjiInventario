@@ -36,16 +36,25 @@ function fechaPorDefecto() {
 }
 console.log("jsLink")
 
-function showDiv(id = "formulario") {
+function showDiv(id = "formulario", Esconder = []) {
+  console.log("showDiv")
+  console.log("Esconder")
+  console.log(Esconder)
   //encontrar el div del formulario
   let div = document.getElementById(id)
   //Si esta escondido mostrarlo de lo contrario esconder
   if (div.style.display === "none") {
     div.style.display = "block";
-    return
+  }else {
+    div.style.display = "none"
   }
-  div.style.display = "none"
-  return
+  //Esconder otras ids
+  for(let i = 0; i < Esconder.length; i++) {
+    id_esconder = Esconder[i]
+    console.log(id_esconder)
+    div = document.getElementById(id_esconder)
+    div.style.display = "none";
+  }
 }
 //Esta funcion no se usa pero es para tener multiples botones que muestran y
 //esconden tablas

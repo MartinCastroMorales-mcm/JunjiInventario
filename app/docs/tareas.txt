@@ -286,3 +286,144 @@ Falta añadir observaciones a editar equipos
 editar contraseña
 
 parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo
+
+
+OK Error detalles devolucion
+OK Error leer pdf asignacion
+OK Error pdf devolucion
+
+Error subir pdf a incidencia
+Error subir pdf a asignacion
+
+agregar regla para que solo se pueda subir archivos pdf a las asignaciones
+o foto¿?
+
+no se listan los pdf en incidencias en linux
+
+Porque aveces la ruta debe ser pdf y aveces app/pdf:
+        Depende desde que directorio se ejecuta el main.py. En linux se inicia desde wsgi.py que esta dentro de la carpeta app.
+        Por esta razon siempre se debe ejecutar el codigo windows desde dentro del directorio app. Por alguna razon intentar evadir el problema
+        usando rutas absolutas genera mas problemas
+
+
+Hay cosas redundantes en editar traslados y no muestra el tipo de equipo
+
+Al devolver desde la pestaña de equipo cuando se asignan multiples 
+equipos a una persona. Al devolver no crea las asignaciones correctamente
+
+editar marcas en modelo se mestran multiples lenovo
+
+agregar mensaje a error se duplica tipo de equipo
+
+
+
+
+Verificacion Final {
+        Usuario {
+                Añadir usuario OK
+                Editar usuario OK
+                Cambiar contraseña OK
+                Eliminar OK
+        }
+        Equipo {
+                Exportar equipos (Funciona quizas no de la manera esperada no lo se)
+                Importar equipos OK
+                Agregar Equipo OK
+                Editar OK 
+                Eliminar OK
+                Incidencia OK
+                Asignar OK
+        }
+        Detalles {
+                Buscar OK
+                Datos telefonicos OK
+                Acta OK
+        }
+        Marca {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Modelo_equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Tipo_equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Funcionarios {
+               Agregar OK
+               Editar OK
+               Eliminar OK
+               Buscar Equipos: OK
+        }
+        Proveedores {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Unidad {
+               Agregar NO
+               Editar OK
+               Eliminar OK
+        }
+        Orden de compra {
+                Agregar MEH
+                Editar MEH
+                Eliminar OK
+        }
+        Tipo adquisicion {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Estado Equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+                Equipo OK
+        }
+        Asignacion {
+                Crear asignacion OK
+                Editar NO
+                Eliminar OK
+        }
+        Traslado {
+                Agregar OK
+                Acta OK
+                Editar NO
+                Eliminar OK
+        }
+        Incidencia {
+                Subir archivo OK
+                Abri archivo OK
+                Boton documentos OK
+                Editar Funciona OK
+        }
+}
+
+Resultados:
+Tipo_equipo: 
+        Podria mostrar las marcas en una lista (No es muy importante)
+                aunque dificil que un tipo tenga tantas marcas 
+        Error al editar tipo de equipo (asignar todas las marcas y luego quitarla todas menos una. Cambiar nombre) OK
+Funcionarios:
+        Muestra equipos que no estan asignados en este momento OK
+Unidad: 
+        Al agregar Unidad No hay forma de agregar el codigo OK
+Orden de Compra:
+        El formulario para agregar ordenes de compra funciona pero contiene informacion irrelevante
+        El formulario de edicion no permite que se edite la id de la orden de compra
+Tipo Adquisicion:
+        Editar da error OK
+Estado Equipo:
+        ¿Que significa la fecha de modificacion?
+Asignacion:
+        editar el funcionario OK
+Traslado       
+        Si se edita no cambia el funcionario mejor no dejar editar OK
+Incidencia:
+        Error N° Documento OK

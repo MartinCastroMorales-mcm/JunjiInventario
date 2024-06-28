@@ -43,6 +43,7 @@
                                 .setAttribute("value", formatedDate);
                         </script>
                     </div>
+                    <label for="Destino"> Destino:</label>
                     <select name="Destino" id="">
                         <option value="{{traslado.idUnidadDestino}}">{{ traslado.nombreDestino}}</option>
                         {% for unidadDestino in unidades %}
@@ -73,11 +74,7 @@
                 <thead>
                     <tr>
 
-                        <td>Tipo Equipo
-                            <br />
-                            <a href="/traslado/ASC" class="text-sort">ASC</a>
-                            <a href="/traslado/DESC" class="text-sort">DESC</a>
-                        </td>
+                        <td>Tipo Equipo</td>
                         <td>Codigo Inventario</td>
                         <td>N° Serie</td>
                         <td>Codigo Proovedor</td>
@@ -88,7 +85,7 @@
                 <tbody>
                     {% for eq in equipo %}
                     <tr>
-                        <td>{{eq.nombreidTipoequipo}}</td>
+                        <td>{{eq.nombreTipo_equipo}}</td>
                         <td>{{eq.Cod_inventarioEquipo}}</td>
                         <td>{{eq.Num_serieEquipo}}</td>
                         <td>{{eq.codigoproveedor_equipo }}</td>

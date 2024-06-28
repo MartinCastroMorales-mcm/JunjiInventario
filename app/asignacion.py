@@ -100,9 +100,6 @@ def add_asignacion(idEquipo = "None"):
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def edit_asignacion(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         #se obtiene la asignacion actual
@@ -143,9 +140,6 @@ def edit_asignacion(id):
 @asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
 @administrador_requerido
 def update_asignacion(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
         #obtener informacion del formulario
         fechaasignacion = request.form["fechaasignacion"]
@@ -246,7 +240,7 @@ def create_asignacion():
 
 #Este metodo es el que crea la asignacion
 @administrador_requerido
-def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_traslado):
+def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_traslado):
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
@@ -267,7 +261,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
 
     TuplaEquipos = ()
     # Iterar sobre los equipos y realizar las operaciones necesarias
-    for equipo_id in equipos:
+    for equipo_id in equipos_id:
         # Insertar en la tabla Equipo_asignacion
         cur.execute("""
             INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
@@ -339,7 +333,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos, realizar_tra
         #la informacion de la asignacion
 
         crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
-                                ,Unidad['idUnidad'], equipos)
+                                ,Unidad['idUnidad'], equipos_id)
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
@@ -368,7 +362,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             self.cell(0, 0, "", ln=1)
             self.cell(0, 0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
             self.cell(
-                0, 12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1
+                0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1
             )  # problema con el caracter ’
             self.cell(0, 12, "www.junji.cl", ln=1)
 
@@ -383,6 +377,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
+    creado_por = "Documento creado por: " + session['user']
+    pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
     presentacion2 = "Dependiente de la Unidad: "
     presentacion22 = "En la Fecha: "
@@ -482,15 +478,9 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             cols.ln()
     nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    if inLinux():
-        print("inLinux save pdf")
-        shutil.move(nombrePdf, "pdf/" + nombrePdf)
-        print("inLinux saved pdf")
-    else:
-        print("out of Linux save pdf")
-        shutil.move(nombrePdf, "app/pdf/" + nombrePdf)
-        print("out of Linux saved pdf")
+    shutil.move(nombrePdf, "pdf/" + nombrePdf)
     #try:
+    #funcion para enviar un correo a un funcionario (se envia el acta)
         #enviar_correo(nombrePdf, 'correo')
     #except:
         #TODO: agregar error
@@ -500,16 +490,21 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 @asignacion.route("/asignacion/mostrar_pdf/<id>")
 @loguear_requerido
 def mostrar_pdf(id):
-    try:
+    if inLinux():
         nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
+        file = os.path.join(dir, nombrePdf)
+        print('file')
+        return send_file(file, as_attachment=True)
+    else:
+        nombrePdf = "asignacion_" + str(id) + ".pdf"
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         print("mostrar_pdf")
         print(file)
         return send_file(file, as_attachment=True)
-    except:
-        flash("no se encontro el pdf")
-        return redirect(url_for('asignacion.Asignacion'))
+        #flash("no se encontro el pdf")
+        #return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver/<id>")
 @administrador_requerido
@@ -584,7 +579,6 @@ def devolver(id):
     crear_pdf_devolucion(Funcionario, Unidad, Asignacion, tupla_equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
-    
 
 def crear_pdf_devolucion(
         Funcionario,
@@ -614,16 +608,18 @@ def crear_pdf_devolucion(
                 self.set_text_color(170,170,170)
                 self.cell(0,0, "", ln=1)
                 self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-                self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
+                self.cell(0,12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
                 self.cell(0,12, "www.junji.cl", ln=1)
         
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA Devolucion de Equipo Informatico N°" + str(Asignacion['idAsignacion'])
+    creado_por = "Documento creado por: " + session['user']
 
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
+    pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
     presentacion2 = "Dependiente de la Unidad: "
     presentacion22 = "En la Fecha: "
@@ -676,9 +672,8 @@ def crear_pdf_devolucion(
                 row.cell(datum)
 
     observacion = "Esta es una observacion"
-
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:" + session['user']
+    nombreEncargado = "Nombre Encargado TI:" 
     rutEncargado = "Numero de RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre Funcionario:"
@@ -717,16 +712,17 @@ def crear_pdf_devolucion(
             cols.write(text="_________________________")
             cols.ln()
             cols.ln()
+    creado_por = "documento creado por: " + session['user']
     nombrePdf = "devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "app/pdf")
+    shutil.move(nombrePdf, "pdf/")
 
 @asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
 @loguear_requerido
 def mostrar_pdf_devolucion(id):
     try:
         nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -748,7 +744,7 @@ def buscar(idAsignacion):
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
-    INNER JOIN Funcionario f ON a.rutFuncionario = f.rutFuncionario
+    INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     WHERE a.idAsignacion = %s
         """, (idAsignacion,)
     )
@@ -769,58 +765,56 @@ def buscar(idAsignacion):
         funcionarios=funcionarios, asignacion=Asignaciones,
         page=1, lastpage=True
     )
+#@asignacion.route("/asignacion/buscar_devolucion/<idDevolucion>")
+#@loguear_requerido
+#def buscar_devolucion():
+
+    #pass
 
 @asignacion.route("/asignacion/devolver_uno/<id_equipo>")
 @administrador_requerido
 def devolver_uno(id_equipo):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    cur = mysql.connection.cursor()
-    #encontrar la id de la asignacion del equipo
-    cur.execute("""
-    SELECT * 
-    FROM equipo_asignacion ea
-    WHERE ea.idEquipo = %s
-                """, (id_equipo,))
-    id_asignacion = cur.fetchone()
-    #encontrar el numero de equipos en la asignacion
-    cur.execute("""
-    SELECT COUNT(*) as count
-    FROM equipo_asignacion ea
-    WHERE ea.idAsignacion = %s
-                """, (id_asignacion['idAsignacion'],))
-    cantidad_equipos = cur.fetchone()['count']
-    #si tiene mas de uno seguir de lo contrario redirigir a devolucion
-    if cantidad_equipos == 1:
-        return devolver(id_asignacion['idAsignacion'])
-    #TODO: generar otra acta? 
+    def consulta():
+        cur = mysql.connection.cursor()
+        #encontrar la id de la asignacion del equipo
+        cur.execute("""
+        SELECT * 
+        FROM equipo_asignacion ea
+        INNER JOIN asignacion a ON ea.idAsignacion = a.idAsignacion 
+        WHERE ea.idEquipo = %s
+        AND a.ActivoAsignacion = 1
+                    """, (id_equipo,))
+        asignacion_vieja = cur.fetchone()
+        #si tiene mas de uno seguir de lo contrario redirigir a devolucion
+        #encontar todos los equipos excepto el que se devuelve
+        cur.execute("""
+        SELECT *
+        FROM equipo_asignacion ea
+        WHERE NOT ea.idEquipo = %s
+        AND ea.idAsignacion = %s
+                    """, (id_equipo, asignacion_vieja['idAsignacion']))
+        equipos = cur.fetchall()
+        return (asignacion_vieja, equipos)
+    resultados_consulta = consulta()
+    equipos = resultados_consulta[1]
+    asignacion_vieja = resultados_consulta[0]
 
-    fecha = date.today()#buscar la funcion para la fecha
-    #print(id_asignacion)
-    cur.execute("""
-    SELECT *
-    FROM asignacion a
-    WHERE a.idAsignacion = %s
-        """, (str(id_asignacion['idAsignacion']),))
-    Asignacion = cur.fetchone()
+    if len(equipos) == 0:
+        return devolver(asignacion_vieja['idAsignacion'])
+    #else:
+        #flash("Este equipo forma parte de una asignacion de multiples equipos")
+        #return redirect('/equipo')
+    #extraer las ids
+    equipos_id = []
+    for equipo in equipos:
+        equipos_id.append(equipo['idEquipo'])
 
-    
-    #encontar todos los equipos excepto el que se devuelve
-    cur.execute("""
-    SELECT *
-    FROM equipo e
-    WHERE NOT e.idEquipo = %s
-                """, (id_equipo,))
-    equipos_data = cur.fetchall()
-    equipos = ()
-    for equipo in equipos_data:
-        equipos = equipos + ((equipo['idEquipo']),)
         
-    #print(Asignacion)
-    devolver(id_asignacion['idAsignacion'])
-    creacionAsignacion(fecha, Asignacion['ObservacionAsignacion'], 
-                Asignacion['rutFuncionario'], equipos)
+    print("asignacion vieja")
+    print(asignacion_vieja)
+    devolver(asignacion_vieja['idAsignacion'])
+    creacionAsignacion(str(date.today()), asignacion_vieja['ObservacionAsignacion'], 
+                asignacion_vieja['rutFuncionario'], equipos_id, True)
 
 
     #cambiar redirect
@@ -833,7 +827,7 @@ def listar_pdf(idAsignacion, devolver="None"):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    dir = PDFS_DIR   
+    dir = 'pdf'   
     if devolver == "None":
         nombreFirmado = "asignacion_" + str(idAsignacion) + "_" + "firmado.pdf"
         location = "asignacion"
@@ -862,7 +856,7 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
-        dir =  PDFS_DIR
+        dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -877,7 +871,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         return redirect("/ingresar")
     try:
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
-        dir =  PDFS_DIR
+        dir =  'pdf'
         file = os.path.join(dir, nombrePdf)
         return send_file(file, as_attachment=True)
     except:
@@ -893,7 +887,10 @@ def adjuntar_pdf_asignacion(idAsignacion):
     #TODO: revisar que sea pdf
     file = request.files["file"]
     #subir archivo
-    dir = PDFS_DIR
+    if inLinux:
+        dir = 'pdf'
+    else:
+        dir = 'app/pdf' #TODO cuando la ruta relativa es app/pdf y cuando es pdf?
     filenameToDelete = "asignacion_" + str(idAsignacion) + "_firmado.pdf"
     filenameToDelete = secure_filename(filenameToDelete)
     if os.path.exists(os.path.join(dir, filenameToDelete)):
@@ -907,6 +904,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
 
     os.rename(os.path.join(dir, sfilename), 
               os.path.join(dir, "asignacion_" + str(idAsignacion) + "_firmado.pdf"))
+    flash("Se subio la firma correctamente")
     return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
@@ -914,7 +912,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
 def adjuntar_pdf_devolucion(idAsignacion):
     #TODO: revisar que sea pdf
     #si existe eliminar
-    dir = PDFS_DIR
+    dir = 'pdf'
     filenameToDelete = "devolucion_" + str(idAsignacion) + "_firmado.pdf"
     if os.path.exists(os.path.join(dir, filenameToDelete)):
         os.remove(os.path.join(dir, filenameToDelete))

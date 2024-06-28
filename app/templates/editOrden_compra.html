@@ -8,7 +8,7 @@
 
 <form action="/update_ordenc/{{orden_compra.idOrden_compra}}" method="POST"class="mi-formulario">
     <label for="">Orden Compra: </label>
-    <input disabled type="text" name="" placeholder="Nombre tipo adquisicion" value="{{orden_compra.idOrden_compra}}">
+    <input  type="text" name="" placeholder="Nombre tipo adquisicion" value="{{orden_compra.idOrden_compra}}">
     <br>
     <label for="nombre_ordenc">Nombre de Orden: </label>
     <input type="text" name="nombre_ordenc" placeholder="Nombre tipo adquisicion" value="{{orden_compra.nombreOrden_compra}}">
@@ -19,9 +19,11 @@
   <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra: </label>
   <input type="date" name="fecha_fin_ordenc" value="{{orden_compra.fecha_fin_ordenc}}">
   <br>
+  {#
   <label for="rutadocu_ordenc">Ruta Documento: </label>
   <input type="text" name="rutadocu_ordenc" value="{{orden_compra.rutadocumentoOrden_compra}}">
   <br>
+  #}
   <label for="nombre_tipo_adquisicion_ordenc"> Tipo de Adquisicion: </label>
     <select name="nombre_tipo_adquisicion_ordenc">
         {% for tipoa in tipo_adquisicion %}

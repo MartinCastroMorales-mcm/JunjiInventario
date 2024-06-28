@@ -47,6 +47,7 @@ def UNIDAD(page=1):
 @administrador_requerido
 def add_Unidad():
     if request.method == 'POST':
+        codigoUnidad = request.form['codigo_unidad']
         nombreUnidad = request.form['nombreUnidad']
         contactoUnidad = request.form['contactoUnidad']
         direccionUnidad = request.form['direccionUnidad']
@@ -54,8 +55,8 @@ def add_Unidad():
         idModalidad = request.form['idModalidad']
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO unidad (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
-            , (nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
+            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
+            , (codigoUnidad,nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
             mysql.connection.commit()
             flash('Unidad agregada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))

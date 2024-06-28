@@ -128,8 +128,8 @@
     </div>
 </div>
 <h2>Equipo</h2>
-<button class="nav-button" onclick="showDiv('formularioExcel')">Exportar a Excel</button>
-<button class="nav-button" onclick="showDiv('importar_excel')">Importar a Excel</button>
+<button class="nav-button" onclick="showDiv('formularioExcel', ['importar_excel'])">Exportar a Excel</button>
+<button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>
 <div class="card card-body" id="formularioExcel" style="display: none;">
     <h2>Seleccione que hojas quiere</h2>
     <form action="/test_excel_form" method="POST" class="mi-formulario">
@@ -189,7 +189,7 @@
 </div>
 <div class="card card-body" id="importar_excel" style="display: none;">
     {#aqui formulario para importar datos#}
-    <p>IMPORTAR</p>
+<h2>Importar Equipos o Unidades</h2>
     <div class="card card-body" id="formulario" style="display: block;">
         <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
             <div class="form-group">
@@ -244,7 +244,7 @@
                 <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                 <td class="toCheck">{{equi.Num_serieEquipo}}</td>
                 {% if equi.nombreFuncionario == '' %}
-                <td class="toCheck">SIN ASIGNAR</td>
+                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
                 {% else %}
                 <td class="toCheck">{{equi.nombreFuncionario}}</td>
                 {% endif %}
@@ -269,8 +269,10 @@
                             <a href="/add_asignacion/{{equi.idEquipo}}" class="agregar-button"
                                 style="width: 90%;">Asignar</a>
                             {% else %}
-                            <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button"
-                                style="width: 90%;">Devolver</a>
+                                {% if equi.nombreEstado_equipo == "EN USO" %}
+                                    <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button"
+                                        style="width: 90%;">Devolver</a>
+                                {% endif%}
                             {% endif %}
 
 

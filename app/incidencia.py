@@ -6,7 +6,7 @@ from cuentas import loguear_requerido, administrador_requerido
 import os
 import shutil 
 from werkzeug.utils import secure_filename
-from env_vars import paths
+from env_vars import paths, inLinux
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = paths['pdf_path']
 
@@ -52,15 +52,14 @@ def incidencia_form(idEquipo):
                 WHERE e.idEquipo = %s
                 """, (idEquipo,))
     equipo = cur.fetchone()
+    print("equipo")
+    print(equipo)
     return render_template("add_incidencia.html", equipo=equipo)
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
 @administrador_requerido
 def add_incidencia():
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == "POST":
          nombreIncidencia = request.form['nombreIncidencia']
          observacionIncidencia = request.form['observacionIncidencia']
@@ -73,10 +72,11 @@ def add_incidencia():
                         observacionIncidencia,
                         rutaActaIncidencia,
                         fechaIncidencia,
-                        idEquipo
+                        idEquipo,
+                        numDocumentosIncidencia
                         )
-                     VALUES (%s, %s, %s, %s, %s)
-                    """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo,)
+                     VALUES (%s, %s, %s, %s, %s, %s)
+                    """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo, 0)
                     )
          mysql.connection.commit()
          flash("Incidencia Agregada Corectamante")
@@ -87,7 +87,7 @@ def add_incidencia():
                      WHERE i.idIncidencia = %s
                      """, (idIncidencia,))
          obj_incidencia = cur.fetchone()
-    return redirect("/incidencia/listar_pdf/" + idEquipo)
+    return redirect("/incidencia/listar_pdf/" + str(idIncidencia))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
 @administrador_requerido
@@ -154,11 +154,18 @@ def adjuntar_pdf(id):
         return redirect("/ingresar")
     #guardar pdf
     file = request.files["file"]
-    dir = PDFS_INCIDENCIAS
+    print("adjuntar incidencia")
+    print("inLinux" + str(inLinux()))
+    #if inLinux():
+    dir ="pdf"
+    #else:
+        #dir = 'app/pdf' 
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     print(carpeta_incidencias)
     #podria dar error pero mejor que tire error y ver cual es
-    os.mkdir(carpeta_incidencias)
+    if not os.path.isdir(carpeta_incidencias):
+        os.mkdir(carpeta_incidencias)
+        print("se creo la carpeta de la incidencia")
     fileName = file.filename
     file.save(os.path.join(
         carpeta_incidencias,
@@ -174,34 +181,36 @@ def adjuntar_pdf(id):
                      WHERE i.idIncidencia = %s
                 """, (id,))
     obj_incidencia = cur.fetchone()
+    print(obj_incidencia)
     #redirigir a si add_pdf_incidencia
     flash("se subio correctamente")
     return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
-@incidencia.route("/incidencia/listar_pdf/<idEquipo>")
+@incidencia.route("/incidencia/listar_pdf/<idIncidencia>")
 @loguear_requerido
-def listar_pdf(idEquipo):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
+def listar_pdf(idIncidencia):
     #verificar la existencia de la carpeta incidencia
     #try:
     cur = mysql.connection.cursor()
-    #cur.execute("""
-    ##SELECT idEquipo
-    ##FROM incidencia i
-    ##WHERE i.idIncidencia = %s
-                ##""", (idEquipo,))
-    #Incidencia = cur.fetchone()
-    #print(Incidencia)
+    cur.execute("""
+    SELECT idEquipo
+    FROM incidencia i
+    WHERE i.idIncidencia = %s
+                """, (idIncidencia,))
+    Incidencia = cur.fetchone()
+    print(Incidencia)
+    idEquipo = Incidencia['idEquipo']
     cur.execute("""
                 SELECT *
                 FROM super_equipo e
                 WHERE e.idEquipo = %s
                 """, (idEquipo,))
     data_equipo = cur.fetchone()
-    dir = PDFS_INCIDENCIAS
-    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idEquipo))
+    #if inLinux():
+    dir = "pdf"
+    #else:
+        #dir = "app/pdf"
+    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idIncidencia))
     if(not os.path.exists(carpeta_incidencias)):
         #insertar numero de documentos
         cur = mysql.connection.cursor()
@@ -209,9 +218,11 @@ def listar_pdf(idEquipo):
             UPDATE incidencia
             SET numDocumentos = %s
             WHERE idIncidencia = %s
-                    """, (0 , idEquipo))
+                    """, (0 , Incidencia['idEquipo']))
         mysql.connection.commit()
-        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idEquipo,
+        print("equipo")
+        print(data_equipo)
+        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia,
                 documentos=(), equipo=data_equipo)
 
         
@@ -221,12 +232,15 @@ def listar_pdf(idEquipo):
 
     #obtener un listado de los nombres de la carpeta
     #generar las tuplas tal que se pueda abrir en otra ventana
-    pdfTupla = ()
+    print("pdfTupla añadir documentos")
+    pdfTupla = []
+    print("antes de crear pdfTupla")
     for fileName in os.listdir(carpeta_incidencias):
         print(fileName)
-        if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
-            pdfTupla = pdfTupla + (fileName,)
-    #print(pdfTupla)
+        #if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
+        pdfTupla.append(fileName) 
+    print(pdfTupla)
+    pdfTupla = tuple(pdfTupla)
 
     #TODO:
     #insertar numero de documentos
@@ -235,10 +249,10 @@ def listar_pdf(idEquipo):
         UPDATE incidencia
         SET numDocumentos = %s
         WHERE idIncidencia = %s
-                """, (len(pdfTupla), idEquipo))
+                """, (len(pdfTupla), idIncidencia))
     mysql.connection.commit()
     
-    return render_template("mostrar_pdf_incidencia.html", idIncidencia=idEquipo, 
+    return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia, 
                            documentos=pdfTupla, equipo=data_equipo, location='incidencia')
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
@@ -246,14 +260,16 @@ def listar_pdf(idEquipo):
 def mostrar_pdf(id, nombrePdf):
     try:
         nombrePdf = nombrePdf
-        dir = PDFS_INCIDENCIAS
+        dir = 'pdf'
         #busca la carpeta de la incidencia asociada a la id
         carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
         file = os.path.join(carpeta_incidencias, nombrePdf)
+        print("file")
+        print(file)
         return send_file(file, as_attachment=True)
     except:
         flash("no se encontro pdf")
-        return redirect(url_for("incicencia.Incidencia"))
+        return redirect(url_for("incidencia.Incidencia"))
 #def create_pdf(Incidencia):
     
     #class PDF(FPDF):

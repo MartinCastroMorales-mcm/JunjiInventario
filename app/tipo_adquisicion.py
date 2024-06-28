@@ -53,7 +53,7 @@ def edit_tipoa(id):
         cur.execute('SELECT * FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))
         data = cur.fetchall()
         print(data)
-        return render_template('editTipo_Adquisicion.html' , tipo_adquisicion = data[0])
+        return render_template('editTipo_adquisicion.html' , tipo_adquisicion = data[0])
     except Exception as e:
             flash(e.args[1])
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))   
