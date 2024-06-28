@@ -90,7 +90,6 @@ def Equipo(page=1):
         lastpage=page < (total / perpage) + 1,
         session=session
     )
-
 def crear_lista_modelo_tipo_marca():
     #Va a ser de tipo 
     #[
@@ -216,8 +215,6 @@ def add_equipo():
             else:
                 flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
-
-
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
@@ -263,8 +260,6 @@ def edit_equipo(id):
     except Exception as e:
         flash(e.args[1])
         return redirect(url_for("equipo.Equipo"))
-
-
 # actualiza registro a traves de id correspondiente
 @equipo.route("/update_equipo/<id>", methods=["POST"])
 @administrador_requerido
@@ -323,8 +318,6 @@ def update_equipo(id):
         except Exception as e:
             flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
-
-
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
@@ -491,6 +484,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
                 SELECT *
                 FROM asignacion a
                 WHERE a.rutFuncionario = %s
+                AND a.ActivoAsignacion = 1
                 ORDER BY a.fecha_inicioAsignacion DESC
                 """, (rutFuncionario,))
     asignaciones = cur.fetchall()

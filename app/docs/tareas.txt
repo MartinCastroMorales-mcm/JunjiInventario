@@ -351,7 +351,7 @@ Verificacion Final {
         }
         Tipo_equipo {
                 Agregar OK
-                Editar NO
+                Editar OK
                 Eliminar OK
         }
         Funcionarios {
@@ -377,7 +377,7 @@ Verificacion Final {
         }
         Tipo adquisicion {
                 Agregar OK
-                Editar NO
+                Editar OK
                 Eliminar OK
         }
         Estado Equipo {
@@ -422,7 +422,7 @@ Orden de Compra:
         El formulario para agregar ordenes de compra funciona pero contiene informacion irrelevante
         El formulario de edicion no permite que se edite la id de la orden de compra
 Tipo Adquisicion:
-        Editar da error
+        Editar da error OK
 Estado Equipo:
         ¿Que significa la fecha de modificacion?
 Asignacion:
