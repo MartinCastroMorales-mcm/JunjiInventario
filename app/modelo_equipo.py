@@ -148,9 +148,6 @@ def add_modelo_equipo():
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def edit_modelo_equipo(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     cur = mysql.connection.cursor()
     cur.execute(
         """ 
@@ -196,10 +193,19 @@ def edit_modelo_equipo(id):
     curs = mysql.connection.cursor()
     curs.execute("SELECT * FROM tipo_equipo")
     tipo_data = curs.fetchall()
+    curs.execute("""
+    SELECT * FROM marca_equipo
+                 """)
+    marcas = curs.fetchall()
     curs.close()
+    print("editModelo_equipo")
+    print("modelo")
+    print(data)
+    print("marca")
+    print(marcas)
     return render_template(
         "editModelo_equipo.html", modelo_equipo=data, id=id,
-        marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data)
+        marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data, marcas=marcas)
 
 
 # actualizar

@@ -22,8 +22,8 @@
                             <option value="{{modelo_equipo.idMarca_Equipo}}" selected="true">
                                     {{modelo_equipo.nombreMarcaEquipo}}</option>
 
-                            {% for marcae in marca_equipo %}
-                            {% if modelo_equipo.idMarca_Equipo == marcae.idMarca_Equipo%}
+                            {% for marcae in marcas %}
+                            {% if modelo_equipo.idMarca_Equipo != marcae.idMarca_Equipo%}
                             <option value="{{marcae.idMarca_Equipo}}">{{marcae.nombreMarcaEquipo}}</option>
                             {% endif %}
                             {% endfor %}
