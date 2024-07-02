@@ -52,16 +52,15 @@ def add_ordenc():
         nombre_ordenc = request.form['nombre_ordenc']
         fecha_compra = request.form['fecha_compra_ordenc']
         fecha_fin = request.form['fecha_fin_ordenc']
-        docu_ordenc = request.form['rutadocu_ordenc']
         nombre_tipoa = request.form['nombre_tipo_adquisicion_ordenc']  
         nombre_proveedor = request.form['nombre_proveedor_ordenc']
         try:      
             cur = mysql.connection.cursor()
             cur.execute('''INSERT INTO orden_compra 
-                        (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,rutadocumentoOrden_compra,
+                        (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,
                             idTipo_adquisicion,idProveedor) 
                         VALUES (%s,%s,%s,%s,%s,%s,%s)
-                        ''', (id_ordenc, nombre_ordenc, fecha_compra, fecha_fin,docu_ordenc, nombre_tipoa, nombre_proveedor))
+                        ''', (id_ordenc, nombre_ordenc, fecha_compra, fecha_fin, nombre_tipoa, nombre_proveedor))
             cur.connection.commit()
             flash("Orden de compra agregada correctamente")
             return redirect(url_for('orden_compra.ordenCompra'))
@@ -106,7 +105,6 @@ def update_ordenc(id):
         nombre_ordenc = request.form['nombre_ordenc']
         fecha_compra_ordenc = request.form['fecha_compra_ordenc']
         fecha_fin_ordenc = request.form['fecha_fin_ordenc']
-        rutadocu_ordenc = request.form['rutadocu_ordenc']
         nombre_tipo_adquisicion_ordenc = request.form['nombre_tipo_adquisicion_ordenc']
         nombre_proveedor_ordenc = request.form['nombre_proveedor_ordenc']
 
@@ -117,11 +115,10 @@ def update_ordenc(id):
             SET nombreOrden_compra = %s,
                 fechacompraOrden_compra = %s,
                 fechafin_ORDEN_COMPRA= %s,
-                rutadocumentoOrden_compra= %s,
                 idProveedor = %s,
                 idTipo_adquisicion = %s
             WHERE idOrden_compra = %s
-            ''', (nombre_ordenc, fecha_compra_ordenc, fecha_fin_ordenc,rutadocu_ordenc, nombre_tipo_adquisicion_ordenc, nombre_proveedor_ordenc, id))
+            ''', (nombre_ordenc, fecha_compra_ordenc, fecha_fin_ordenc,nombre_tipo_adquisicion_ordenc, nombre_proveedor_ordenc, id))
             mysql.connection.commit()
             flash('Orden de compra actualizada correctamente')
             return redirect(url_for('orden_compra.ordenCompra'))
