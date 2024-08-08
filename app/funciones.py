@@ -10,17 +10,40 @@ def validarChar(name):
 
 #deberia ser un rut sin puntos y con guion
 def validarRut(rut):
+    print("validar rut")
     rutGrupo = rut.split("-")
+    print(rutGrupo)
     if len(rutGrupo) != 2:
         return False
     num = rutGrupo[0]
     digVerificador = rutGrupo[1]
-    try:
-        num = int(num)
-    except:
+    #try:
+    suma = 0
+    multiplicador = 2
+    print("antes for")
+    print(len(num))
+    for i in range(0, len(num)):
+        print("i: " + str(i))
+        j = len(num) -1 - i
+        print("j: " + str(j))
+        n = num[j]
+        print("n: " + str(n))
+        n = int(n)
+        suma += n * multiplicador
+        print("suma: " + str(suma))
+        multiplicador += 1
+        if(multiplicador > 7):
+            multiplicador = 2
+    num = suma
+    #except:
         #Si no es posible convertir el num a int tiene un formato incorrecto
-        return False
-    mod = num % 11
+        #return False
+    mod = (num % 11)
+    print("mod1")
+    print(mod)
+    mod = 11 - mod
+    print("mod2")
+    print(mod)
     if digVerificador == "k":
         digVerificador = 10
     else:
@@ -28,7 +51,6 @@ def validarRut(rut):
             digVerificador = int(digVerificador)
         except:
             return False
-
     if mod == digVerificador:
         return True
     else:

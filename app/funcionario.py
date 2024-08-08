@@ -143,7 +143,8 @@ def delete_funcionario(id):
         flash('Funcionario eliminado correctamente')
         return redirect(url_for('funcionario.Funcionario'))
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for('funcionario.Funcionario'))
 
 @funcionario.route("/funcionario/buscar_funcionario/<id>")

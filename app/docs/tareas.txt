@@ -427,3 +427,10 @@ Traslado
         Si se edita no cambia el funcionario mejor no dejar editar OK
 Incidencia:
         Error N° Documento OK
+
+
+
+
+
+editar Orden de compra
+rut validar
