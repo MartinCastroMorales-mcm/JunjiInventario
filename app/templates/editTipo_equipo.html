@@ -9,15 +9,16 @@
             <div>
                 <label>Nombre Tipo Equipo</label>
                 <br/>
-                <input id="nombre" name="nombreTipo_equipo" value="{{tipo_equipo.nombreTipo_equipo}}" rows="4" cols="50"/>
+                <input id="nombre" name="nombreTipo_equipo" value="{{tipo_equipo.nombreTipo_equipo}}" rows="4" cols="50"
+                maxlength="45"/>
             </div>
             <br>
             <div>
                 <label>Observaciones</label>
                 {% if tipo_equipo.observacionTipoEquipo == None%}
-                <textarea id="observacion" name="observacion" rows="4" cols="50"></textarea>
+                <textarea id="observacion" name="observacion" rows="4" cols="50" maxlength="45"></textarea>
                 {% else %}
-                <textarea id="observacion" name="observacion" rows="4" cols="50">{{tipo_equipo.observacionTipoEquipo}}</textarea>
+                <textarea id="observacion" name="observacion" rows="4" cols="50" maxlength="45">{{tipo_equipo.observacionTipoEquipo}}</textarea>
                 {% endif%}
             </div>
             <br>

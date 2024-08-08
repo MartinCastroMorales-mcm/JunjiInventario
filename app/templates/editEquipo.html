@@ -8,35 +8,39 @@
         <form action="/update_equipo/{{equipo.idEquipo}}" method="POST"class="mi-formulario">
             <div class="form-group">
             <label for="codigo_inventario">Codigo inventario: </label>
-            <input type="text" name="codigo_inventario" value="{{equipo.Cod_inventarioEquipo}}">           
+            <input type="text" name="codigo_inventario" value="{{equipo.Cod_inventarioEquipo}}"
+            maxlength="45">           
             </div>
             <div class="form-group">
             <label for="numero_serie">Numero serie: </label>
-            <input type="text" name="numero_serie" value="{{equipo.Num_serieEquipo}}">
+            <input type="text" name="numero_serie" value="{{equipo.Num_serieEquipo}}" maxlength="20">
              </div>
 
             <div class="form-group">
             <label for="observacion_equipo">Observacion: </label>
-            <input type="text" name="observacion_equipo" value="{{equipo.ObservacionEquipo}}">
+            <input type="text" name="observacion_equipo" value="{{equipo.ObservacionEquipo}}"
+            maxlength="250">
              </div>
              <div class="form-group">
 
                 <label for="codigoproveedor">Codigo Proveedor: </label>
-                <input type="text" name="codigoproveedor" value="{{equipo.codigoproveedor_equipo}}">
+                <input type="text" name="codigoproveedor" value="{{equipo.codigoproveedor_equipo}}"
+                    maxlength="20">
                
                 </div>
                 <div class="form-group">
                 <label for="mac">Mac : </label>
-                <input type="text" name="mac" value="{{equipo.macEquipo}}">
+                <input type="text" name="mac" value="{{equipo.macEquipo}}" maxlength="45">
                 </div>
     
                 <div class="form-group">
                 <label for="imei">imei : </label>
-                <input type="text" name="imei" value="{{equipo.imeiEquipo}}">
+                <input type="text" name="imei" value="{{equipo.imeiEquipo}}" maxlength="45">
                  </div>
                  <div class="form-group">
                     <label for="numero">Numero de telefono : </label>
-                    <input type="text" name="numero" value="{{equipo.numerotelefonicoEquipo}}">
+                    <input type="text" name="numero" value="{{equipo.numerotelefonicoEquipo}}"
+                        maxlength="12">
                      </div>
             <div class="form-group">
              <label for="nombre_estado_equipo">Estado equipo: </label>

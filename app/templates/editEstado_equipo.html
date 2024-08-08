@@ -8,7 +8,8 @@
 <form action="/update_estado_equipo/{{estado_equipo.idEstado_equipo}}" method="POST"class="mi-formulario">
     <div class="form-group">
     <label for="nombre_estado_equipo">Estado Equipo:</label>
-    <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" value="{{estado_equipo.nombreEstado_equipo}}">
+    <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" value="{{estado_equipo.nombreEstado_equipo}}"
+    maxlength="45">
     </div>
     <div class="form-group">
         <label for="fecha_modificacion">Fecha de modificación:</label>

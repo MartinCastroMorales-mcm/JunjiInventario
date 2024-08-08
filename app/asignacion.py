@@ -132,7 +132,8 @@ def edit_asignacion(id):
             "editAsignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
         )
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
 
 
@@ -166,7 +167,9 @@ def update_asignacion(id):
             flash("asignacion actualizado correctamente")
             return redirect(url_for("asignacion.Asignacion"))
         except Exception as e:
-            flash(e.args[1])
+
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for("asignacion.Asignacion"))
 
 
@@ -212,7 +215,8 @@ def delete_asignacion(id):
         flash("asignacion eliminado correctamente")
         return redirect(url_for("asignacion.Asignacion"))
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
 
 #Este metodo extrae la informacion del formulario
@@ -494,15 +498,23 @@ def mostrar_pdf(id):
         nombrePdf = "asignacion_" + str(id) + ".pdf"
         dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
-        print('file')
-        return send_file(file, as_attachment=True)
+        if os.path.exists(file):
+            print('file')
+            return send_file(file, as_attachment=True)
+        else:
+            flash("no se encontro el pdf")
+            return redirect("/asignacion")
     else:
         nombrePdf = "asignacion_" + str(id) + ".pdf"
         dir = 'pdf' 
         file = os.path.join(dir, nombrePdf)
-        print("mostrar_pdf")
-        print(file)
-        return send_file(file, as_attachment=True)
+        if os.path.exists(file):
+            print("mostrar_pdf")
+            print(file)
+            return send_file(file, as_attachment=True)
+        else:
+            flash("no se encontro el pdf")
+            return redirect("/asignacion")
         #flash("no se encontro el pdf")
         #return redirect(url_for('asignacion.Asignacion'))
 

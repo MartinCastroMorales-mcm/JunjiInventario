@@ -12,7 +12,8 @@
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
                     <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
-                        value="{{modelo_equipo.nombreModeloequipo}}">
+                        value="{{modelo_equipo.nombreModeloequipo}}"
+                        maxlength="45">
                 </div>
                 <div class="form-group">
                     <div id="selector_marca">
@@ -40,7 +41,7 @@
                 </div>
 
 
-                <button id="enviar" class="agregar-button" style="display: none;"> Agregar</button>
+                <button id="enviar" class="agregar-button" style="display: block;"> Agregar</button>
             </form>
         </div>
     </div>

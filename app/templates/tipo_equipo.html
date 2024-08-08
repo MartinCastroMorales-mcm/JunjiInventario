@@ -28,7 +28,7 @@
             <form action="/crear_tipo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombreTipo_equipo">Nombre Tipo Equipo:</label>
-                    <input type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required>
+                    <input type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required maxlength="45">
                 </div>
                 {#<label for="nombre_marca_equipo"> Marca Equipo: </label>#}
                 {#<select name="nombre_marca_equipo" id="">#}
@@ -50,7 +50,7 @@
                 <tr>
                     <td onclick="sortTable(0)">Nombre tipo de equipo</td>
                     <td onclick="sortTable(1)">Nombre Marca</td>
-                    <td>Operations</td>
+                    <td>Acciones</td>
                 </tr>
             </thead>
             <tbody id="myTableBody">
@@ -71,7 +71,7 @@
                         {% endfor %}
                     </td>
                     <td>
-                        <a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>
+                        {#<a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>#}
                         <a href="/delete_tipo_equipo/{{tipoe.idTipo_equipo}}" class="delete-button">Eliminar</a>
                     </td>
                 </tr>

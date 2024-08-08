@@ -22,25 +22,22 @@
         En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
         y se muestra el formulario para agregar un item.
         #}
-        <a href="/add_asignacion" class="nav-button">Crear Asignacion</a>
+        <a href="/add_asignacion" class="nav-button">Crear Asignación</a>
 
     </div>
     <h2>Asignaciones</h2>
     <div style="position: relative;">
         <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
         <div style="overflow-x:auto;">
-
-
             <table id="posts">
                 <thead>
                     <tr>
-
                         <td onclick="sortTable(0)">Fecha Inicio</td>
-                        <td onclick="sortTable(1)">Observacion</td>
+                        <td onclick="sortTable(1)">Observación</td>
                         <td>Actas</td>
-                        <td onclick="sortTable(3)">nombreFuncionario</td>
-                        <td onclick="sortTable(4)">fechaDevolucion</td>
-                        <td>Botones</td>
+                        <td onclick="sortTable(3)">NombreFuncionario</td>
+                        <td onclick="sortTable(4)">FechaDevolucion</td>
+                        <td>Acciones</td>
                     </tr>
                 </thead>
                 <tbody id="myTableBody">
@@ -55,11 +52,10 @@
                                 <button class="options-button">Asignaciones</button>
                                 <div class="dropdown-options">
                                     <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
-                                        class="info-button desplegable-button">Asignacion</a>
+                                        class="info-button desplegable-button">Asignación</a>
                                     <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}" 
                                     class="success-button desplegable-button">
                                         Firmar</a>
-
                                 </div>
                             </div>
                             {% if asig.ActivoAsignacion != 1 %}
@@ -67,7 +63,7 @@
                                 <button class="options-button">Devoluciones</button>
                                 <div class="dropdown-options">
                                     <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
-                                        class="info-button desplegable-button">Devolucion</a>
+                                        class="info-button desplegable-button">Devolución</a>
                                     <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver" 
                                         class="success-button desplegable-button">
                                         Firmar</a>

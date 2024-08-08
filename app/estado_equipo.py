@@ -38,7 +38,8 @@ def add_estado_equipo():
             flash('Estado de equipo agregado correctamente')
             return redirect(url_for('estado_equipo.estadoEquipo'))
         except Exception as e:
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for('estado_equipo.estadoEquipo'))
     
 #enviar datos a vista editar
@@ -54,7 +55,8 @@ def edit_estado_equipo(id):
         data = cur.fetchall()
         return render_template('editEstado_equipo.html', estado_equipo = data[0])
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('estado_equipo.estadoEquipo'))
 
 #actualizar
@@ -79,7 +81,8 @@ def update_estado_equipo(id):
             flash('Estado de equipo actualizado correctamente')
             return redirect(url_for('estado_equipo.estadoEquipo'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('estado_equipo.estadoEquipo'))
 
 #eliminar    
@@ -96,7 +99,8 @@ def delete_estado_equipo(id):
         flash('Estado de equipo eliminado correctamente')
         return redirect(url_for('estado_equipo.estadoEquipo'))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('estado_equipo.estadoEquipo'))
 
 @estado_equipo.route("/mostrar_equipos_segun_tipo/<tipo>")

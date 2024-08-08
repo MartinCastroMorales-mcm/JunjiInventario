@@ -144,7 +144,6 @@ def crear_lista_modelo_tipo_marca():
     pass
 # agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
-@administrador_requerido
 def add_equipo():
     if request.method == "POST":
         codigo_inventario = request.form["codigo_inventario"]
@@ -213,7 +212,8 @@ def add_equipo():
             if(e.args[0] == 1062):
                 flash("No se puede repetir el valor de serie")
             else:
-                flash(e.args[1])
+                flash("Error al crear")
+                #flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
@@ -258,7 +258,8 @@ def edit_equipo(id):
             modelo_equipo=modeloe_data,
         )
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for("equipo.Equipo"))
 # actualiza registro a traves de id correspondiente
 @equipo.route("/update_equipo/<id>", methods=["POST"])
@@ -316,7 +317,8 @@ def update_equipo(id):
             flash("Equipo actualizado correctamente")
             return redirect(url_for("equipo.Equipo"))
         except Exception as e:
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
@@ -332,7 +334,8 @@ def delete_equipo(id):
         flash("Equipo eliminado correctamente")
         return redirect(url_for("equipo.Equipo"))
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al Eliminar, equipo puede tener dependencias")
+        #flash(e.args[1])
         return redirect(url_for("equipo.Equipo"))
 
 
@@ -602,7 +605,7 @@ def equipo_detalles(idEquipo):
     )
     data_equipo = cur.fetchone()
     #revisar si este equipo esta asignado a un funcionario
-    if data_equipo['rutFuncionario'] != '':
+    if data_equipo['nombreFuncionario'] != '':
         cur.execute("""
         SELECT *
         FROM funcionario f
@@ -1336,7 +1339,8 @@ def importar_unidad(col_comuna, col_modalidad, col_codigo,
             mysql.connection.commit()
         except Exception as e:
             print("unidad ya ingresada ¿?")
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
 
     flash("unidades importadas")
     print("unidades importadas")

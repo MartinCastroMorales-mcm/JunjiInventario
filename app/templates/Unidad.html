@@ -29,17 +29,21 @@
             <form action="/add_Unidad" method="POST" class="mi-formulario">
                 <div class="form-group">
 
-                    <label for="codigo_unidad">Codigo de la Unidad: </label>
-                    <input type="text" class="form-control" name="codigo_unidad" placeholder="codigo">
+                    <label for="codigo_unidad">Código de la Unidad: </label>
+                    <input type="text" class="form-control" name="codigo_unidad" placeholder="codigo"
+                    maxlength="11">
                     <br>
                     <label for="nombreUnidad">Nombre de la Unidad: </label>
-                    <input type="text" class="form-control" name="nombreUnidad" placeholder="Nombre">
+                    <input type="text" class="form-control" name="nombreUnidad" placeholder="Nombre"
+                    maxlength="45">
                     <br>
                     <label for="contactoUnidad">Contacto: </label>
-                    <input type="text" class="form-control" name="contactoUnidad" placeholder="Contacto">
+                    <input type="text" class="form-control" name="contactoUnidad" placeholder="Contacto"
+                    maxlength="45">
                     <br>
-                    <label for="direccionUnidad">Direccion: </label>
-                    <input type="text" class="form-control" name="direccionUnidad" placeholder="Direccion">
+                    <label for="direccionUnidad">Dirección: </label>
+                    <input type="text" class="form-control" name="direccionUnidad" placeholder="Direccion"
+                    maxlength="45">
                     <br>
                     <label for="nombreComuna">Comuna: </label>
                     <select class="form-select" aria-label="nombreComuna" name="idComuna">
@@ -67,14 +71,14 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td onclick="sortTable(0)">Codigo Unidad</td>
+                    <td onclick="sortTable(0)">Código Unidad</td>
                     <td onclick="sortTable(1)">Nombre Unidad</td>
                     <td onclick="sortTable(2)">Contacto</td>
-                    <td onclick="sortTable(3)">Direccion</td>
+                    <td onclick="sortTable(3)">Dirección</td>
                     <td onclick="sortTable(4)">Comuna</td>
                     <td onclick="sortTable(5)">N° Equipos</td>
                     <td onclick="sortTable(5)">Modalidad</td>
-                    <td>Operations</td>
+                    <td>Acciones</td>
                 </tr>
             </thead>
             <tbody id="myTableBody">

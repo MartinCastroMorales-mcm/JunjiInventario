@@ -92,7 +92,8 @@ def crear_tipo_equipo():
             (nombreTipo_Equipo,),
         )
     except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for("tipo_equipo.tipoEquipo"))
     mysql.connection.commit()
     cur.execute(
@@ -236,7 +237,8 @@ def edit_tipo_equipo(id):
             marcas=marcasModificadas,
         )
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for("tipo_equipo.tipoEquipo"))
 
 #Funcion que pide las marcas y 
@@ -310,5 +312,6 @@ def delete_tipo_equipo(id):
         flash("Tipo de equipo eliminado correctamente")
         return redirect(url_for("tipo_equipo.tipoEquipo"))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for("tipo_equipo.tipoEquipo"))

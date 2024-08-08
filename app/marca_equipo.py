@@ -50,23 +50,22 @@ def add_marca_equipo():
             flash('Marca agregada correctamente')
             return redirect(url_for('marca_equipo.marcaEquipo'))  
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('marca_equipo.marcaEquipo'))
         
 #enviar datos a vista editar
 @marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def edit_marca_equipo(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM marca_equipo WHERE idMarca_Equipo = %s', (id,))
         data = cur.fetchall()
         return render_template('editMarca_equipo.html', marca_equipo = data[0])
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #actualizar
@@ -89,16 +88,14 @@ def update_marca_equipo(id):
             flash('Marca actualizada correctamente')
             return redirect(url_for('marca_equipo.marcaEquipo'))
         except Exception as e:
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #eliminar    
 @marca_equipo.route('/marca_equipo/delete_marca_equipo/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def delete_marca_equipo(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM marca_equipo WHERE idMarca_equipo = %s', (id,))
@@ -106,7 +103,8 @@ def delete_marca_equipo(id):
         flash('Marca eliminada correctamente')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('marca_equipo.marcaEquipo'))
     
     

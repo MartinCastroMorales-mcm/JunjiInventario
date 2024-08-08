@@ -35,7 +35,8 @@ def add_comuna():
             flash('Comuna ingresada correctamente')
             return redirect(url_for('comuna.Comuna'))
         except Exception as e:
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for('comuna.Comuna'))
         
 #enviar datos a vista editar
@@ -55,7 +56,8 @@ def edit_comuna(id):
         cur.close()
         return render_template('editComuna.html', comuna = data[0], provincia = p_data)
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for('comuna.Comuna'))
     
 #actualiza registro segun el id
@@ -76,7 +78,8 @@ def update_comuna(id):
             flash('Comuna actualizada correctamente')
             return redirect(url_for('comuna.Comuna'))
         except Exception as e:
-            flash(e.args[1])
+            flash("Error al crear")
+            #flash(e.args[1])
             return redirect(url_for('comuna.Comuna'))
         
 #elimina registro segun el id
@@ -89,5 +92,6 @@ def delete_comuna(id):
         flash('Comuna eliminada correctamente')
         return redirect(url_for('comuna.Comuna'))
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for('comuna.Comuna'))

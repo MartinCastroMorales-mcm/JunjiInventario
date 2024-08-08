@@ -59,21 +59,19 @@ def add_ordenc():
             cur.execute('''INSERT INTO orden_compra 
                         (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,
                             idTipo_adquisicion,idProveedor) 
-                        VALUES (%s,%s,%s,%s,%s,%s,%s)
+                        VALUES (%s,%s,%s,%s,%s,%s)
                         ''', (id_ordenc, nombre_ordenc, fecha_compra, fecha_fin, nombre_tipoa, nombre_proveedor))
             cur.connection.commit()
             flash("Orden de compra agregada correctamente")
             return redirect(url_for('orden_compra.ordenCompra'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('orden_compra.ordenCompra'))
 #Envias datos a formulario editar
 @orden_compra.route('/edit_ordenc/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def edit_ordenc(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra, oc.fechafin_ORDEN_COMPRA, oc.rutadocumentoOrden_compra, p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombreTipo_adquisicion
@@ -91,28 +89,31 @@ def edit_ordenc(id):
         cur.close()
         return render_template('editOrden_compra.html', orden_compra = data[0], tipo_adquisicion = dataso, proveedor = datas)
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('orden_compra.ordenCompra'))
     
 #actualizar
 @orden_compra.route('/update_ordenc/<id>', methods = ['POST'])
 @administrador_requerido
 def update_ordenc(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == 'POST':
+        #id_orden_compra = request.form['id_orden_compra']
         nombre_ordenc = request.form['nombre_ordenc']
         fecha_compra_ordenc = request.form['fecha_compra_ordenc']
         fecha_fin_ordenc = request.form['fecha_fin_ordenc']
         nombre_tipo_adquisicion_ordenc = request.form['nombre_tipo_adquisicion_ordenc']
         nombre_proveedor_ordenc = request.form['nombre_proveedor_ordenc']
 
+        print("update_orden_compra")
+        print(fecha_compra_ordenc)
+        print(fecha_fin_ordenc)
         try:
             cur = mysql.connection.cursor()
             cur.execute('''
             UPDATE orden_compra 
-            SET nombreOrden_compra = %s,
+            SET 
+                nombreOrden_compra = %s,
                 fechacompraOrden_compra = %s,
                 fechafin_ORDEN_COMPRA= %s,
                 idProveedor = %s,
@@ -123,16 +124,14 @@ def update_ordenc(id):
             flash('Orden de compra actualizada correctamente')
             return redirect(url_for('orden_compra.ordenCompra'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('orden_compra.ordenCompra'))
         
 #eliminar    
 @orden_compra.route('/delete_ordenc/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def delete_ordenc(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM orden_compra WHERE idOrden_compra = %s', (id,))
@@ -140,5 +139,6 @@ def delete_ordenc(id):
         flash('Orden de compra eliminado correctamente')
         return redirect(url_for('orden_compra.ordenCompra'))
     except Exception as e:
-        flash(e.args[1])
+        flash("Error al crear")
+        #flash(e.args[1])
         return redirect(url_for('orden_compra.ordenCompra'))

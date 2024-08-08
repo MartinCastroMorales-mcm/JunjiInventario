@@ -70,7 +70,8 @@ def add_funcionario():
             flash('Funcionario agregado correctamente')
             return redirect(url_for('funcionario.Funcionario'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('funcionario.Funcionario'))
     
 #enviar datos a vista editar
@@ -94,16 +95,14 @@ def edit_funcionario(id):
         ubi_data = cur.fetchall()
         return render_template('editFuncionario.html', funcionario = data[0], Unidad = ubi_data)
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('funcionario.Funcionario'))
 
 #actualizar funcionario por id
 @funcionario.route('/update_funcionario/<id>', methods = ['POST'])
 @administrador_requerido
 def update_funcionario(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == 'POST':
         rut_funcionario = request.form['rut_funcionario']
         nombre_funcionario = request.form['nombre_funcionario']
@@ -129,16 +128,14 @@ def update_funcionario(id):
         
             return redirect(url_for('funcionario.Funcionario'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('funcionario.Funcionario'))
 
 #eliminar registro segun id
 @funcionario.route('/delete_funcionario/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def delete_funcionario(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM funcionario WHERE rutFuncionario = %s', (id,))

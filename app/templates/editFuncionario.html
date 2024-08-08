@@ -8,20 +8,24 @@
     <form action="/update_funcionario/{{funcionario.rutFuncionario}}" method="POST"class="mi-formulario">
     <div class="form-group">
         <label for="rut_funcionario">Rut Funcionario</label>
-        <input type="text" name="rut_funcionario" value="{{funcionario.rutFuncionario}}">
+        <input type="text" name="rut_funcionario" value="{{funcionario.rutFuncionario}}"
+        maxlength="20">
     </div>
     <div class="form-group">
         <label for="nombre_funcionario">Nombre Funcionario</label>
-        <input type="text" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}">
+        <input type="text" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}"
+        maxlength="45">
     </div>
     <div class="form-group">
         <label for="correo_funcionario">Correo Funcionario</label>
         <input type="text" name="correo_funcionario"  
-            value="{{funcionario.correoFuncionario}}">
+            value="{{funcionario.correoFuncionario}}"
+            maxlength="45">
     </div>
     <div class="form-group">
         <label for="cargo_funcionario">Cargo:</label>
-        <input type="text" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}">
+        <input type="text" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}"
+        maxlength="45">
 
     </div>
     <!-- Arreglar nombre unidad-->

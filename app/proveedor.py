@@ -69,7 +69,8 @@ def add_proveedor():
         #dara una excepcion si es que falla la consulta u otro tipo de error             
         except Exception as e:
             #flash retornara el error 
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             #generado el error redirije a la pagina principal
             return redirect(url_for('proveedor.Proveedor'))
 
@@ -90,7 +91,8 @@ def edit_proveedor(id):
         #como llamaremos seleccionamos los datos del proveedor dependiendo el valor de data[0] (el id que seleccionamos)
         return render_template('editProveedor.html' , proveedor = data[0])
     except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('proveedor.Proveedor'))
 
 #ruta para poder actualizar los datos de proveedor dependiendo del id
@@ -110,7 +112,8 @@ def actualizar_proveedor(id):
             flash('Proveedor actualizado correctamente')
             return redirect(url_for('proveedor.Proveedor'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('proveedor.Proveedor'))
     
 #ruta para poder eliminar un proveedor por id
@@ -127,6 +130,7 @@ def delete_proveedor(id):
         flash('Proveedor eliminado correctamente')
         return redirect(url_for('proveedor.Proveedor'))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('proveedor.Proveedor'))
 

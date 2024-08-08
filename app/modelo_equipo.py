@@ -137,7 +137,8 @@ def add_modelo_equipo():
             flash("Modelo agregado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
 
@@ -238,7 +239,8 @@ def update_modelo_equipo(id):
             flash("Modelo actualizado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
 
@@ -256,5 +258,6 @@ def delete_modelo_equipo(id):
         flash("Modelo eliminado correctamente")
         return redirect(url_for("modelo_equipo.modeloEquipo"))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for("modelo_equipo.modeloEquipo"))

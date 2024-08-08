@@ -27,10 +27,12 @@
     <form action="/add_ordenc" method="POST" class="mi-formulario">
     <div class="form-group">
     <label for="id_ordenc">ID de Orden: </label>
-    <input type="text" name="id_ordenc" id="id_ordenc" placeholder="Serie orden de compra">
+    <input type="text" name="id_ordenc" id="id_ordenc" placeholder="Serie orden de compra"
+    maxlength="45">
     <br>
     <label for="nombre_ordenc">Nombre de Orden: </label>
-    <input type="text" name="nombre_ordenc" placeholder="Nombre orden de compra">
+    <input type="text" name="nombre_ordenc" placeholder="Nombre orden de compra"
+    maxlength="45">
    <br>
    <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
     <input type="date" name="fecha_compra_ordenc" placeholder="">
@@ -42,7 +44,7 @@
     <input type="text" name="rutadocu_ordenc" placeholder="">
     <br>
     #}
-    <label for="nombre_tipo_adquisicion_ordenc">Tipo de Adquisicion: </label>
+    <label for="nombre_tipo_adquisicion_ordenc">Tipo de Adquisición: </label>
     <select name="nombre_tipo_adquisicion_ordenc" id="" >
         <option value="">Elija el tipo de adquisicion</option>
         {% for tip in tipo_adquisicion %}
@@ -67,13 +69,13 @@
   <table id="posts">
     <thead>
         <tr>
-            <td onclick="sortTable(0)">Codigo de orden</td>
+            <td onclick="sortTable(0)">Código de orden</td>
             <td onclick="sortTable(1)">Nombre de orden</td>
             <td onclick="sortTable(2)">Fecha de Orden de compra</td>
             <td onclick="sortTable(3)">Fecha Final de Orden de compra</td>
             <td onclick="sortTable(4)">Tipo de adquisicion</td>
             <td onclick="sortTable(5)">Nombre de proveedor</td>
-            <td>Operations</td>
+            <td>Acciones</td>
         </tr>
     </thead>
     <tbody id="myTableBody">

@@ -27,9 +27,10 @@
         <div class="card card-body" id="formulario", style="display: none;">
             <form action="/add_proveedor" method="POST" class="mi-formulario">
                 <div class="form-group">
-                    <label for="nombre_proveedor">Nombre proveedor: </label>
-                    <input type="text" name="nombre_proveedor" placeholder="Nombre proveedor">
-                    <button class="agregar-button"> Agregar</button>
+                    <label for="nombre_proveedor">Nombre Proveedor: </label>
+                    <input type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
+                    maxlength="45">
+                    <button class="agregar-button">Agregar</button>
             </form>
         </div>
     </div>
@@ -39,7 +40,7 @@
             <thead>
                 <tr>
                     <td onclick="sortTable(0)">Nombre proveedor</td>
-                    <td>Operations</td>
+                    <td>Acciones</td>
                 </tr>
             </thead>
             <tbody id="myTableBody">

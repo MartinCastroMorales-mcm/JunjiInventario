@@ -28,16 +28,21 @@
             <form action="/add_funcionario" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="rut_funcionario">Rut funcionario(sin puntos y con guion)</label>
-                    <input type="text" name="rut_funcionario" placeholder="Rut de funcionario">
+                    <input type="text" name="rut_funcionario" placeholder="Rut de funcionario"
+                    maxlength="20">
                     <br>
                     <label for="nombre_funcionario">Nombre Funcionario: </label>
-                    <input type="text" name="nombre_funcionario" placeholder="Nombre funcionario">
+                    <input type="text" name="nombre_funcionario" placeholder="Nombre funcionario"
+                    maxlength="45">
+
                     <br>
                     <label for="correo_funcionario">Correo Funcionario: </label>
-                    <input type="text" name="correo_funcionario" placeholder="Correo funcionario">
+                    <input type="text" name="correo_funcionario" placeholder="Correo funcionario"
+                    maxlength="45">
                     <br>
                     <label for="cargo_funcionario"> Cargo: </label>
-                    <input type="text" name="cargo_funcionario" placeholder="Cargo">
+                    <input type="text" name="cargo_funcionario" placeholder="Cargo"
+                    maxlength="45">
                     <br>
                     <label for="codigo_Unidad">Unidad: </label>
                     <select name="codigo_Unidad" id="">
@@ -55,12 +60,12 @@
         <table id="posts">
             <thead>
                 <tr>
-                    <td onclick="sortTable(0)">Rut funcionario</td>
-                    <td onclick="sortTable(1)">Nombre funcionario</td>
+                    <td onclick="sortTable(0)">Rut Funcionario</td>
+                    <td onclick="sortTable(1)">Nombre Funcionario</td>
                     <td onclick="sortTable(2)">Cargo</td>
-                    <td onclick="sortTable(3)">Cod. Unidad</td>
+                    <td onclick="sortTable(3)">Código Unidad</td>
                     <td onclick="sortTable(4)">Correo</td>
-                    <td>Operations</td>
+                    <td>Acciones</td>
                 </tr>
             </thead>
             <tbody id="myTableBody">

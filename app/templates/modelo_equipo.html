@@ -33,7 +33,9 @@
             <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo">
+                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                    maxlength="45">
+
                 </div>
                 {#
                 TODO: Al apretar el boton verde agregar se muestra un boton para seleccionar la marca
@@ -78,7 +80,7 @@
                     {#<th onclick="sortTable(1)">Marca</th>#}
                     <th onclick="sortTable(1)">Tipo Equipo</th>
                     <th onclick="sortTable(2)">Marca Equipo</th>
-                    <th>Operations</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody id="myTableBody">

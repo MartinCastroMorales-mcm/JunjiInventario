@@ -73,7 +73,7 @@ def add_incidencia():
                         rutaActaIncidencia,
                         fechaIncidencia,
                         idEquipo,
-                        numDocumentosIncidencia
+                        numDocumentos
                         )
                      VALUES (%s, %s, %s, %s, %s, %s)
                     """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo, 0)
@@ -163,6 +163,7 @@ def adjuntar_pdf(id):
     carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
     print(carpeta_incidencias)
     #podria dar error pero mejor que tire error y ver cual es
+    print(carpeta_incidencias)
     if not os.path.isdir(carpeta_incidencias):
         os.mkdir(carpeta_incidencias)
         print("se creo la carpeta de la incidencia")

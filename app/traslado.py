@@ -8,6 +8,8 @@ from flask import (
     make_response,
     send_file,
     session,
+    request,
+    abort,
 )
 from db import mysql
 from fpdf import FPDF
@@ -74,8 +76,11 @@ def Traslado(page=1):
 @administrador_requerido
 def add_traslado():
     if request.method == "POST":
-
-        Origen = int(request.form["Origen"])
+        Origen = request.form["Origen"]
+        if(Origen == ""):
+            flash("seleccione un origen")
+            return redirect(url_for("traslado.Traslado"))
+        Origen = int(Origen)
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -110,7 +115,8 @@ def add_traslado():
             )
 
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for("traslado.Traslado"))
 
 
@@ -162,16 +168,14 @@ def edit_traslado(id):
         )
 
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for("traslado.Traslado"))
 
 
 @traslado.route("/traslado/delete_traslado/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_traslado(id):
-    if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute(
@@ -215,7 +219,8 @@ def delete_traslado(id):
         flash("Traslado eliminado correctamente")
         return redirect(url_for("traslado.Traslado"))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for("traslado.Traslado"))
 
 
@@ -228,9 +233,25 @@ def create_traslado(origen):
     if request.method == "POST":
         fechatraslado = request.form["fechatraslado"]
         # rutadocumento = request.form['']
-        Destino = request.form["Destino"]
+        try:
+            Destino = request.form["Destino"]
+            print("destino -" + Destino + "-")
+            if(Destino == ""):
+                raise Exception("Destino no especificado")
+        except Exception as e:
+            flash("Destino no especificado")
+            return redirect(url_for("traslado.Traslado"))
         # trasladar[] es la notacion para obtener un array con todos los outputs de las checklist
-        equipos = request.form.getlist("trasladar[]")
+        try:
+            equipos = request.form.getlist("trasladar[]")
+            print("-")
+            print(equipos)
+            print("-")
+            if len(equipos) == 0:
+                raise Exception("equipos")
+        except Exception as e:
+            flash("equipos no seleccionados")
+            return redirect(url_for("traslado.Traslado"))
         crear_traslado_generico(fechatraslado, Destino, origen, equipos)
 
         return redirect(url_for("traslado.Traslado"))

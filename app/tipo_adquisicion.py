@@ -40,7 +40,8 @@ def add_tipoa():
             flash('Tipo de adquisicion agregado exitosamente')
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion')) 
 
 #enviar datos a formulario editar segun el id
@@ -55,16 +56,14 @@ def edit_tipoa(id):
         print(data)
         return render_template('editTipo_adquisicion.html' , tipo_adquisicion = data[0])
     except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))   
 
 #actualiza el registro segun su id
 @tipo_adquisicion.route('/update_tipoa/<id>', methods = ['POST'])
 @administrador_requerido
 def actualizar_tipoa(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     if request.method == 'POST':
         nombre_tipoa = request.form['nombre_tipoa'] 
         try: 
@@ -78,16 +77,14 @@ def actualizar_tipoa(id):
             flash('Tipo de adquisicion actualizado correctamente')
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
         
 #elimina un registro segun su id
 @tipo_adquisicion.route('/delete_tipoa/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
 def delete_tipoa(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))
@@ -95,5 +92,6 @@ def delete_tipoa(id):
         flash('Tipo de adquisicion eliminado correctamente')
         return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))

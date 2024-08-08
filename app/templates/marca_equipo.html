@@ -27,7 +27,7 @@
             <form action="/add_marca_equipo" method="POST">
                 <div class="form-group">
 
-                    <input type="text" name="nombre_marca_equipo" placeholder="Nombre marca">
+                    <input type="text" name="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45">
                 </div>
                 <button class="agregar-button"> Agregar</button>
             </form>
@@ -45,7 +45,7 @@
 
                         <td onclick="sortTable(0)">Nombre Marca
                         </td>
-                        <td>Operations</td>
+                        <td>Acciones</td>
                     </tr>
                 </thead>
                 <tbody id="myTableBody">

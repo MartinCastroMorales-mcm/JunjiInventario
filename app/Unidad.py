@@ -55,13 +55,14 @@ def add_Unidad():
         idModalidad = request.form['idModalidad']
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s)'
+            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)'
             , (codigoUnidad,nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
             mysql.connection.commit()
             flash('Unidad agregada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('Unidad.UNIDAD'))
 
 #ruta para poder enviar los datos a la vista de edicion segun el id correspondiente
@@ -94,7 +95,8 @@ def edit_Unidad(id):
         return render_template('editUnidad.html', Unidad = data[0], 
                 comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
 
 #actualiza los datos de Unidad segun el id correspondiente   
@@ -126,7 +128,8 @@ def update_Unidad(id):
             flash('Unidad actualizada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('Unidad.UNIDAD'))
         
 #Elimina un registro segun el id
@@ -140,7 +143,8 @@ def delete_Unidad(id):
         flash('Unidad eliminada correctamente')
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
-        flash(e.args[1])
+        #flash(e.args[1])
+        flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
 @Unidad.route("/unidad/buscar_unidad/<id>")
 @loguear_requerido

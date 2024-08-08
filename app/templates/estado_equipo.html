@@ -28,9 +28,10 @@
 <form action="/add_estado_equipo" method="POST"class="mi-formulario">
     <div class="form-group">
         <label for="nombre_estado_equipo">Estado de Equipo: </label>
-        <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado">
+        <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" 
+        maxlength="45">
         <br>
-        <label for="fecha_modificacion">Fecha de modificación: </label>
+        <label for="fecha_modificacion">Fecha de Modificación: </label>
         <input type="date" name="fecha_modificacion">
         <br>
         <button class="agregar-button"> Agregar</button>    
@@ -44,7 +45,7 @@
     <thead>
         <tr>
             <td onclick="sortTable(0)">Nombre estado</td>
-            <td>Operations</td>
+            <td>Acciones</td>
         </tr>
     </thead>
     <tbody id="myTableBody">

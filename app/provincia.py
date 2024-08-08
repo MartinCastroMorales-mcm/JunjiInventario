@@ -33,7 +33,8 @@ def add_provincia():
             flash('Provincia agregada correctamente')
             return redirect(url_for('provincias.Provincia'))  
         except Exception as e:
-            flash(e.args[1])
+            #flash(e.args[1])
+            flash("Error al crear")
             return redirect(url_for('provincias.Provincia'))
         
 #enviar datos a vista editar segun el id
